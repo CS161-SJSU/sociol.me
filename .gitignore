@@ -1,2 +1,8 @@
+<<<<<<< HEAD
 /.vscode
 .DS_Store
+=======
+.idea
+.DS_Store
+/.vscode
+>>>>>>> Setup Redux + TS + Google Signin
