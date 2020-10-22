@@ -1,12 +1,15 @@
 from rest_framework import serializers 
-from backend.models import SocialApp
+from backend.models import GoogleSignIn
  
  
-class SocialAppSerializer(serializers.ModelSerializer):
+class GoogleSignInSerializer(serializers.ModelSerializer):
  
     class Meta:
-        model = SocialApp
-        fields = ('id',
-                  'title',
-                  'description',
-                  'published')
+        model = GoogleSignIn
+        fields = ('email',
+                  'firstName',
+                  'lastName',
+                  'fullName',
+                  'imageUrl',
+                  'googleId',
+                  'tokenId')
