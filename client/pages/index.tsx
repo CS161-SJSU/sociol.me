@@ -5,6 +5,9 @@ import { connect } from 'react-redux'
 import { NextPageContext } from 'next'
 import { State } from '../store/reducers'
 
+import Dashboard from "../components/dashboard";
+
+
 export interface PageProps extends State {
   pageProp: string
   appProp: string
@@ -25,15 +28,13 @@ class Index extends React.Component<PageProps> {
   }
 
   render() {
+
     // console.log('5. Page.render');
     const { pageProp, appProp } = this.props
     console.log('here this.props: ', this.props)
     return (
       <div>
-        <p>This is landing page</p>
-
-        <pre>{JSON.stringify({ pageProp, appProp }, null, 2)}</pre>
-
+        <Dashboard/>
         <Link href="/login">
           <a>Navigate to login</a>
         </Link>

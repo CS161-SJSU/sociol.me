@@ -14,6 +14,10 @@ export default class MyDocument extends Document {
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
           />
+          <script src="../styles/flickity.pkgd.min.js"/>
+          <link
+              rel="stylesheet"
+              href="../styles/plugin/flickity.css" media="screen"/>
         </Head>
         <body>
           <Main />
