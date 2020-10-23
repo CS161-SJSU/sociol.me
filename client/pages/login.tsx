@@ -4,28 +4,46 @@ import { useSelector } from 'react-redux'
 import { NextPage } from 'next'
 import { State } from '../store/reducers'
 import { wrapper } from '../store/store'
+import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import SignIn from '../components/SignIn'
-import { login } from '../api/login.api'
+import Login from '../components/Login'
+import { GoogleSignin } from '../api/login.api'
+import { loginSuccess, loginFailed } from '../store/actions/auth.action'
 
-interface OtherProps {
-  getStaticProp: string
-  appProp: string
-}
+//TODO: Handle failed cases
+//TODO: DONE - Send token to server
+//TODO: User Signout
+//TODO: DONE - Save user infomation to redux state
 
-const LoginPage: NextPage<OtherProps> = ({ appProp, getStaticProp }) => {
-  const { app, page } = useSelector<State, State>((state) => state)
+const LoginPage = (props) => {
+  // const { app, page } = useSelector<State, State>((state) => state)
+
+  const onGoogleSigninSuccess = (userData: Object) => {
+    console.log('here', userData)
+    // props.GoogleSignin(userData)
+  }
+
   return (
     <div className="login">
-      <SignIn />
+      <Login onGoogleSigninSuccess={onGoogleSigninSuccess} />
     </div>
   )
 }
 
-export const getStaticProps = wrapper.getStaticProps(({ store }) => {
-  store.dispatch({ type: 'PAGE', payload: 'login' })
-  return { props: { getStaticProp: 'bar' } }
+LoginPage.getInitialProps = () => ({
+  //TODO: verify auth token
+  // custom: 'custom', // pass some custom props to component
 })
 
-export default LoginPage
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+  }
+}
+
+function matchDispatchToProps(dispatch) {
+  return bindActionCreators({ GoogleSignin }, dispatch)
+}
+
+export default connect(mapStateToProps, matchDispatchToProps)(LoginPage)

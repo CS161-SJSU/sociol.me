@@ -14,6 +14,10 @@ export default function userReducer(
       return { ...state, ...action.payload, ...{ loading: false } }
     case types.LOGIN_FAILED:
       return { ...state, ...{ loading: false }, ...{ errors: action.payload } }
+    case types.VERIFY_GOOGLE_TOKEN_SUCCESS:
+      return { ...state, ...action.payload, ...{ loading: false } }
+    case types.VERIFY_GOOGLE_TOKEN_FAILED:
+      return { ...state, ...{ loading: false }, ...{ errors: action.payload } }
     default:
       return state
   }

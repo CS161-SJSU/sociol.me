@@ -86,14 +86,19 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'social-analytics',
-        'HOST': '127.0.0.1',
-        'PORT': 27017,
+        'HOST': 'mongodb+srv://user:5kANkvoF1qrpRvAl@cluster0.yi1dl.gcp.mongodb.net/social-analytics?retryWrites=true&w=majority', 
+        'USER': 'user',
+        'PASSSWORD': '5kANkvoF1qrpRvAl'
     }
 }
 
 
 # Password validation
+<<<<<<< HEAD:server/server/settings.py
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
+=======
+# https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-ssvalidators
+>>>>>>> 49866ea... Google SSO IP:server/config/settings.py
 
 AUTH_PASSWORD_VALIDATORS = [
     {
