@@ -30,7 +30,6 @@ def to_servers(request):
     if request.method == 'POST': 
         print("if")
         token = request.data.get('tokenId')
-        # token = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjE3OGFiMWRjNTkxM2Q5MjlkMzdjMjNkY2FhOTYxODcyZjhkNzBiNjgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiNDEzODg5MzE3OTYyLXU3cnJhNDI4Z2NtMmEzaW4xaWppNWppYWYxcjRzbnRjLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNDEzODg5MzE3OTYyLXU3cnJhNDI4Z2NtMmEzaW4xaWppNWppYWYxcjRzbnRjLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTEzOTkwOTc3NDgwMzIzODA1MjgyIiwiZW1haWwiOiJsZWVraW1idWk5MkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6IkVzeUZwQ3dDY1R3akE4dFl2Nlc5SmciLCJuYW1lIjoiTGVlIEtpbSIsInBpY3R1cmUiOiJodHRwczovL2xoNi5nb29nbGV1c2VyY29udGVudC5jb20vLTVvMHVUNGp4RkpnL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFBL0FNWnV1Y21PNWpxYkxVczVRRm5fTGw2T0NBc05YQ2ZHSXcvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6IkxlZSIsImZhbWlseV9uYW1lIjoiS2ltIiwibG9jYWxlIjoiZW4iLCJpYXQiOjE2MDM0MTQxODQsImV4cCI6MTYwMzQxNzc4NCwianRpIjoiMzFiZGY2YjVhMTFkNDNjNTE2MTQ0ZTUzNGFkNmYwMTM0NWEyMzcxMSJ9.NTiStXA24B8DZuu4IGcYRwc6Moxg7lhuWasDTp9jWzHp_bKg5zEgbivDRmfIIapOoi-b91clb201s0anZrXf88BAnj9uhErG0rlN_PYUSJk81m6gW6Tqlyu1Jh2GyIOdIlpRkuvNqIyKVAyqWGLwrcoVA7J9whh0YPEOrzUDxUIXw-6D3_XNGMEErJIVnf0ggu64AeQf00oA2-IbN38aC1y6Stf-C2whtnXjbqdlIKGVhcKdJgEqVRfbDlafziWnkVScQgppjMx5-yd0BJICOCDmQIGk9t05qBO45xRL0Q94tnQa3km9eVL2579XFw3zDJ1FC5N5k91Aoqov9CFeCg"
 
         try:
             print("try")
@@ -38,52 +37,24 @@ def to_servers(request):
             idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
             print(idinfo)
 
-            # ID token is valid. Get the user's Google Account ID from the decoded token.
-            # userid = idinfo['sub']
-            # print("Google ID: " + userid)
-    
             response = httprequest.get("https://oauth2.googleapis.com/tokeninfo?id_token=" + token)
-            print("The response")
-            userData = response.json()
-            print(userData) 
-            print("The values")
-
-            # email = userData.get('email', None)
-            email = idinfo['email']
-            # firstName = userData.get('given_name', None)
-            firstName = idinfo['given_name']
-            lastName = idinfo['family_name']
-            fullName = idinfo['name']
-            imageUrl = idinfo['picture']
-            googleId = idinfo['sub']
-
-            # user = GoogleSignInSerializer(email=email, firstName=firstName,
-            #             lastName=lastName, fullName=fullName, 
-            #             imageUrl=imageUrl, googleId=googleId, tokenId=token)
-
-            # print(email)
-            # print(firstName)
-            # saving to DB
-            # server_serializer = GoogleSignInSerializer(data=userData)
             
-            # if user.is_valid():
-            #     user.save()
-            
-            return Response({'message': 'Google ID info OK!',
-                            'firstName': firstName,
-                            'lastName': lastName,
-                            'fullName': fullName,
-                            'imageUrl': imageUrl,
-                            'googleId': googleId,
-                            'tokenId': token}, status=status.HTTP_202_ACCEPTED)
+            # email = idinfo['email']
+            # firstName = idinfo['given_name']
+            # lastName = idinfo['family_name']
+            # fullName = idinfo['name']
+            # imageUrl = idinfo['picture']
+            # googleId = idinfo['sub']
 
+            user = GoogleSignIn(email = idinfo['email'], firstName = idinfo['given_name'], lastName = idinfo['family_name'], 
+                                fullName = idinfo['name'], imageUrl = idinfo['picture'],
+                                googleId = idinfo['sub'], tokenId = token)
+            user.save()
+            return Response({'message': 'Google ID info OK!'}, status=status.HTTP_202_ACCEPTED)
+            
         except ValueError:
             # Invalid token
             print("Value Error")
-            # return Response({'message': 'Google ID info is wrong!'})
             return Response({'message': 'Google ID info is wrong!'}, status=status.HTTP_401_UNAUTHORIZED)
     
-
-    print("POST failed")
-    # return Response({'message': 'Google sign in failed!'})
     return Response({'message': 'Google sign in failed!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
