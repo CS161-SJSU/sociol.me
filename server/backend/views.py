@@ -6,7 +6,6 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
  
 from backend.models import GoogleSignIn
-from backend.serializers import GoogleSignInSerializer
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
