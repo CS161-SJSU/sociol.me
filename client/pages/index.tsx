@@ -1,11 +1,14 @@
 import React from 'react'
-import Link from 'next/link'
+
 
 import { connect } from 'react-redux'
 import { NextPageContext } from 'next'
 import { State } from '../store/reducers'
+import Router from "next/router";
 
-import Dashboard from "../components/dashboard";
+import Dashboard from '../pages/dashboard'
+import unfetch from "isomorphic-unfetch";
+
 
 
 export interface PageProps extends State {
@@ -25,22 +28,28 @@ class Index extends React.Component<PageProps> {
       pathname,
       query,
     })
+    const clientId = process.env.UNSPLASH_CLIENT_ID
+    const requestURL = `https://api.unsplash.com/topics/architecture/photos?page=1&client_id=${clientId}`
+    const data = await unfetch(requestURL)
+    const imageArray = await data.json()
+    return {
+      imageArray
+    }
   }
 
-  render() {
 
+  render() {
     // console.log('5. Page.render');
     const { pageProp, appProp } = this.props
-    console.log('here this.props: ', this.props)
+    //console.log('here this.props: ', this.props)
+    const images = this.props.imageArray
     return (
       <div>
-        <Dashboard/>
-        <Link href="/login">
-          <a>Navigate to login</a>
-        </Link>
+        <Dashboard images={images}/>
       </div>
     )
   }
 }
+
 
 export default connect((state) => state)(Index)

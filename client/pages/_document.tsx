@@ -3,6 +3,12 @@ import Document, { Html, Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheets } from '@material-ui/core/styles'
 import theme from '../styles/theme'
 
+const styleBody = {
+  body :{
+    margin: '0px',
+  }
+}
+
 export default class MyDocument extends Document {
   render() {
     return (
@@ -14,12 +20,8 @@ export default class MyDocument extends Document {
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
           />
-          <script src="../styles/flickity.pkgd.min.js"/>
-          <link
-              rel="stylesheet"
-              href="../styles/plugin/flickity.css" media="screen"/>
         </Head>
-        <body>
+        <body style={{margin: "0"}}>
           <Main />
           <NextScript />
         </body>
