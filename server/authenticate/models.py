@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 
-class GoogleSignIn(models.Model):
+class User(models.Model):
     email = models.CharField(max_length=70, unique = True, blank=False, default='')
     firstName = models.CharField(max_length=70, blank=False, default='')
     lastName = models.CharField(max_length=70, blank=False, default='')
