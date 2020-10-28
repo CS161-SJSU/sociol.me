@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Django REST framework 
     'rest_framework',
-    'backend.apps.BackendConfig',
+    'authenticate.apps.AuthenticateConfig',
     # CORS
     'corsheaders',
 ]
