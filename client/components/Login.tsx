@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 import GoogleLogin from 'react-google-login'
+
 import styled from 'styled-components'
 
 function Copyright() {
@@ -20,7 +21,7 @@ function Copyright() {
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
       <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+        Social Analytics
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -48,11 +49,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function SignIn() {
+interface LoginProps {
+  onGoogleSignin: Function
+}
+
+const Login: React.FC<LoginProps> = ({ onGoogleSignin }: LoginProps) => {
   const classes = useStyles()
 
-  const responseGoogle = (response) => {
-    console.log(response)
+  const onGoogleSigninSuccess = (res) => {
+    // console.log(res)
+    const googleProfile = res.profileObj
+
+    const userData = {
+      email: googleProfile.email,
+      firstName: googleProfile.givenName,
+      lastName: googleProfile.familyName,
+      fullName: googleProfile.name,
+      imageUrl: googleProfile.imageUrl,
+      googleId: googleProfile.googleId,
+      tokenId: res.tokenId,
+    }
+    // if signin successfully
+    if (userData.tokenId) {
+      onGoogleSignin(userData)
+    }
+    //  save previous id  // onClick
+  }
+
+  const onGoogleSigninFail = (res) => {
+    console.log('FAILED: ' + res)
   }
 
   const GoogleSignIn = styled.div`
@@ -73,7 +98,26 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-
+          <GoogleSignIn>
+            <GoogleLogin
+              clientId="413889317962-u7rra428gcm2a3in1iji5jiaf1r4sntc.apps.googleusercontent.com"
+              buttonText="Sign in with Google"
+              onSuccess={onGoogleSigninSuccess}
+              onFailure={onGoogleSigninFail}
+              theme="dark"
+              redirectUri="http://localhost:3000/setup"
+            />
+          </GoogleSignIn>
+          {/* <Button
+            type="submit"
+            variant="contained"
+            color="secondary"
+            className={classes.submit}
+          >
+            Connect to Twitter
+          </Button> */}
+          ---------------------------------- or
+          ----------------------------------
           <form className={classes.form} noValidate>
             <TextField
               variant="outlined"
@@ -125,20 +169,12 @@ export default function SignIn() {
             </Grid>
           </form>
         </div>
-        {/* <Box mt={8}>
+        <Box mt={8}>
           <Copyright />
-        </Box> */}
-        <GoogleSignIn>
-          <GoogleLogin
-            clientId="413889317962-u7rra428gcm2a3in1iji5jiaf1r4sntc.apps.googleusercontent.com"
-            buttonText="Sign in with Google"
-            onSuccess={responseGoogle}
-            onFailure={responseGoogle}
-            isSignedIn={true}
-            redirectUri="http://localhost:3000/setup"
-          />
-        </GoogleSignIn>
+        </Box>
       </Container>
     </div>
   )
 }
+
+export default Login

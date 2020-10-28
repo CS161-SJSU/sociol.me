@@ -24,7 +24,7 @@ load_dotenv()
 
 @api_view(['POST','GET'])
 def to_authenticate(request):
-    servers = User.objects
+    # TODO: User already exist
     
     if request.method == 'POST': 
         token = request.data.get('tokenId')
@@ -37,10 +37,10 @@ def to_authenticate(request):
             response = httprequest.get("https://oauth2.googleapis.com/tokeninfo?id_token=" + token)
             
 
-            user = User(email = idinfo['email'], firstName = idinfo['given_name'], lastName = idinfo['family_name'], 
-                                fullName = idinfo['name'], imageUrl = idinfo['picture'],
-                                googleId = idinfo['sub'], tokenId = token)
-            user.save()
+            user = User.objects.create_user(email = idinfo['email'], password = token, first_name = idinfo['given_name'], 
+                                last_name = idinfo['family_name'], full_name = idinfo['name'], image_url = idinfo['picture'],
+                                google_id = idinfo['sub'], token_id = token)
+
             return Response({'message': 'Google ID info OK!'}, status=status.HTTP_202_ACCEPTED)
             
         except ValueError:

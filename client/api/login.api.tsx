@@ -1,5 +1,8 @@
 import axios from 'axios'
-import { loginSuccessfully, loginFailed } from '../store/actions/auth.action'
+import {
+  verifyGoogleTokenSuccess,
+  verifyGoogleTokenFailed,
+} from '../store/actions/auth.action'
 import {
   HOST,
   LOGIN_URI,
@@ -7,17 +10,42 @@ import {
   USER_TOKEN,
   USER_FIRST_NAME,
   USER_LAST_NAME,
+  VERIFY_GOOGLE_TOKEN_URI,
 } from '../constants/main'
+import { setTokenToLocalStorage } from '../utils'
 
 // eslint-disable-next-line import/prefer-default-export
-export const login = (userData) => (dispatch) => {
+export const GoogleSignin = (userData) => (dispatch) => {
   return axios
-    .post(`${HOST}${LOGIN_URI}`, userData)
+    .post(`${HOST}${VERIFY_GOOGLE_TOKEN_URI}`, userData)
     .then((res) => {
-      // const { token, email, first_name, last_name } = ress.data
-      dispatch(loginSuccessfully(res.data))
+      // console.log('res: ', res)
+      // console.log('userData: ', userData)
+      const { tokenId, email, firstName, lastName } = userData
+      setTokenToLocalStorage(USER_TOKEN, tokenId).then(() => {
+        localStorage.setItem(USER_EMAIL, email)
+        localStorage.setItem(USER_FIRST_NAME, firstName)
+        localStorage.setItem(USER_LAST_NAME, lastName)
+        dispatch(verifyGoogleTokenSuccess(userData))
+      })
     })
     .catch((err) => {
-      dispatch(loginFailed(err))
+      dispatch(verifyGoogleTokenFailed(err))
     })
+}
+
+export const twitterSignin = (userData) => (dispatch) => {
+  const config = {
+    headers: {
+      Authorization: `OAuth oauth_callback="http://localhost:3000/", oauth_consumer_key="H0M4eWHkZgZPcTgJjayJqErpW"`,
+    },
+    mode: 'cors',
+    credentials: 'include',
+  }
+  axios
+    .post(`https://api.twitter.com/oauth/request_token`, config)
+    .then((res) => {
+      console.log('res: ', res)
+    })
+    .catch((err) => {})
 }

@@ -17,18 +17,49 @@ load_dotenv()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # settings.py
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Allow access to all domains
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:8080',
+    'http://localhost:3000',
+    'http://localhost',
+)
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+AUTH_USER_MODEL = "authenticate.User" 
 
 # Application definition
 
@@ -41,9 +72,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Django REST framework 
     'rest_framework',
-    'authenticate.apps.AuthenticateConfig',
     # CORS
     'corsheaders',
+    #app
+    'authenticate',
 ]
 
 MIDDLEWARE = [
@@ -86,8 +118,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'social-analytics',
-        'HOST': '127.0.0.1',
-        'PORT': 27017,
+        'HOST': 'mongodb+srv://user:5kANkvoF1qrpRvAl@cluster0.yi1dl.gcp.mongodb.net/social-analytics?retryWrites=true&w=majority', 
+        'USER': 'user',
+        'PASSSWORD': '5kANkvoF1qrpRvAl'
     }
 }
 
@@ -129,11 +162,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
-CORS_ORIGIN_ALLOW_ALL = False
-CORS_ORIGIN_WHITELIST = (
-    'http://localhost:8081',
-)
 
 # REST_FRAMEWORK = {
 #     'DEFAULT_AUTHENTICATION_CLASSES': [
