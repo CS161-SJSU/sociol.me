@@ -1,15 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Link from 'next/link'
 import { useSelector } from 'react-redux'
 import { NextPage } from 'next'
-import { State } from '../store/reducers'
-import { wrapper } from '../store/store'
+import { useRouter } from 'next/router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import Button from '@material-ui/core/Button'
 
 import Login from '../components/Login'
+import { USER_TOKEN } from '../constants/main'
 import { GoogleSignin } from '../api/login.api'
-import { loginSuccess, loginFailed } from '../store/actions/auth.action'
 
 //TODO: Handle failed cases
 //TODO: DONE - Send token to server
@@ -17,16 +17,24 @@ import { loginSuccess, loginFailed } from '../store/actions/auth.action'
 //TODO: DONE - Save user infomation to redux state
 
 const LoginPage = (props) => {
-  // const { app, page } = useSelector<State, State>((state) => state)
+  console.log('props: ', props)
+  const router = useRouter()
 
-  const onGoogleSigninSuccess = (userData: Object) => {
-    console.log('here', userData)
-    // props.GoogleSignin(userData)
+  useEffect(() => {
+    const token = window.localStorage.getItem(USER_TOKEN)
+    if (token) {
+      router.push('/setup', 'shallow')
+    }
+  })
+
+  const onGoogleSignin = (userData: Object) => {
+    // console.log('here', userData)
+    props.GoogleSignin(userData)
   }
 
   return (
     <div className="login">
-      <Login onGoogleSigninSuccess={onGoogleSigninSuccess} />
+      <Login onGoogleSignin={onGoogleSignin} />
     </div>
   )
 }

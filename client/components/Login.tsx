@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 import GoogleLogin from 'react-google-login'
+
 import styled from 'styled-components'
 
 function Copyright() {
@@ -49,14 +50,14 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 interface LoginProps {
-  onGoogleSigninSuccess: Function
+  onGoogleSignin: Function
 }
 
-const Login: React.FC<LoginProps> = ({ onGoogleSigninSuccess }: LoginProps) => {
+const Login: React.FC<LoginProps> = ({ onGoogleSignin }: LoginProps) => {
   const classes = useStyles()
 
-  const responseGoogle = (res) => {
-    console.log(res)
+  const onGoogleSigninSuccess = (res) => {
+    // console.log(res)
     const googleProfile = res.profileObj
 
     const userData = {
@@ -66,9 +67,17 @@ const Login: React.FC<LoginProps> = ({ onGoogleSigninSuccess }: LoginProps) => {
       fullName: googleProfile.name,
       imageUrl: googleProfile.imageUrl,
       googleId: googleProfile.googleId,
+      tokenId: res.tokenId,
     }
-    onGoogleSigninSuccess(userData)
-    // dispatch(loginSuccessfully(userData))
+    // if signin successfully
+    if (userData.tokenId) {
+      onGoogleSignin(userData)
+    }
+    //  save previous id  // onClick
+  }
+
+  const onGoogleSigninFail = (res) => {
+    console.log('FAILED: ' + res)
   }
 
   const GoogleSignIn = styled.div`
@@ -93,20 +102,20 @@ const Login: React.FC<LoginProps> = ({ onGoogleSigninSuccess }: LoginProps) => {
             <GoogleLogin
               clientId="413889317962-u7rra428gcm2a3in1iji5jiaf1r4sntc.apps.googleusercontent.com"
               buttonText="Sign in with Google"
-              onSuccess={responseGoogle}
-              onFailure={responseGoogle}
-              isSignedIn={true}
+              onSuccess={onGoogleSigninSuccess}
+              onFailure={onGoogleSigninFail}
+              theme="dark"
               redirectUri="http://localhost:3000/setup"
             />
           </GoogleSignIn>
-          <Button
+          {/* <Button
             type="submit"
             variant="contained"
             color="secondary"
             className={classes.submit}
           >
             Connect to Twitter
-          </Button>
+          </Button> */}
           ---------------------------------- or
           ----------------------------------
           <form className={classes.form} noValidate>

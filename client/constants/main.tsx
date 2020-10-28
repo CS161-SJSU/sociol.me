@@ -10,5 +10,5 @@ export const USER_TOKEN = 'USER_TOKEN'
 
 // Server URI
 export const LOGIN_URI = '/auth/login/'
-export const VERIFY_GOOGLE_TOKEN_URI = '/auth/login/'
+export const VERIFY_GOOGLE_TOKEN_URI = '/authenticate/'
 export const REGISTER_URI = '/auth/register/'
