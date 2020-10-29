@@ -5,41 +5,54 @@ import Link from 'next/link'
 
 
 const flickityOptions = {
-    initialIndex: 0,
-    cellAlign: 'left',
-    freeScroll: false,
+    initialIndex: 1,
+    cellAlign: 'center',
+    freeScroll: true,
     prevNextButtons: false,
     pageDots: false,
     contain: true,
-    autoPlay: false,
-    adaptiveHeight: true,
+    autoPlay: 3500,
+    pauseAutoPlayOnHover: false,
     selectedAttraction: 0.015,
-    friction: 0.2
+    friction: 0.2,
+    resize: false,
+    wrapAround: true,
+    setGallerySize: false,
+    imagesLoaded: true,
+    accessibility: false,
+    draggable: false,
 }
 
 const useStyles = makeStyles(() => ({
 
     mainCarousel: {
-        width: "min(106vh, 50%)",
+        width: "min(108vh, 50%)",
+        margin: '0',
+        padding: '0',
     },
     carouselItem: {
         height: '100vh',
-        width: '100%'
+        width: '51vw',
     },
 
     text: {
-        position: 'absolute',
-        bottom: '50%',
+        position: 'fixed',
         top: '50%',
-        transform: 'translate(-50%, -50%)'
+        left: '51%',
+        transform: 'translate(-50%, -50%)',
+        textAlign: 'center',
+        fontFamily: 'arial',
+        textDecoration: 'none',
+        fontSize: '1.8em',
+        zIndex: 'auto',
+        color: 'black',
+        backgroundColor: 'chartreuse',
     },
 
     outerBody: {
         position: 'relative',
         textAlign: 'center',
     },
-
-
 }))
 
 
@@ -48,11 +61,10 @@ function Carousel({ images }) {
     const classes = useStyles()
 
     return (
-
         <Flickity
             className={classes.mainCarousel}
             options={flickityOptions} // takes flickity options {}
-            reloadOnUpdate // default false
+            reloadOnUpdate={false} // default false
             static // default false
             disableImagesLoaded={false} // default false
         >
@@ -67,10 +79,10 @@ function Carousel({ images }) {
 export default function Dashboard({images}) {
     const classes = useStyles()
     return (
-        <div style={{""}}>
+        <div>
             <Carousel images={images} />
-            <Link className={classes.text} href="/login">
-                <a>Navigate to login</a>
+            <Link  href="/login">
+                <a  className={classes.text} >  Navigate to login</a>
             </Link>
         </div>
     )
