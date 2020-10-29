@@ -36,11 +36,17 @@ def to_authenticate(request):
 
             response = httprequest.get("https://oauth2.googleapis.com/tokeninfo?id_token=" + token)
             
-
-            user = User.objects.create_user(email = idinfo['email'], password = token, first_name = idinfo['given_name'], 
-                                last_name = idinfo['family_name'], full_name = idinfo['name'], image_url = idinfo['picture'],
-                                google_id = idinfo['sub'], token_id = token)
-
+            # SSO is valid, now search for the user by email in the DB
+            try:
+                # if user exist, update the token
+                user = User.objects.get(email=idinfo['email'])
+                user.token_id = token
+            except User.DoesNotExist:
+                # new user created
+                user = User.objects.create_user(email = idinfo['email'], password = token, first_name = idinfo['given_name'], 
+                                    last_name = idinfo['family_name'], full_name = idinfo['name'], image_url = idinfo['picture'],
+                                    google_id = idinfo['sub'], token_id = token)
+            # both cases, it will be accepted
             return Response({'message': 'Google ID info OK!'}, status=status.HTTP_202_ACCEPTED)
             
         except ValueError:
