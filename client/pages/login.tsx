@@ -1,31 +1,57 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Link from 'next/link'
 import { useSelector } from 'react-redux'
 import { NextPage } from 'next'
-import { State } from '../store/reducers'
-import { wrapper } from '../store/store'
+import { useRouter } from 'next/router'
+import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import Button from '@material-ui/core/Button'
 
-import SignIn from '../components/SignIn'
-import { login } from '../api/login.api'
+import Login from '../components/Login'
+import { USER_TOKEN } from '../constants/main'
+import { GoogleSignin } from '../api/login.api'
 
-interface OtherProps {
-  getStaticProp: string
-  appProp: string
-}
+//TODO: Handle failed cases
+//TODO: DONE - Send token to server
+//TODO: User Signout
+//TODO: DONE - Save user infomation to redux state
 
-const LoginPage: NextPage<OtherProps> = ({ appProp, getStaticProp }) => {
-  const { app, page } = useSelector<State, State>((state) => state)
+const LoginPage = (props) => {
+  console.log('props: ', props)
+  const router = useRouter()
+
+  useEffect(() => {
+    const token = window.localStorage.getItem(USER_TOKEN)
+    if (token) {
+      router.push('/setup', 'shallow')
+    }
+  })
+
+  const onGoogleSignin = (userData: Object) => {
+    // console.log('here', userData)
+    props.GoogleSignin(userData)
+  }
+
   return (
     <div className="login">
-      <SignIn />
+      <Login onGoogleSignin={onGoogleSignin} />
     </div>
   )
 }
 
-export const getStaticProps = wrapper.getStaticProps(({ store }) => {
-  store.dispatch({ type: 'PAGE', payload: 'login' })
-  return { props: { getStaticProp: 'bar' } }
+LoginPage.getInitialProps = () => ({
+  //TODO: verify auth token
+  // custom: 'custom', // pass some custom props to component
 })
 
-export default LoginPage
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+  }
+}
+
+function matchDispatchToProps(dispatch) {
+  return bindActionCreators({ GoogleSignin }, dispatch)
+}
+
+export default connect(mapStateToProps, matchDispatchToProps)(LoginPage)
