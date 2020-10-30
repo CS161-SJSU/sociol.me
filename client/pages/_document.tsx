@@ -3,6 +3,12 @@ import Document, { Html, Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheets } from '@material-ui/core/styles'
 import theme from '../styles/theme'
 
+const styleBody = {
+  body :{
+    margin: '0px',
+  }
+}
+
 export default class MyDocument extends Document {
   render() {
     return (
@@ -15,7 +21,7 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
           />
         </Head>
-        <body>
+        <body style={{margin: "0", padding: "0"}}>
           <Main />
           <NextScript />
         </body>
