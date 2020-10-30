@@ -50,13 +50,9 @@ class Index extends React.Component<PageProps> {
   }
 }
 
-<<<<<<< HEAD
-export default connect((state) => state)(Index)
-=======
 
 
 
 
 
 export default connect((state) => state)(Index)
->>>>>>> master
