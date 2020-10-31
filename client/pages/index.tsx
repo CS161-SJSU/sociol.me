@@ -4,9 +4,7 @@ import { NextPageContext } from 'next'
 import { State } from '../store/reducers'
 
 import Dashboard from '../pages/dashboard'
-import unfetch from "isomorphic-unfetch";
-
-
+import unfetch from 'isomorphic-unfetch'
 
 export interface PageProps extends State {
   pageProp: string
@@ -26,12 +24,12 @@ class Index extends React.Component<PageProps> {
       query,
     })
     const clientId = process.env.UNSPLASH_CLIENT_ID
-      const randNumber = Math.floor(Math.random() *10) + 1
+    const randNumber = Math.floor(Math.random() * 10) + 1
     const requestURL = `https://api.unsplash.com/topics/architecture/photos?page=${randNumber}&client_id=${clientId}`
     const data = await unfetch(requestURL)
     const imageArray = await data.json()
     return {
-      imageArray
+      imageArray,
     }
   }
 
@@ -39,13 +37,13 @@ class Index extends React.Component<PageProps> {
 
   render() {
     // console.log('5. Page.render');
-    const {pageProp, appProp} = this.props
+    const { pageProp, appProp } = this.props
     //console.log('here this.props: ', this.props)
     const images = this.props.imageArray
     return (
-        <div>
-          <Dashboard images={images}/>
-        </div>
+      <div>
+        <Dashboard images={images} />
+      </div>
     )
   }
 }
