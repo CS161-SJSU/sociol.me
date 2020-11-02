@@ -33,19 +33,3 @@ export const GoogleSignin = (userData) => (dispatch) => {
       dispatch(verifyGoogleTokenFailed(err))
     })
 }
-
-export const twitterSignin = (userData) => (dispatch) => {
-  const config = {
-    headers: {
-      Authorization: `OAuth oauth_callback="http://localhost:3000/", oauth_consumer_key="H0M4eWHkZgZPcTgJjayJqErpW"`,
-    },
-    mode: 'cors',
-    credentials: 'include',
-  }
-  axios
-    .post(`https://api.twitter.com/oauth/request_token`, config)
-    .then((res) => {
-      console.log('res: ', res)
-    })
-    .catch((err) => {})
-}

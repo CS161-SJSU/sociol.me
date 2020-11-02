@@ -1,4 +1,12 @@
-# social-analytics
+<p align="center">
+    <img width="150" src="./client/public/sociol_logo.png">
+</p>
+
+<h1 align="center">Sociol</h1>
+
+<div align="center">
+Analysts for your Social Media</br></br>
+</div>
 
 ## 📂 Technologies Used
 
@@ -6,7 +14,6 @@
 
 - [NextJS]()
 - [Redux](https://github.com/reduxjs/redux)
-- [Material UI]()
 - [Jest](https://github.com/facebook/jest)
 - [Enzyme](https://github.com/FormidableLabs/enzyme-matchers/tree/master/packages/jest-enzyme)
 
