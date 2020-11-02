@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core'
 
 const styles = {
@@ -59,11 +58,6 @@ function WaveBorder(props) {
   )
 }
 
-WaveBorder.propTypes = {
-  lowerColor: PropTypes.string.isRequired,
-  upperColor: PropTypes.string.isRequired,
-  classes: PropTypes.object.isRequired,
-  animationNegativeDelay: PropTypes.number.isRequired,
-}
+WaveBorder.propTypes = {}
 
 export default withStyles(styles)(WaveBorder)
