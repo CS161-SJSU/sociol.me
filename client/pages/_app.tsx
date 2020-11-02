@@ -1,13 +1,10 @@
 import React from 'react'
 import App, { AppInitialProps, AppContext } from 'next/app'
 import { wrapper } from '../store/store'
+import '../assets/scss/style.scss'
 
 class WrappedApp extends App<AppInitialProps> {
   public static getInitialProps = async ({ Component, ctx }: AppContext) => {
-    // Keep in mind that this will be called twice on server, one for page and second for error page
-    // ctx.store.dispatch({ type: 'APP', payload: 'was set in _app' })
-    // TODO: get user token, first and last name
-
     return {
       pageProps: {
         // Call page-level getInitialProps
