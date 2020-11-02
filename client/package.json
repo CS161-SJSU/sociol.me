@@ -18,12 +18,8 @@
     "flickity-imagesloaded": "^2.0.0",
     "imports-loader": "^1.2.0",
     "isomorphic-unfetch": "^3.1.0",
-<<<<<<< HEAD
-    "next": "9.5.5",
-=======
     "lodash": "^4.17.20",
     "next": "^10.0.0",
->>>>>>> 16e9302... Finish Landing Page
     "next-redux-wrapper": "^6.0.2",
     "node-sass": "^4.14.1",
     "prop-types": "^15.7.2",
