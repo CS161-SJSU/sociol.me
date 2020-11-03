@@ -5,8 +5,6 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
  
 from twitter.models import TwitterModel
-from backend.models import GoogleSignIn
-from backend.serializers import GoogleSignInSerializer
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -22,7 +20,8 @@ import requests as httprequest
 import os
 import tweepy
 import json
-
+import webbrowser
+import time
 
 
 # Create your views here.
@@ -31,31 +30,53 @@ def twitter_authenticate(request):
     if request.method == 'POST':
         try:
             user_email = request.data.get('email')
-            if user_email is None:
-                return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+            #if user_email is None:
+            #    return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-            user = User_Model.objects.filter(email=user_email)
+            #user = User_Model.objects.filter(email=user_email)
+
             consumer_key = os.environ.get('TWITTER_ID')
             consumer_secret = os.environ.get('TWITTER_SECRET')
         
             #async await?????
             #in case of fail, return 401
-            auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+            
+            #auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'oob')
+            #redirect_url = auth.get_authorization_url()
+            #webbrowser.open(redirect_url)
 
-            auth_token = auth.access_token
-            auth_token_secret = auth.access_token_secret
+            #verifier = raw_input('Verifier:')
+            #token = session.get('request_token')
+            #session.delete('request_token')
+
+            #auth.request_token = { 'oauth_token' : token,
+            #             'oauth_token_secret' : verifier }
+
+            #try:
+            #    auth.get_access_token(verifier)
+            #except tweepy.TweepError:
+            #    print('Error! Failed to get access token.')
+
+            #auth_token = auth.access_token
+            #auth_token_secret = auth.access_token_secret
+
+            auth_token = ''
+            auth_token_secret = ''
+
+            auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+            auth.set_access_token(auth_token, auth_token_secret)
 
             api = tweepy.API(auth, wait_on_rate_limit = True)
 
             user_info_dict = api.me()
-            id = user_info_dict['id']
+            user_id = user_info_dict['id']
             name = user_info_dict['name']
             screen_name = user_info_dict['screen_name']
             followers_count = user_info_dict['followers_count']
             friends_count = user_info_dict['friends_count']
             description = user_info_dict['description']
 
-            twitter_user_model = TwitterModel.objects.create(email = user_email, name = name, id = id, screen_name = screen_name, description = description, 
+            twitter_user_model = TwitterModel.create(email = user_email, name = name, user_id = user_id, screen_name = screen_name, description = description, 
             followers_count = followers_count, friends_count = friends_count, auth_token = auth_token, auth_token_secret = auth_token_secret)
 
             #send back to frontend auth_token, screen_name, name
