@@ -1,61 +1,15 @@
 import React from 'react'
-import Avatar from '@material-ui/core/Avatar'
-import Button from '@material-ui/core/Button'
-import CssBaseline from '@material-ui/core/CssBaseline'
-import TextField from '@material-ui/core/TextField'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
-import Link from '@material-ui/core/Link'
-import Grid from '@material-ui/core/Grid'
-import Box from '@material-ui/core/Box'
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
-import Typography from '@material-ui/core/Typography'
-import { makeStyles } from '@material-ui/core/styles'
-import Container from '@material-ui/core/Container'
 import GoogleLogin from 'react-google-login'
+import { Card, Form, Button } from 'tabler-react'
+import FormPage from '../components/FormPage'
 
 import styled from 'styled-components'
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Social Analytics
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  )
-}
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.light,
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-}))
 
 interface LoginProps {
   onGoogleSignin: Function
 }
 
 const Login: React.FC<LoginProps> = ({ onGoogleSignin }: LoginProps) => {
-  const classes = useStyles()
-
   const onGoogleSigninSuccess = (res) => {
     // console.log(res)
     const googleProfile = res.profileObj
@@ -83,97 +37,42 @@ const Login: React.FC<LoginProps> = ({ onGoogleSignin }: LoginProps) => {
   const GoogleSignIn = styled.div`
     display: flex;
     justify-content: center;
-    padding: 1rem;
+    padding: 1rem 1rem 0 1rem;
   `
 
   return (
-    <div>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          <GoogleSignIn>
-            <GoogleLogin
-              clientId="413889317962-u7rra428gcm2a3in1iji5jiaf1r4sntc.apps.googleusercontent.com"
-              buttonText="Sign in with Google"
-              onSuccess={onGoogleSigninSuccess}
-              onFailure={onGoogleSigninFail}
-              theme="dark"
-              redirectUri="http://localhost:3000/setup"
-            />
-          </GoogleSignIn>
-          {/* <Button
-            type="submit"
-            variant="contained"
-            color="secondary"
-            className={classes.submit}
-          >
-            Connect to Twitter
-          </Button> */}
-          ---------------------------------- or
-          ----------------------------------
-          <form className={classes.form} noValidate>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-            >
-              Sign In
-            </Button>
-
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
-          </form>
-        </div>
-        <Box mt={8}>
-          <Copyright />
-        </Box>
-      </Container>
-    </div>
+    <>
+      <FormPage imageURL={'./images/logo.svg'}>
+        <Card>
+          <Card.Header>
+            <Card.Title className="center-content">Login</Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <Form.Group label="Email">
+              <Form.Input icon="user" placeholder="Email" />
+            </Form.Group>
+            <Form.Group label="Password">
+              <Form.Input icon="lock" placeholder="Password" type="password" />
+            </Form.Group>
+            <Form.Footer>
+              <Button color="primary" size="lg" block>
+                Login
+              </Button>
+              <div className="center-content mt-4">or</div>
+              <GoogleSignIn>
+                <GoogleLogin
+                  clientId="413889317962-u7rra428gcm2a3in1iji5jiaf1r4sntc.apps.googleusercontent.com"
+                  buttonText="Login with Google"
+                  onSuccess={onGoogleSigninSuccess}
+                  onFailure={onGoogleSigninFail}
+                  redirectUri="http://localhost:3000/setup"
+                />
+              </GoogleSignIn>
+            </Form.Footer>
+          </Card.Body>
+        </Card>
+      </FormPage>
+    </>
   )
 }
 

@@ -15,7 +15,7 @@ const LandingPage = () => {
       <main className="site-content">
         <Hero className="illustration-section-01" />
         <WaveBorder />
-        <FeaturesTiles />
+        {/* <FeaturesTiles /> */}
         <FeaturesSplit
           invertMobile
           topDivider

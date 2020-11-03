@@ -37,7 +37,7 @@ const FeaturesSplit = ({
 
   const innerClasses = classNames(
     'features-split-inner section-inner',
-    topDivider && 'has-top-divider',
+    // topDivider && 'has-top-divider',
     bottomDivider && 'has-bottom-divider'
   )
 

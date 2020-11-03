@@ -33,9 +33,9 @@ const LoginPage = (props) => {
   }
 
   return (
-    <div className="login">
+    <>
       <Login onGoogleSignin={onGoogleSignin} />
-    </div>
+    </>
   )
 }
 

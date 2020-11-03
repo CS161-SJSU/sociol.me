@@ -2,6 +2,8 @@ import React from 'react'
 import App, { AppInitialProps, AppContext } from 'next/app'
 import { wrapper } from '../store/store'
 import '../assets/scss/style.scss'
+import 'tabler-react/dist/Tabler.css'
+// import 'tabler-react/dist/Tabler.RTL.css'
 
 class WrappedApp extends App<AppInitialProps> {
   public static getInitialProps = async ({ Component, ctx }: AppContext) => {
