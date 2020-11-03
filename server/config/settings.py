@@ -11,17 +11,21 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-import environ
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-env = environ.Env()
-# reading .env file
-environ.Env.read_env()
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Raises django's ImproperlyConfigured exception if SECRET_KEY not in os.environ
-SECRET_KEY = env("SECRET_KEY")
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+# settings.py
+SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -81,7 +85,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'userdb',
+        'NAME': 'social-analytics',
+        'HOST': 'mongodb+srv://user:5kANkvoF1qrpRvAl@cluster0.yi1dl.gcp.mongodb.net/social-analytics?retryWrites=true&w=majority', 
+        'USER': 'user',
+        'PASSSWORD': '5kANkvoF1qrpRvAl'
     }
 }
 

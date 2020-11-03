@@ -3,13 +3,15 @@ import {
   SET_USER_INFO,
   LOGIN_SUCCESS,
   LOGIN_FAILED,
+  VERIFY_GOOGLE_TOKEN_SUCCESS,
+  VERIFY_GOOGLE_TOKEN_FAILED,
   REGISTER_SUCCESS,
   REGISTER_FAILED,
   UPDATE_PROFILE,
   LOGOUT,
 } from '../../constants/actions'
 
-export const loginSuccessfully = (user) => ({
+export const loginSuccess = (user) => ({
   type: LOGIN_SUCCESS,
   payload: user,
 })
@@ -19,7 +21,17 @@ export const loginFailed = (error) => ({
   payload: error,
 })
 
-export const registerSuccessfully = (user) => ({
+export const verifyGoogleTokenSuccess = (user) => ({
+  type: VERIFY_GOOGLE_TOKEN_SUCCESS,
+  payload: user,
+})
+
+export const verifyGoogleTokenFailed = (error) => ({
+  type: VERIFY_GOOGLE_TOKEN_FAILED,
+  payload: error,
+})
+
+export const registerSuccess = (user) => ({
   type: REGISTER_SUCCESS,
   payload: user,
 })
