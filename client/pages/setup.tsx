@@ -10,6 +10,10 @@ import { USER_TOKEN } from '../constants/main'
 import { logout } from '../store/actions/auth.action'
 import {makeStyles} from "@material-ui/core/styles";
 import styles from '../components/css/nav.module.css'
+import TwitterLogin from 'react-twitter-auth';
+import { TwitterSignin } from '../api/twit.api'
+import Axios from 'axios'
+
 
 interface OtherProps {
   getStaticProp: string
@@ -20,22 +24,6 @@ const SetupPage = (props) => {
   console.log('Setup props: ', props)
   const { firstName } = props.user
   const router = useRouter()
-
-  useEffect(() => {
-    const token = window.localStorage.getItem(USER_TOKEN)
-    /*if (!token) {
-      router.push('/login')
-    }*/
-  })
-
-  // const googleClientID: string = process.env.GOOGLE_CLIENT_ID
-
-  const logout = () => {
-    console.log('logout')
-    localStorage.removeItem(USER_TOKEN)
-    router.push('/login')
-    props.logout()
-  }
 
   const useStyles = makeStyles(() => ({
     mainCarousel: {
@@ -68,8 +56,51 @@ const SetupPage = (props) => {
     },
   }))
 
+  useEffect(() => {
+    const token = window.localStorage.getItem(USER_TOKEN)
+    /*if (!token) {
+      router.push('/login')
+    }*/
 
 
+  })
+
+  const onTwitterSignin = (email, pwd : Object) => {
+    props.TwitterSignin(email, pwd)
+  }
+
+
+  const onTwitterSuccess = (response) => {
+
+    const token = response.headers.get('x-auth-token');
+    //or ?
+    //const token = window.localStorage.getItem(TWITTER_TOKEN)
+    response.json().then(user => {
+      if (token) {
+        user.getState({isAuthenticated: true, user: user, token: token})
+      }
+    });
+  }
+
+  const onTwitterFailed = (error) => {
+    alert(error)
+  }
+
+
+
+
+  // const googleClientID: string = process.env.GOOGLE_CLIENT_ID
+
+  const logout = () => {
+    console.log('logout')
+    localStorage.removeItem(USER_TOKEN)
+    router.push('/login')
+    props.logout()
+  }
+
+
+  const customHeader = {};
+  customHeader['Test'] = 'test-header';
 
   return (
     <div>
@@ -98,16 +129,14 @@ const SetupPage = (props) => {
                   >
                     <button className={"signInButton"}>Sign In with Spotify</button>
                   </a>
-                  <a href="/api/auth/signin"
-                     onClick={(e) => {
-                       e.preventDefault();
-                       signin('twitter' );
-                     }}
-                  >
-                    <button className={"signInButton"}>Sign In with Twitter</button>
-                  </a>
+                  <TwitterLogin loginUrl="http://localhost:3000/auth/twitter/redirect" //Back end URL
+                                onFailure={onTwitterFailed}
+                                onSuccess={onTwitterSuccess}
+                                requestTokenUrl="http://localhost:3000/auth/twitter/redirect"
+                                showIcon={true}
+                                customHeaders={customHeader}
+                                />
                 </>
-
 
           </p>
         </nav>
@@ -172,6 +201,7 @@ const SetupPage = (props) => {
 
       `}</style>
       </header>
+
       <div>
         <GoogleLogout
           clientId="413889317962-u7rra428gcm2a3in1iji5jiaf1r4sntc.apps.googleusercontent.com"
@@ -202,7 +232,7 @@ function mapStateToProps(state) {
 }
 
 function matchDispatchToProps(dispatch) {
-  return bindActionCreators({ logout }, dispatch)
+  return bindActionCreators({ TwitterSignin, logout }, dispatch)
 }
 
 export default connect(mapStateToProps, matchDispatchToProps)(SetupPage)

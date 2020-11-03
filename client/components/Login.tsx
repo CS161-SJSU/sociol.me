@@ -60,6 +60,7 @@ const Login: React.FC<LoginProps> = ({ onGoogleSignin }: LoginProps) => {
     // console.log(res)
     const googleProfile = res.profileObj
 
+
     const userData = {
       email: googleProfile.email,
       firstName: googleProfile.givenName,
