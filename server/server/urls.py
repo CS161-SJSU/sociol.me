@@ -22,5 +22,6 @@ from django.conf.urls import url, include
 # ]
  
 urlpatterns = [ 
-    url(r'^', include('authenticate.urls'))
+    url(r'^', include('authenticate.urls')),
+    url(r'^', include('twitter.urls'))
 ]
