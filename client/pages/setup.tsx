@@ -8,13 +8,7 @@ import { useRouter } from 'next/router'
 import { GoogleLogout } from 'react-google-login'
 import {USER_EMAIL, USER_TOKEN} from '../constants/main'
 import { logout } from '../store/actions/auth.action'
-import {makeStyles} from "@material-ui/core/styles";
-import styles from '../components/css/nav.module.css'
-import { TwitterSignin } from '../api/twit.api'
-import Axios from 'axios'
-import TwitterButton from "../components/TwitterButton";
-
-
+import Setup from '../components/Setup'
 
 interface OtherProps {
   getStaticProp: string
@@ -58,6 +52,7 @@ const SetupPage = (props) => {
   }))
 
   useEffect(() => {
+<<<<<<< HEAD
     const token = window.localStorage.getItem(USER_TOKEN)
     /*if (!token) {
       router.push('/login')
@@ -75,11 +70,20 @@ const SetupPage = (props) => {
     router.push('/login')
     props.logout()
   }
+=======
+    // const token = window.localStorage.getItem(USER_TOKEN)
+    // if (!token) {
+    //   router.push('/login')
+    // }
+  })
+  const onTwitterConnect = (props) => {}
+>>>>>>> e43ab62... Setup Page In Progress
 
   const customHeader = {};
   customHeader['Test'] = 'test-header';
 
   return (
+<<<<<<< HEAD
     <div>
       Cagan Setup Page -- Hi {firstName}
         <TwitterButton onTwitterSignin={onTwitterSignin} />
@@ -94,13 +98,13 @@ const SetupPage = (props) => {
         ></GoogleLogout>
       </div>
     </div>
+=======
+    <>
+      <Setup onTwitterConnect={onTwitterConnect}></Setup>
+    </>
+>>>>>>> e43ab62... Setup Page In Progress
   )
 }
-
-// export const getStaticProps = wrapper.getStaticProps(({ store }) => {
-//   store.dispatch({ type: 'PAGE', payload: 'login' })
-//   return { props: { getStaticProp: 'bar' } }
-// })
 
 SetupPage.getInitialProps = (props) => ({
   //TODO: verify auth token

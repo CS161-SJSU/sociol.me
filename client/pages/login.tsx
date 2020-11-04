@@ -12,9 +12,6 @@ import { USER_TOKEN } from '../constants/main'
 import { GoogleSignin } from '../api/login.api'
 
 //TODO: Handle failed cases
-//TODO: DONE - Send token to server
-//TODO: User Signout
-//TODO: DONE - Save user infomation to redux state
 
 const LoginPage = (props) => {
   console.log('LOGIN PAGE: props: ', props)
