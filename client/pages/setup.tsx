@@ -6,13 +6,14 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { useRouter } from 'next/router'
 import { GoogleLogout } from 'react-google-login'
-import { USER_TOKEN } from '../constants/main'
+import {USER_EMAIL, USER_TOKEN} from '../constants/main'
 import { logout } from '../store/actions/auth.action'
 import {makeStyles} from "@material-ui/core/styles";
 import styles from '../components/css/nav.module.css'
-import TwitterLogin from 'react-twitter-auth';
 import { TwitterSignin } from '../api/twit.api'
 import Axios from 'axios'
+import TwitterButton from "../components/TwitterButton";
+
 
 
 interface OtherProps {
@@ -61,36 +62,13 @@ const SetupPage = (props) => {
     /*if (!token) {
       router.push('/login')
     }*/
-
-
   })
 
-  const onTwitterSignin = (email, pwd : Object) => {
-    props.TwitterSignin(email, pwd)
+  const onTwitterSignin = (email : Object) => {
+    props.TwitterSignin(email)
   }
-
-
-  const onTwitterSuccess = (response) => {
-
-    const token = response.headers.get('x-auth-token');
-    //or ?
-    //const token = window.localStorage.getItem(TWITTER_TOKEN)
-    response.json().then(user => {
-      if (token) {
-        user.getState({isAuthenticated: true, user: user, token: token})
-      }
-    });
-  }
-
-  const onTwitterFailed = (error) => {
-    alert(error)
-  }
-
-
-
 
   // const googleClientID: string = process.env.GOOGLE_CLIENT_ID
-
   const logout = () => {
     console.log('logout')
     localStorage.removeItem(USER_TOKEN)
@@ -98,109 +76,13 @@ const SetupPage = (props) => {
     props.logout()
   }
 
-
   const customHeader = {};
   customHeader['Test'] = 'test-header';
 
   return (
     <div>
       Cagan Setup Page -- Hi {firstName}
-      <header>
-        <noscript>
-          <style>{`.nojs-show { opacity: 1; top: 0; }`}</style>
-        </noscript>
-        <nav>
-          <p>
-            <Link href="/">
-              <a className={styles.link}> Main Page</a>
-            </Link>
-            <Link href="/">
-              <a> About Me</a>
-            </Link>
-          </p>
-
-          <p>
-                <>
-                  <a href="/api/auth/signin"
-                     onClick={(e) => {
-                       e.preventDefault();
-                       signin('spotify');
-                     }}
-                  >
-                    <button className={"signInButton"}>Sign In with Spotify</button>
-                  </a>
-                  <TwitterLogin loginUrl="http://localhost:3000/auth/twitter/redirect" //Back end URL
-                                onFailure={onTwitterFailed}
-                                onSuccess={onTwitterSuccess}
-                                requestTokenUrl="http://localhost:3000/auth/twitter/redirect"
-                                showIcon={true}
-                                customHeaders={customHeader}
-                                />
-                </>
-
-          </p>
-        </nav>
-        <style jsx>{`
-
-        header {
-        border-bottom: 1px solid #ccc;
-        }
-
-        nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        max-width: 120rem;
-        padding: 0.2rem 1.25rem;
-        margin: 0 6% 0 0;
-        }
-
-        p {
-        display: grid;
-        grid-auto-flow: column;
-        gap: 40px;
-        align-items: center;
-        }
-
-        .signInButton,
-        .signOutButton{
-        background-color: #1eb1fc;
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 1rem;
-        padding: 0.5rem 1rem;
-        }
-
-        .signInButton:hover {
-          background-color: #1b9fe2;
-        }
-
-        .signOutButton {
-          background-color: #333;
-        }
-
-        .signOutButton:hover {
-          background-color: #555;
-        }
-        
-        .avatar {
-          border-radius: 2rem;
-          float: left;
-          height: 2.2rem;
-          width: 2.2rem;
-          background-color: white;
-          background-size: cover;
-          border: 1px solid #ddd;
-        }
-        
-        .email{
-          font-weight: 600;
-        }
-
-      `}</style>
-      </header>
+        <TwitterButton onTwitterSignin={onTwitterSignin} />
 
       <div>
         <GoogleLogout
@@ -228,6 +110,7 @@ SetupPage.getInitialProps = (props) => ({
 function mapStateToProps(state) {
   return {
     user: state.user,
+
   }
 }
 

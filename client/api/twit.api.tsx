@@ -1,8 +1,8 @@
 import Axios from 'axios'
 
 // eslint-disable-next-line import/prefer-default-export
-async function TwitterSignin(email, pwd)  {
-        const res = await Axios.post("http://localhost:3000/api/login", {email, pwd});
+async function TwitterSignin(email)  {
+        const res = await Axios.post("http://localhost:3000/api/login", {email});
         const {data} = await res;
         if (data.error) {
             return data.error
