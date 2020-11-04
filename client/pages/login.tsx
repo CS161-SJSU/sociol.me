@@ -17,13 +17,14 @@ import { GoogleSignin } from '../api/login.api'
 //TODO: DONE - Save user infomation to redux state
 
 const LoginPage = (props) => {
-  console.log('props: ', props)
+  console.log('LOGIN PAGE: props: ', props)
   const router = useRouter()
 
   useEffect(() => {
     const token = window.localStorage.getItem(USER_TOKEN)
+    // const token = props.user.token
     if (token) {
-      router.push('/setup', 'shallow')
+      router.push('/setup')
     }
   })
 
