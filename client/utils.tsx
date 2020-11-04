@@ -9,3 +9,4 @@ export function getTokenFromLocalStorage(key) {
 export function removeTokenFromLocalStorage(key) {
   return localStorage.removeItem(key)
 }
+
