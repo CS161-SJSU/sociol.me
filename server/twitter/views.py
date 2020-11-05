@@ -46,9 +46,7 @@ def twitter_authenticate(request):
         print("Error! Failed to get request token.")
 
     webbrowser.open(redirect_url)                
-	# store the request token
-    request.session['request_token'] = auth.request_token['oauth_token'] 
-    print(request.session)
+
     return Response({'message': 'error authenticating twitter'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -116,81 +114,6 @@ def verify(request):
     #print("no twitter model problem")
     #send back to frontend auth_token, screen_name, name
 
-    info_dict = {
-        'auth_token': auth_token, 
-        'screen_name': screen_name,
-        'name': name,
-        'user_id' : user_id,
-        'followers_count' : followers_count,
-        'friends_count' : friends_count,
-        'description' : description,
-        'auth_token' : auth_token
-    }
-
-    #print(info_dict)
-    
-    try:
-        info_json = json.dumps(info_dict)
-        #print(info_json)
-    except Exception as e:
-        print("error: ", e)
-    
-    return Response({info_json}, status=status.HTTP_202_ACCEPTED)
-
-
-
-@api_view(['POST', 'GET'])
-def verify(request): 
-    email = request.data.get('email')
-    print(email)
-    if email is None:
-        return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
-
-    token = request.data.get('oauth_token')
-    verifier = request.data.get('oauth_verifier')
-    print(token)
-    print (verifier)
-    consumer_key = os.environ.get('TWITTER_ID')
-    print(consumer_key)
-    consumer_secret = os.environ.get('TWITTER_SECRET')
-    print(consumer_secret)
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-
-    auth.request_token = { 'oauth_token' : token, 'oauth_token_secret' : verifier }
-    print("---", auth.request_token)
-
-    auth.get_access_token(verifier)
-
-    
-    auth_token = auth.access_token
-    print("hello Access token", auth_token)
-    auth_token_secret = auth.access_token_secret
-    print("hello Access token secret",auth_token_secret)
-
-    auth.set_access_token(auth_token, auth_token_secret)
-
-    api = tweepy.API(auth, wait_on_rate_limit = True)
-
-    user_info_dict = api.me()
-    user_id = user_info_dict.id
-    print("step 5", user_id)
-    name = user_info_dict.name
-    print("step 6", name)
-    screen_name = user_info_dict.screen_name
-    print("step 7", screen_name)
-    followers_count = user_info_dict.followers_count
-    print("step 8", followers_count)
-    friends_count = user_info_dict.friends_count
-    print("step 9", friends_count)
-    description = user_info_dict.description
-    print("step 10", description)
-
-    twitter_user_model = TwitterModel.objects.create(email = email, name = name, user_id = user_id, screen_name = screen_name, description = description, 
-    followers_count = followers_count, friends_count = friends_count, auth_token = auth_token, auth_token_secret = auth_token_secret)
-
-    #print("no twitter model problem")
-    #send back to frontend auth_token, screen_name, name
-
     user_twitter_info = {
         'auth_token': auth_token, 
         'screen_name': screen_name,
@@ -242,11 +165,6 @@ def get_twitter_info(request):
     return Response(user_twitter_info, status=status.HTTP_202_ACCEPTED)
 
 
-
-
-
-'''
->>>>>>> 150021a... Finish Twitter Integration
 @api_view(['POST','GET'])
 def top_worst(request):
     email = request.data.get('email')
