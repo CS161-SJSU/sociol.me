@@ -10,9 +10,13 @@ export default function TwitterReducer(
   switch (action.type) {
     case HYDRATE:
       return { ...state, ...action.payload.user }
-    case types.VERIFY_TWITTER_TOKEN_SUCCESS:
+    case types.TWITTER_AUTH_SUCCESS:
       return { ...state, ...action.payload, ...{ loading: false } }
-    case types.VERIFY_TWITTER_TOKEN_FAILED:
+    case types.TWITTER_AUTH_FAILED:
+      return { ...state, ...{ loading: false }, ...{ errors: action.payload } }
+    case types.TWITTER_ACCESS_TOKEN_SUCCESS:
+      return { ...state, ...action.payload, ...{ loading: false } }
+    case types.TWITTER_ACCESS_TOKEN_FAILED:
       return { ...state, ...{ loading: false }, ...{ errors: action.payload } }
     case types.LOGOUT:
       return {}
@@ -20,4 +24,3 @@ export default function TwitterReducer(
       return state
   }
 }
-// https://demos.creative-tim.com/nextjs-argon-dashboard/admin/dashboard

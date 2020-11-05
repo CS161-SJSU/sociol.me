@@ -1,11 +1,7 @@
 import React, { useEffect } from 'react'
-import Link from 'next/link'
-import { useSelector } from 'react-redux'
-import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import Button from '@material-ui/core/Button'
 
 import Login from '../components/Login'
 import { USER_TOKEN } from '../constants/main'
@@ -37,10 +33,7 @@ const LoginPage = (props) => {
   )
 }
 
-LoginPage.getInitialProps = () => ({
-  //TODO: verify auth token
-  // custom: 'custom', // pass some custom props to component
-})
+LoginPage.getInitialProps = () => ({})
 
 function mapStateToProps(state) {
   return {

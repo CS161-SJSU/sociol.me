@@ -1,30 +1,27 @@
 /* eslint-disable import/prefer-default-export */
 import {
-  SET_USER_INFO,
-  VERIFY_TWITTER_TOKEN_SUCCESS,
-  VERIFY_TWITTER_TOKEN_FAILED,
-  LOGOUT,
+  TWITTER_AUTH_SUCCESS,
+  TWITTER_AUTH_FAILED,
+  TWITTER_ACCESS_TOKEN_SUCCESS,
+  TWITTER_ACCESS_TOKEN_FAILED,
 } from '../../constants/actions'
 
-
-
-export const verifyTwitterTokenSuccess = (user) => ({
-  type: VERIFY_TWITTER_TOKEN_SUCCESS,
+export const twitterAuthSuccess = (user) => ({
+  type: TWITTER_AUTH_SUCCESS,
   payload: user,
 })
 
-export const verifyTwitterTokenFailed = (error) => ({
-  type: VERIFY_TWITTER_TOKEN_FAILED,
+export const twitterAuthFailed = (error) => ({
+  type: TWITTER_AUTH_FAILED,
   payload: error,
 })
 
-
-export const setUserInfo = (user) => ({
-  type: SET_USER_INFO,
+export const twitterAccessTokenSuccess = (user) => ({
+  type: TWITTER_ACCESS_TOKEN_SUCCESS,
   payload: user,
 })
 
-
-export const logout = () => ({
-  type: LOGOUT,
+export const twitterAccessTokenFailed = (error) => ({
+  type: TWITTER_ACCESS_TOKEN_FAILED,
+  payload: error,
 })
