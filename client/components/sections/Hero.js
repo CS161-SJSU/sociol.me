@@ -61,7 +61,7 @@ const Hero = ({
               <span className="text-color-primary">Social Media</span>
             </h1>
             <div className="container-xs">
-              <p className="m-0 mb-32">
+              <p className="mb-50">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
                 eiusmod tempor incididunt ut labore et dolore magna aliqua — Ut
                 enim ad minim veniam, quis nostrud exercitation ullamco laboris
@@ -70,7 +70,7 @@ const Hero = ({
               <div>
                 <ButtonGroup>
                   <Button tag="a" color="primary" wideMobile href="/login">
-                    Get started
+                    Get Started
                   </Button>
                   {/* <Button
                     tag="a"
