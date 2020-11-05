@@ -10,11 +10,6 @@ import { USER_EMAIL, USER_TOKEN } from '../constants/main'
 import { TwitterConnect, TwitterAccessToken } from '../api/twitter.api'
 import Setup from '../components/Setup'
 
-interface OtherProps {
-  getStaticProp: string
-  appProp: string
-}
-
 const SetupPage = (props) => {
   const [email, setEmail] = useState('')
   console.log('email: ', email)

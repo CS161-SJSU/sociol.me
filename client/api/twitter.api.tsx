@@ -18,9 +18,9 @@ export const TwitterConnect = () => (dispatch) => {
   return axios
     .post(`${HOST}${TWITTER_AUTH}`)
     .then((res) => {
-      console.log('TwitterConnect res: ', res)
+      console.log('TwitterConnect res: ', res.data)
       // console.log('userData: ', userData)
-      dispatch(twitterAuthSuccess(res))
+      dispatch(twitterAuthSuccess(res.data))
     })
     .catch((err) => {
       dispatch(twitterAuthFailed(err))
@@ -33,7 +33,7 @@ export const TwitterAccessToken = (userData) => (dispatch) => {
     .then((res) => {
       console.log('TwitterVerify res: ', res)
       // console.log('userData: ', userData)
-      dispatch(twitterAccessTokenSuccess(res))
+      dispatch(twitterAccessTokenSuccess(res.data))
     })
     .catch((err) => {
       dispatch(twitterAccessTokenFailed(err))

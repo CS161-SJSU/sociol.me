@@ -40,9 +40,7 @@ def twitter_authenticate(request):
         print("Error! Failed to get request token.")
 
     webbrowser.open(redirect_url)                
-	# store the request token
-    request.session['request_token'] = auth.request_token['oauth_token'] 
-    print(request.session)
+
     return Response({'message': 'error authenticating twitter'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -98,7 +96,7 @@ def verify(request):
     #print("no twitter model problem")
     #send back to frontend auth_token, screen_name, name
 
-    info_dict = {
+    user_twitter_info = {
         'auth_token': auth_token, 
         'screen_name': screen_name,
         'name': name,
@@ -109,15 +107,15 @@ def verify(request):
         'auth_token' : auth_token
     }
 
-    #print(info_dict)
+    print(user_twitter_info)
     
     try:
-        info_json = json.dumps(info_dict)
-        #print(info_json)
+        info_json = json.dumps(user_twitter_info)
+        print(info_json)
     except Exception as e:
         print("error: ", e)
     
-    return Response({info_json}, status=status.HTTP_202_ACCEPTED)
+    return Response(user_twitter_info, status=status.HTTP_202_ACCEPTED)
 
 
 
