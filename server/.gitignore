@@ -60,6 +60,9 @@ coverage.xml
 docs/_build/
 
 # PyBuilder
+<<<<<<< HEAD
+target/
+=======
 target/
 
 # local env files
@@ -68,3 +71,4 @@ target/
 .env.development.local
 .env.test.local
 .env.production.local
+>>>>>>> 876b0828ca8fdd280179f8f8a24a5aa03cdc6188
