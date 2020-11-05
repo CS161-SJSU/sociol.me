@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     'corsheaders',
     #app
     'authenticate',
+    'spotify',
 ]
 
 MIDDLEWARE = [

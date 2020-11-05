@@ -1,13 +1,28 @@
 from django.shortcuts import render
+
+from django.http.response import JsonResponse
+from rest_framework.parsers import JSONParser 
+from rest_framework import status
+ 
+from authenticate.models import User
+from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.response import Response
+import requests
+import os
+from dotenv import load_dotenv
+load_dotenv()
+from django.shortcuts import render
 from urllib.parse import urlencode
 import base64
-import requests
 import datetime
 
 client_id = "cebf3123507e477ebb130851d36d4cee"
 client_secret = "914ceeb3a0b6461686c100cc54210ca0"
 
-class SpotfiyAPI(object):
+class SpotifyAPI(object):
     access_token = None
     access_token_expires = datetime.datetime.now()
     access_token_did_expire = None
@@ -48,15 +63,16 @@ class SpotfiyAPI(object):
     def perform_auth(self):
         token_url = self.token_url
         token_data = self.get_token_data()
-        token_headers = self.get_token_headers()
+        token_headers = self.get_token_header()
         r = requests.post(token_url, data=token_data, headers=token_headers)
 
         if r.status_code not in range(200,299):
             raise Exception("Could not authenticate client")
             return False
         data= r.json()
+        print(r.json())
         now = datetime.datetime.now()
-        access_token = data['access token']
+        access_token = data['access_token']
         expires_in = data['expires_in']
         expires = now + datetime.timedelta(seconds=expires_in)
         self.access_token = access_token
@@ -67,7 +83,9 @@ class SpotfiyAPI(object):
     def get_access_token(self):
         token = self.access_token
         expires = self.access_token_expires
-        now = datetime.datetime.now
+        now = datetime.datetime.now() 
+        print(expires)
+        print(now)
         if expires > now:
             self.perform_auth()
             return self.get_access_token()
@@ -81,6 +99,7 @@ class SpotfiyAPI(object):
         headers = {
             "Authorization": f"Bearer {access_token}"
         }
+        print(access_token)
         return headers
 
     def get_resource(self, lookup_id, resource_type='albums', version='v1'):
@@ -100,7 +119,7 @@ class SpotfiyAPI(object):
     def base_search(self, query_params):
         headers = self.get_resource_header()
         endpoint = "https://api.spotify.com/v1/search"
-        lookup_url = f"{endpoint}?{data}"
+        lookup_url = f"{endpoint}"
         r = requests.get(lookup_url, headers=headers)  
         if r.status_code not in range(200,299):
             return {}
@@ -119,8 +138,20 @@ class SpotfiyAPI(object):
         query_params = urlencode({"q": query, "type": search_type.lower()})
         return self.base_search(query_params)
 
+@api_view(['GET'])
+def spotify_auth(request):
+    spotify = SpotifyAPI(client_id, client_secret)
+    spotify.perform_auth()
+    print(spotify.access_token)
+    # # spotify.get_access_token()
+    # spotify.get_resource_header()
+    return Response({'message': 'yay'}, status=status.HTTP_401_UNAUTHORIZED)
 
-# spotify = SpotfiyAPI(client_id, client_secret)      
+# spotify = SpotifyAPI(client_id, client_secret)      
+# spotify.perform_auth()
+
+
 # spotify.search({track: "Time"}, search_type="Track")
+
 
 
