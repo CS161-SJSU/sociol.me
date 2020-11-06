@@ -14,6 +14,7 @@ from rest_framework.response import Response
 
 from google.oauth2 import id_token
 from google.auth.transport import requests
+from pymongo import MongoClient
 from dotenv import load_dotenv
 load_dotenv()
 import requests as httprequest
@@ -22,6 +23,9 @@ import tweepy
 import json
 import webbrowser
 import time
+
+
+mongo_client = MongoClient('mongodb://localhost:27017')
 
 # Create your views here.
 @api_view(['POST','GET'])
@@ -90,7 +94,7 @@ def verify(request):
     description = user_info_dict.description
     print("step 10", description)
 
-    twitter_user_model = TwitterModel.objects.create(email = email, name = name, user_id = user_id, screen_name = screen_name, description = description, 
+    twitter_user_model = TwitterModel.objects.update_create(email = email, name = name, user_id = user_id, screen_name = screen_name, description = description, 
     followers_count = followers_count, friends_count = friends_count, auth_token = auth_token, auth_token_secret = auth_token_secret)
 
     #print("no twitter model problem")
@@ -118,6 +122,33 @@ def verify(request):
     return Response(user_twitter_info, status=status.HTTP_202_ACCEPTED)
 
 
+@api_view(['POST', 'GET'])
+def get_twitter_info(request): 
+    email = request.data.get('email')
+    auth_token = request.data.get('auth_token')
+    print(email)
+    print(auth_token)
+    if email is None:
+        return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    twitter_user_info = TwitterModel.objects.get(auth_token = auth_token)
+    if twitter_user_info.email != email:
+        return Response({"err": "invalid email"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+    user_twitter_info = {
+        'auth_token': twitter_user_info.auth_token, 
+        'screen_name': twitter_user_info.screen_name,
+        'name': twitter_user_info.name,
+        'user_id' : twitter_user_info.user_id,
+        'followers_count' : twitter_user_info.followers_count,
+        'friends_count' : twitter_user_info.friends_count,
+        'description' : twitter_user_info.description,
+    }
+
+    print(user_twitter_info)
+    
+    return Response(user_twitter_info, status=status.HTTP_202_ACCEPTED)
 
 
 
