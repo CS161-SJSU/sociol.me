@@ -34,7 +34,7 @@ def to_authenticate(request):
             CLIENT_ID = os.environ.get('CLIENT_ID')
             idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
 
-            # response = httprequest.get("https://oauth2.googleapis.com/tokeninfo?id_token=" + token)
+            #  
             
             # SSO is valid, now search for the user by email in the DB
             try:

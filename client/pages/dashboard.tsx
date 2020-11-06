@@ -1,88 +1,42 @@
-import { makeStyles } from '@material-ui/core/styles'
-import Flickity from 'react-flickity-component'
 import React from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/router'
+import GoogleLogin from 'react-google-login'
+import { Card, Form, Button, Icon } from 'tabler-react'
+import FormPage from '../components/FormPage'
+import { GoogleLogout } from 'react-google-login'
+import { USER_TOKEN } from '../constants/main'
 
-const flickityOptions = {
-  initialIndex: 1,
-  cellAlign: 'center',
-  freeScroll: true,
-  prevNextButtons: false,
-  pageDots: false,
-  contain: true,
-  autoPlay: 3500,
-  pauseAutoPlayOnHover: false,
-  selectedAttraction: 0.015,
-  friction: 0.2,
-  resize: false,
-  wrapAround: true,
-  setGallerySize: false,
-  imagesLoaded: true,
-  accessibility: false,
-  draggable: false,
-}
+import styled from 'styled-components'
 
-const useStyles = makeStyles(() => ({
-  mainCarousel: {
-    width: 'min(108vh, 50%)',
-    margin: '0',
-    padding: '0',
-  },
-  carouselItem: {
-    height: '100vh',
-    width: '51vw',
-  },
-
-  text: {
-    position: 'fixed',
-    top: '50%',
-    left: '51%',
-    transform: 'translate(-50%, -50%)',
-    textAlign: 'center',
-    fontFamily: 'arial',
-    textDecoration: 'none',
-    fontSize: '1.8em',
-    zIndex: 'auto',
-    color: 'black',
-    backgroundColor: 'chartreuse',
-  },
-
-  outerBody: {
-    position: 'relative',
-    textAlign: 'center',
-  },
-}))
-
-function Carousel({ images }) {
-  const classes = useStyles()
-
+const Dashboard = () => {
+  const router = useRouter()
+  const logout = () => {
+    console.log('logout')
+    localStorage.removeItem(USER_TOKEN)
+    router.push('/')
+    // props.logout()
+  }
   return (
-    <Flickity
-      className={classes.mainCarousel}
-      options={flickityOptions} // takes flickity options {}
-      reloadOnUpdate={false} // default false
-      static // default false
-      disableImagesLoaded={false} // default false
-    >
-      {images.map((image) => (
-        <img
-          className={classes.carouselItem}
-          src={image.urls.full}
-          alt={'Image'}
-        />
-      ))}
-    </Flickity>
+    <>
+      <FormPage imageURL={'./images/logo.svg'}>
+        <Card>
+          <Card.Header>
+            <Card.Title className="center-content">
+              Hi <Icon prefix="fa" name="smile-o" /> Dashboard is In Progress
+            </Card.Title>
+          </Card.Header>
+          <Card.Body className="center-content">
+            <GoogleLogout
+              clientId="413889317962-u7rra428gcm2a3in1iji5jiaf1r4sntc.apps.googleusercontent.com"
+              buttonText="Logout"
+              onLogoutSuccess={logout}
+              onFailure={logout}
+            ></GoogleLogout>
+          </Card.Body>
+        </Card>
+      </FormPage>
+    </>
   )
 }
 
-export default function Dashboard({ images }) {
-  const classes = useStyles()
-  return (
-    <div>
-      {/* <Carousel images={images} /> */}
-      <Link href="/login">
-        <a className={classes.text}> Navigate to login</a>
-      </Link>
-    </div>
-  )
-}
+export default Dashboard

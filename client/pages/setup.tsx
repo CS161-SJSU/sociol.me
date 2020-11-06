@@ -1,74 +1,62 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useSelector } from 'react-redux'
-import { NextPage } from 'next'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { useRouter } from 'next/router'
-import { GoogleLogout } from 'react-google-login'
-import { USER_TOKEN } from '../constants/main'
-import { logout } from '../store/actions/auth.action'
+import axios from 'axios'
+import { HOST } from '../constants/main'
+import { USER_EMAIL, USER_TOKEN } from '../constants/main'
 
-interface OtherProps {
-  getStaticProp: string
-  appProp: string
-}
+import { TwitterConnect, TwitterAccessToken } from '../api/twitter.api'
+import Setup from '../components/Setup'
 
 const SetupPage = (props) => {
-  console.log('Setup props: ', props)
-  const { firstName } = props.user
+  const [email, setEmail] = useState('')
+  console.log('email: ', email)
+
+  console.log('SETUP PAGE props: ', props)
   const router = useRouter()
+  console.log(router.query)
 
   useEffect(() => {
     const token = window.localStorage.getItem(USER_TOKEN)
-    if (!token) {
-      router.push('/login')
+    const email = window.localStorage.getItem(USER_EMAIL)
+    if (email) {
+      setEmail(email)
     }
   })
 
-  // const googleClientID: string = process.env.GOOGLE_CLIENT_ID
+  if (router.query) {
+    const twitterTokens = router.query
+    if (twitterTokens.oauth_verifier && email) {
+      console.log('{ ...twitterTokens, email }: ', { ...twitterTokens, email })
+      props.TwitterAccessToken({ ...twitterTokens, email })
+      router.push('/setup')
+    }
+  }
 
-  const logout = () => {
-    console.log('logout')
-    localStorage.removeItem(USER_TOKEN)
-    router.push('/login')
-    props.logout()
+  const onTwitterConnect = () => {
+    props.TwitterConnect()
   }
 
   return (
-    <div>
-      Cagan Setup Page -- Hi {firstName}
-      <div>
-        <GoogleLogout
-          clientId="413889317962-u7rra428gcm2a3in1iji5jiaf1r4sntc.apps.googleusercontent.com"
-          buttonText="Logout"
-          onLogoutSuccess={logout}
-          onFailure={logout}
-          theme="dark"
-        ></GoogleLogout>
-      </div>
-    </div>
+    <>
+      <Setup email={email} onTwitterConnect={onTwitterConnect}></Setup>
+    </>
   )
 }
 
-// export const getStaticProps = wrapper.getStaticProps(({ store }) => {
-//   store.dispatch({ type: 'PAGE', payload: 'login' })
-//   return { props: { getStaticProp: 'bar' } }
-// })
-
-SetupPage.getInitialProps = (props) => ({
-  //TODO: verify auth token
-  // custom: 'custom', // pass some custom props to component
-})
+SetupPage.getInitialProps = (props) => ({})
 
 function mapStateToProps(state) {
   return {
     user: state.user,
+    twitter: state.twitter,
   }
 }
 
 function matchDispatchToProps(dispatch) {
-  return bindActionCreators({ logout }, dispatch)
+  return bindActionCreators({ TwitterConnect, TwitterAccessToken }, dispatch)
 }
 
 export default connect(mapStateToProps, matchDispatchToProps)(SetupPage)
