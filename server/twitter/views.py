@@ -137,13 +137,13 @@ def verify(request):
 @api_view(['POST', 'GET'])
 def get_twitter_info(request): 
     email = request.data.get('email')
-    auth_token = request.data.get('auth_token')
+    #auth_token = request.data.get('auth_token')
     print(email)
-    print(auth_token)
+    #print(auth_token)
     if email is None:
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    twitter_user_info = TwitterModel.objects.get(auth_token = auth_token)
+    twitter_user_info = TwitterModel.objects.get(email = email)
     if twitter_user_info.email != email:
         return Response({"err": "invalid email"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
@@ -155,7 +155,7 @@ def get_twitter_info(request):
         'user_id' : twitter_user_info.user_id,
         'followers_count' : twitter_user_info.followers_count,
         'friends_count' : twitter_user_info.friends_count,
-        'description' : twitter_user_info.description,
+        'description' : twitter_user_info.description
     }
 
     print(user_twitter_info)
