@@ -94,9 +94,21 @@ def verify(request):
     description = user_info_dict.description
     print("step 10", description)
 
-    twitter_user_model = TwitterModel.objects.update_create(email = email, name = name, user_id = user_id, screen_name = screen_name, description = description, 
-    followers_count = followers_count, friends_count = friends_count, auth_token = auth_token, auth_token_secret = auth_token_secret)
-
+    try:
+        twitter_user = TwitterModel.objects.get(user_id = user_id, email = email)
+        twitter_user.followers_count = followers_count
+        twitter_user.friends_count = friends_count
+        twitter_user.auth_token = auth_token
+        twitter_user.auth_token_secret = auth_token_secret
+        twitter_user.description = description
+        twitter_user.screen_name = screen_name
+        twitter_user.name = name
+        twitter_user.save()
+        print("update db")
+    except TwitterModel.DoesNotExist:
+        twitter_user_model = TwitterModel.objects.create(email = email, name = name, user_id = user_id, screen_name = screen_name, description = description, 
+        followers_count = followers_count, friends_count = friends_count, auth_token = auth_token, auth_token_secret = auth_token_secret)
+        print("make new document")
     #print("no twitter model problem")
     #send back to frontend auth_token, screen_name, name
 
