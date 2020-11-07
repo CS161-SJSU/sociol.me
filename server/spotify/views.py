@@ -26,8 +26,7 @@ import datetime
 
 from spotify.models import SpotifyModel
 
-client_id = "cebf3123507e477ebb130851d36d4cee"
-client_secret = "914ceeb3a0b6461686c100cc54210ca0"
+
 
 # Client info
 CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
@@ -161,9 +160,9 @@ class SpotifyAPI(object):
 
 @api_view(['GET'])
 def spotify_auth(request):
-    spotify = SpotifyAPI(client_id, client_secret)
-    spotify.perform_auth()
-    print(spotify.access_token)
+    #spotify = SpotifyAPI(client_id, client_secret)
+    #spotify.perform_auth()
+   # print(spotify.access_token)
     # # spotify.get_access_token()
     # spotify.get_resource_header()
     return Response({'message': 'yay'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -229,13 +228,14 @@ def spotify_callback(request):
         Response({"Failed to get Profile info %s "},
                  user_data.get('error', 'No error message returned.'))
 
-
-    spotify_user_model = SpotifyModel.objects.create(country = res['country'], display_name = res['display_name'], email = res['email'], id = res['id'], href = res['href'], followers = res['followers'])
+    spotify_user_model = SpotifyModel.objects.create(country=user_data['country'],
+                                                     display_name=user_data['display_name'], email=user_data['email'],
+                                                     id=user_data['id'], href=user_data['href'],
+                                                     followers=user_data['followers']['total'])
 
     return redirect(FRONTEND_URI + '?access_token=' + access_token)
 
     #  return redirect(url_for('me'))
-
 
 
 # These following functions could be changed later
