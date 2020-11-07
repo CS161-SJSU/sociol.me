@@ -5,7 +5,7 @@ import json
 import requests
 
 USER_ID = os.environ.get('SPOTIFY_CLIENT_ID')
-TOKEN = "BQCKFWugvo8UiEfJM4D_9T0cSSRSAgeCbk-TMyXCp-huQIkggA-WOrqJpvmuu_HXaCp4QIA2YNDhm2ePGpMjNg6S08sDdfJOZ8vpkdKMFVxkTrqs2-x3BoS7jf8i5m9n-au_cGGpw_7WgBfeuh_dzO4"
+TOKEN = "AQAQrHMCq9QDnK-G5WtG5VAqu3vyWk6iVCs9WGO0OQIUIwrI08cO9zLQqkBh-iRrL-ZWXZ48az7tSI3mkm1mEP1BcBsoGqZm-ZCmsYYNDLeWrPKDo2LB61CvjFtRdwZneM2afsGpT9vYGvfKCSub-JBVjdOhSPTd5hwQsbqQQ-32jW0ZQ1jfMhmgXw6IQNpYgXVHYprazk6_cR8KR-YWThCdZ4Sz88raAVdgM1VLj7IAqEEUd22prPNgCXRXn0Af"
 
 
 if __name__ == "__main__":
@@ -20,8 +20,9 @@ if __name__ == "__main__":
     yesterday = today - datetime.timedelta(days=1) #We want to run the feed daily, last 24 hours played songs
     yesterday_unix_timestamp = int(yesterday.timestamp()) * 1000
 
-    r = requests.get("https://api.spotify.com/v1/me/player/recently-played?after={time}".format(time=yesterday_unix_timestamp), headers=headers)
+    r = requests.get("https://api.spotify.com/v1/me/", headers=headers)
+
 
     data = r.json()
 
-    print(data)
+    print("Data ", data)
