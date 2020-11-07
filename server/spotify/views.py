@@ -1,3 +1,5 @@
+import webbrowser
+
 from django.shortcuts import render
 
 from django.http.response import JsonResponse, HttpResponseRedirect
@@ -177,6 +179,7 @@ def spotify_login(request):
     # res = HttpResponseRedirect(f'{AUTH_URL}/?{urlencode(payload)}')
 
     res = redirect(f'{AUTH_URL}/?{urlencode(payload)}')
+    webbrowser.open(res.url)
     print(res.url)
     return Response({'message': "Returned token"}, status=status.HTTP_202_ACCEPTED)
 
@@ -184,7 +187,7 @@ def spotify_login(request):
 @api_view(['GET'])
 def spotify_callback(request):
     code = request.GET.get('code')
-
+    print(request)
     print("CODE :", code)
 
     # Request tokens with code we obtained
@@ -194,7 +197,8 @@ def spotify_callback(request):
         'grant_type': 'authorization_code',
     }
 
-    # Might have to add headers into this
+    # Post request in order to get callback URL
+    # Might have to add headers into this?
     res = requests.post(TOKEN_URL, auth=(CLIENT_ID, CLIENT_SECRET), data=auth_options)
 
     res_data = res.json()
@@ -208,11 +212,30 @@ def spotify_callback(request):
         Response({"Failed to receive token: %s "},
                  res_data.get('error', 'No error information received.'))
 
+    # Getting user's information
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {token}".format(token=access_token)
+    }
+
+    r = requests.get(ME_URL, headers=headers)
+    user_data = r.json()
+    print("User Data: ", user_data)
+
+    if r.status_code != 200:
+        Response({"Failed to get Profile info %s "},
+                 user_data.get('error', 'No error message returned.'))
+
+    # Model save it in here
+
     return redirect(FRONTEND_URI + '?access_token=' + access_token)
 
     #  return redirect(url_for('me'))
 
 
+
+# These following functions could be changed later
 @api_view(['GET'])
 def spotify_refresh():
     # Refreshes access token
@@ -230,7 +253,7 @@ def spotify_refresh():
 
     # Loading new token into session
     session['tokens']['access_token'] = res_data.get('access_token')
-
+    afafa
     return json.dumps(session['tokens'])
 
 
@@ -253,9 +276,3 @@ def spotify_me():
         abort(res.status_code)
 
     return render_template('me.html', data=res_data, tokens=session.get('tokens'))
-
-# spotify = SpotifyAPI(client_id, client_secret)
-# spotify.perform_auth()
-
-
-# spotify.search({track: "Time"}, search_type="Track")

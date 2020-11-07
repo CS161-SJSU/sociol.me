@@ -5,7 +5,7 @@ import json
 import requests
 
 USER_ID = os.environ.get('SPOTIFY_CLIENT_ID')
-TOKEN = "BQA8pWDvUGNBK3XhiBlJl66kOwXiWsOxP_B6Bl41_Ue56cyvppY6Nnlk0MJTLpDQN7q0pTLR2-W3xikTh4k"
+TOKEN = "AQAQrHMCq9QDnK-G5WtG5VAqu3vyWk6iVCs9WGO0OQIUIwrI08cO9zLQqkBh-iRrL-ZWXZ48az7tSI3mkm1mEP1BcBsoGqZm-ZCmsYYNDLeWrPKDo2LB61CvjFtRdwZneM2afsGpT9vYGvfKCSub-JBVjdOhSPTd5hwQsbqQQ-32jW0ZQ1jfMhmgXw6IQNpYgXVHYprazk6_cR8KR-YWThCdZ4Sz88raAVdgM1VLj7IAqEEUd22prPNgCXRXn0Af"
 
 
 if __name__ == "__main__":
@@ -22,6 +22,7 @@ if __name__ == "__main__":
 
     r = requests.get("https://api.spotify.com/v1/me/", headers=headers)
 
+
     data = r.json()
 
-    print(data)
+    print("Data ", data)
