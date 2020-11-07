@@ -24,6 +24,8 @@ from urllib.parse import urlencode
 import base64
 import datetime
 
+from spotify.models import SpotifyModel
+
 client_id = "cebf3123507e477ebb130851d36d4cee"
 client_secret = "914ceeb3a0b6461686c100cc54210ca0"
 
@@ -227,7 +229,8 @@ def spotify_callback(request):
         Response({"Failed to get Profile info %s "},
                  user_data.get('error', 'No error message returned.'))
 
-    # Model save it in here
+
+    spotify_user_model = SpotifyModel.objects.create(country = res['country'], display_name = res['display_name'], email = res['email'], id = res['id'], href = res['href'], followers = res['followers'])
 
     return redirect(FRONTEND_URI + '?access_token=' + access_token)
 
