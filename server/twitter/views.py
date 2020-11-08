@@ -163,99 +163,76 @@ def get_twitter_info(request):
     return Response(user_twitter_info, status=status.HTTP_202_ACCEPTED)
 
 
-
-
-
-
-
-
-
-'''
 @api_view(['POST','GET'])
-def twitter_get_token(request):  #call this for initial setup
+def topworst(request):
+    email = request.data.get('email')
+    print(email)
+    if email is None:
+        return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+# find user with that email
+    try:
+        print("try to get the email")
+        twitter_user_model = TwitterModel.objects.get(email=email)
+
+        consumer_key = os.environ.get('TWITTER_ID')
+        consumer_secret = os.environ.get('TWITTER_SECRET')
+        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+        auth.set_access_token(twitter_user_model.auth_token, twitter_user_model.auth_token_secret)
+        api = tweepy.API(auth, wait_on_rate_limit = True)
     
-    if request.method == 'POST': 
-        print("if")
-        oauth_token = request.data.get('oauth_token')
-        oauth_verifier = request.data.get('oauth_verifier')
-        user_email = request.data.get('email')
+        print("this is the api: ")
+        print(api)
 
-        try:
-            print("try")
+        user_info_dict = api.me()
+        user_id = user_info_dict.id
+        print("User ID: ", user_id)
 
-            url = "https://api.twitter.com/oauth/access_token"
-            post_data = [('oauth_token', oauth_token), ('oauth_verified', oauth_verifier)]
-            response = httprequest.post(url, post_data)
-            print(response.json())
-            #save these info to the DB
-            #oauth_token=6253282-eWudHldSbIaelX7swmsiHImEL4KinwaGloHANdrY
-            #oauth_token_secret=2EEfA6BG5ly3sR3XjE0IBSnlQu4ZrUzPiYTmrkVU
-            #user_id=6253282
-            #screen_name=twitterapi
-            #save oauth_verifier
-            #save (gmail)email as well
-
-            #call verify credentials
-
-            return Response({'message': 'twitter token verified!'}, status=status.HTTP_202_ACCEPTED)
-
-        except ValueError:
-            # Invalid token
-            print("Value Error")
-            return Response({'message': 'twitter token invalid!'}, status=status.HTTP_401_UNAUTHORIZED)
-    
-
-    print("POST failed")
-    return Response({'message': 'twitter sign in failed!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-def twitter_verify_credentials(request):
-    
-    #db has to reference the gmail
-    #send back a gmail and token, our app token (to be implemented)
-
-    if request.method == 'GET': 
-        print("if")
-        user_email = request.data.get('email')
+        print("try timeline")
         
-        #what response to store to DB
-        """
-        description
-        favourite_counts
-        follow_request_sent
-        followers_counts
-        following
-        friends_count
-        location
-        name
-        profile_image_url_https
-        screen_name
-        created_at
-        """
+        count = 2000
+        public_tweets = api.user_timeline(user_id, count = count)
 
-        #if email sent was empty
-            #return error
-
-        try: 
-            #get oauth token from DB based on email
+        print("----------This is the top best 5 tweets: --------------")
         
-        except ValueError: #handle db exceptions
-            #return error
+        sorted_tweets = sorted(public_tweets, key=lambda x: x.retweet_count, reverse=True)[:5]
+        for sorted_tweet in sorted_tweets:
+            print("tweet name: ", sorted_tweet.user.name)
+            print("tweet text: ", sorted_tweet.text)
+            print("retweet count: ", sorted_tweet.retweet_count, "- tweet_id: ", sorted_tweet.id)
 
-        try:
-            print("try")
+        print("------------This is the worst 5 tweets: ---------------")
 
-            url = "https://api.twitter.com/1.1/account/verify_credentials.json"
-            response = httprequest.get(url + oauth)
-            print(response.json())
+        sorted_tweets = sorted(public_tweets, key=lambda x: x.retweet_count, reverse=False)[:5]
+        for sorted_tweet in sorted_tweets:
+            print("tweet screen name: ", sorted_tweet.user.screen_name)
+            print("tweet text: ", sorted_tweet.text)
+            print("retweet count: ", sorted_tweet.retweet_count, "- tweet_id: ", sorted_tweet.id)
 
-            return Response({'message': 'twitter credentials verified!'}, status=status.HTTP_202_ACCEPTED)
 
-        except ValueError:
-            # Invalid token
-            print("Value Error")
-            return Response({'message': 'twitter credentials invalid!'}, status=status.HTTP_401_UNAUTHORIZED)
-    
+        # for item in public_tweets:
 
-    print("POST failed")
-    return Response({'message': 'twitter verify credentials failed!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-'''
+        #     mined = {
+        #         'tweet_id':        item.id,
+        #         'name':            item.user.name,
+        #         'screen_name':     item.user.screen_name,
+        #         'retweet_count':   item.retweet_count,
+        #         'text':            item.full_text,
+        #         'mined_at':        datetime.datetime.now(),
+        #         'created_at':      item.created_at,
+        #         'favourite_count': item.favorite_count,
+        #         'hashtags':        item.entities['hashtags'],
+        #         'status_count':    item.user.statuses_count,
+        #         'location':        item.place,
+        #         'source_device':   item.source
+        #     }
+
+
+        return Response({'message': 'timeline is perfect!'}, status=status.HTTP_202_ACCEPTED)
+
+
+    except Exception as e:
+        print("error: ", e)
+        return Response({'message': 'timeline failed!'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+    return Response({'message': 'topworst failed!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
