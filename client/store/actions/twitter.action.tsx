@@ -12,12 +12,12 @@ export const twitterAuthFailed = (error) => ({
 })
 
 export const twitterAccessTokenSuccess = (user) => ({
-  type: types.TWITTER_GET_TOP_WORST_TWEETS_SUCCESS,
+  type: types.TWITTER_ACCESS_TOKEN_SUCCESS,
   payload: user,
 })
 
 export const twitterAccessTokenFailed = (error) => ({
-  type: types.TWITTER_GET_TOP_WORST_TWEETS_FAILED,
+  type: types.TWITTER_ACCESS_TOKEN_FAILED,
   payload: error,
 })
 
