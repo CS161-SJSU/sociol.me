@@ -1,5 +1,6 @@
 import webbrowser
 
+import pandas
 from django.shortcuts import render
 
 from django.http.response import JsonResponse, HttpResponseRedirect
@@ -27,7 +28,6 @@ import datetime
 from spotify.models import SpotifyModel
 
 
-
 # Client info
 CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
 CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
@@ -38,7 +38,62 @@ AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
 ME_URL = 'https://api.spotify.com/v1/me'
 
+# API STATS ENDPOINTS
+RECENTLY_PLAYED = 'https://api.spotify.com/v1/me/player/recently-played'
+
 FRONTEND_URI = 'http://localhost:3000/'
+
+
+def recently_played(access_token):
+
+    print("INSIDE RECENTLY PLAYED")
+
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {token}".format(token=access_token)
+    }
+
+    today = datetime.datetime.now()
+    yesterday = today - datetime.timedelta(days=1)  # We want to run the feed daily, last 24 hours played songs
+    yesterday_unix_timestamp = int(yesterday.timestamp()) * 1000
+
+    print("PRINT THE CALL ")
+    # print(RECENTLY_PLAYED + '?after={time}'.format(time=yesterday_unix_timestamp))
+
+    # r = requests.get("https://api.spotify.com/v1/me/player/recently-played?limit=10&after=0", headers=headers)
+    r = requests.get(RECENTLY_PLAYED + '?limit=10&after={time}'.format(time=yesterday_unix_timestamp),
+                     headers=headers)
+
+    data = r.json()
+
+    #print("Recently played data: ", data)
+
+    song_titles = []
+    artist_names = []
+    played_at_list = []
+    timestamps = []
+
+    for song in data["items"]:
+        song_titles.append(song["track"]["name"])
+        artist_names.append(song["track"]["album"]["artists"][0]["name"])
+        played_at_list.append(song["played_at"])
+        timestamps.append(song["played_at"][0:10])
+
+    recently_played_dict = {
+        "song_title" : song_titles,
+        "artist_name" : artist_names,
+        "played_at" : played_at_list,
+        "timestamp" : timestamps
+    }
+
+    #Saving into Pandas dataframe in order to show in table format
+    dataframe = pandas.DataFrame(recently_played_dict, columns= ["song_title", "artist_name" , "played_at", "timestamp"])
+
+    print(dataframe)
+
+    #print(recently_played_dict )
+    return Response({'message': data})
 
 
 class SpotifyAPI(object):
@@ -49,10 +104,10 @@ class SpotifyAPI(object):
     client_secret = None
     token_url = "https://accounts.spotify.com/api/token"
 
-    def __init__(self, client_id, client_secret, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.client_id = client_id
-        self.client_secret = client_secret
+        # self.client_id = client_id
+        # self.client_secret = client_secret
 
     def get_client_credentials(self):
         """
@@ -160,9 +215,9 @@ class SpotifyAPI(object):
 
 @api_view(['GET'])
 def spotify_auth(request):
-    #spotify = SpotifyAPI(client_id, client_secret)
-    #spotify.perform_auth()
-   # print(spotify.access_token)
+    # spotify = SpotifyAPI(client_id, client_secret)
+    # spotify.perform_auth()
+    # print(spotify.access_token)
     # # spotify.get_access_token()
     # spotify.get_resource_header()
     return Response({'message': 'yay'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -173,9 +228,10 @@ def spotify_login(request):
     payload = {
         'response_type': 'code',
         'client_id': os.environ.get('SPOTIFY_CLIENT_ID'),
-        'scope': 'user-read-private user-read-email user-follow-read',
+        'scope': 'user-read-private user-read-email user-follow-read user-library-read user-read-recently-played',
         'redirect_uri': REDIRECT_URI
     }
+
 
     # res = HttpResponseRedirect(f'{AUTH_URL}/?{urlencode(payload)}')
 
@@ -228,14 +284,28 @@ def spotify_callback(request):
         Response({"Failed to get Profile info %s "},
                  user_data.get('error', 'No error message returned.'))
 
-    spotify_user_model = SpotifyModel.objects.create(country=user_data['country'],
-                                                     display_name=user_data['display_name'], email=user_data['email'],
-                                                     id=user_data['id'], href=user_data['href'],
-                                                     followers=user_data['followers']['total'])
+    # spotify_user_model = SpotifyModel.objects.create(country=user_data['country'],
+    #                                                display_name=user_data['display_name'], email=user_data['email'],
+    #                                               id=user_data['id'], href=user_data['href'],
+    #                                              followers=user_data['followers']['total'])
+
+    print("CALLING RECENTLY PLAYED")
+    recently_played(access_token)
 
     return redirect(FRONTEND_URI + '?access_token=' + access_token)
 
     #  return redirect(url_for('me'))
+
+
+@api_view(['POST', 'GET'])
+def get_spotify_info(request):
+    email = request.data.get('email')
+    print(request.data)
+    # auth_token = request.data.get('auth_token')
+    print(email)
+    # print(auth_token)
+    if email is None:
+        return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 # These following functions could be changed later
@@ -256,7 +326,6 @@ def spotify_refresh():
 
     # Loading new token into session
     session['tokens']['access_token'] = res_data.get('access_token')
-    afafa
     return json.dumps(session['tokens'])
 
 
