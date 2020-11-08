@@ -16,6 +16,7 @@ export const REGISTER_URI = '/auth/register/'
 
 export const TWITTER_AUTH = '/twitter/auth/'
 export const TWITTER_ACCESS_TOKEN = '/twitter/verify/'
+export const TWITTER_ME = '/twitter/info/'
 
 export const SPOTIFIY_AUTH = '/spotify/login/'
 export const SPOTIFIY_ME = '/spotify/me/'

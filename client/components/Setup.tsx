@@ -83,9 +83,9 @@ const Setup: React.FC<SetupProps> = (
                   size="lg"
                   block
                   pill
-                  onClick={handleSpotifyConnect}
+                  onClick={handleTwitterConnect}
                 >
-                  Connect to Spotify
+                  Connect to Twitter
                 </Button>
               )}
 

@@ -3,11 +3,13 @@ import Link from 'next/link'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { useRouter } from 'next/router'
-import axios from 'axios'
-import { HOST } from '../constants/main'
 import { USER_EMAIL, USER_TOKEN } from '../constants/main'
 
-import { TwitterConnect, TwitterAccessToken } from '../api/twitter.api'
+import {
+  TwitterConnect,
+  TwitterAccessToken,
+  TwitterGetUserInfo,
+} from '../api/twitter.api'
 import { SpotifyConnect } from '../api/spotify.api'
 import Setup from '../components/Setup'
 
@@ -24,6 +26,7 @@ const SetupPage = (props) => {
     const email = window.localStorage.getItem(USER_EMAIL)
     if (email) {
       setEmail(email)
+      // props.TwitterGetUserInfo(email)
     }
   })
 
@@ -67,7 +70,7 @@ function mapStateToProps(state) {
 
 function matchDispatchToProps(dispatch) {
   return bindActionCreators(
-    { TwitterConnect, TwitterAccessToken, SpotifyConnect },
+    { TwitterConnect, TwitterAccessToken, TwitterGetUserInfo, SpotifyConnect },
     dispatch
   )
 }
