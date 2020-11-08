@@ -4,8 +4,15 @@ import {
   twitterAuthFailed,
   twitterAccessTokenSuccess,
   twitterAccessTokenFailed,
+  twitterGetUserSuccess,
+  twitterGetUserFailed,
 } from '../store/actions/twitter.action'
-import { HOST, TWITTER_AUTH, TWITTER_ACCESS_TOKEN } from '../constants/main'
+import {
+  HOST,
+  TWITTER_AUTH,
+  TWITTER_ACCESS_TOKEN,
+  TWITTER_ME,
+} from '../constants/main'
 import { setTokenToLocalStorage } from '../utils'
 
 // eslint-disable-next-line import/prefer-default-export
@@ -32,5 +39,19 @@ export const TwitterAccessToken = (userData) => (dispatch) => {
     })
     .catch((err) => {
       dispatch(twitterAccessTokenFailed(err))
+    })
+}
+
+export const TwitterGetUserInfo = (email) => (dispatch) => {
+  return axios
+    .get(`${HOST}${TWITTER_ME}?email=${email}`)
+    .then((res) => {
+      console.log('TwitterVerify res: ', res)
+      // console.log('userData: ', userData)
+      dispatch(twitterGetUserSuccess(res.data))
+    })
+    .catch((err) => {
+      console.log('err: ', err)
+      dispatch(twitterGetUserFailed(err))
     })
 }

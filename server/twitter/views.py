@@ -134,9 +134,9 @@ def verify(request):
     return Response(user_twitter_info, status=status.HTTP_202_ACCEPTED)
 
 
-@api_view(['POST', 'GET'])
+@api_view(['GET'])
 def get_twitter_info(request): 
-    email = request.data.get('email')
+    email = request.GET.get('email')
     #auth_token = request.data.get('auth_token')
     print(email)
     #print(auth_token)
