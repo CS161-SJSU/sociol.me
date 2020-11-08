@@ -4,7 +4,9 @@ import json
 import requests
 
 USER_ID = os.environ.get('SPOTIFY_CLIENT_ID')
-TOKEN = "BQDguhQdSMnNhbimXaaThfO9Tl7B0PoBE_HJP7RS5-xh7d3uvTTo_3YJ_Tyx5Ac4K5jqgvlPJj7Ijg-G0y8NJTqy8Y3dRsPQhoJdah8BhM0opCHfWyGKOHsHRd_Vd91ezQ3OymkgZMEK3hw98ss_gT8mojJjL_cc2DAKEhA"
+
+TOKEN = "AQAQrHMCq9QDnK-G5WtG5VAqu3vyWk6iVCs9WGO0OQIUIwrI08cO9zLQqkBh-iRrL-ZWXZ48az7tSI3mkm1mEP1BcBsoGqZm-ZCmsYYNDLeWrPKDo2LB61CvjFtRdwZneM2afsGpT9vYGvfKCSub-JBVjdOhSPTd5hwQsbqQQ-32jW0ZQ1jfMhmgXw6IQNpYgXVHYprazk6_cR8KR-YWThCdZ4Sz88raAVdgM1VLj7IAqEEUd22prPNgCXRXn0Af"
+
 
 if __name__ == "__main__":
     headers = {
@@ -22,3 +24,8 @@ if __name__ == "__main__":
     data = r.json()
 
     print("Data ", data)
+
+    data = r.json()
+
+    print("Data ", data)
+

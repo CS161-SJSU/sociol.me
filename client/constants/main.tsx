@@ -13,5 +13,9 @@ export const TWITTER_TOKEN = 'TWITTER_TOKEN'
 export const LOGIN_URI = '/auth/login/'
 export const VERIFY_GOOGLE_TOKEN_URI = '/authenticate/'
 export const REGISTER_URI = '/auth/register/'
+
 export const TWITTER_AUTH = '/twitter/auth/'
 export const TWITTER_ACCESS_TOKEN = '/twitter/verify/'
+
+export const SPOTIFIY_AUTH = '/spotify/login/'
+export const SPOTIFIY_ME = '/spotify/me/'

@@ -8,6 +8,7 @@ import { HOST } from '../constants/main'
 import { USER_EMAIL, USER_TOKEN } from '../constants/main'
 
 import { TwitterConnect, TwitterAccessToken } from '../api/twitter.api'
+import { SpotifyConnect } from '../api/spotify.api'
 import Setup from '../components/Setup'
 
 const SetupPage = (props) => {
@@ -39,9 +40,17 @@ const SetupPage = (props) => {
     props.TwitterConnect()
   }
 
+  const onSpotifyConnect = () => {
+    props.SpotifyConnect()
+  }
+
   return (
     <>
-      <Setup email={email} onTwitterConnect={onTwitterConnect}></Setup>
+      <Setup
+        email={email}
+        onTwitterConnect={onTwitterConnect}
+        onSpotifyConnect={onSpotifyConnect}
+      ></Setup>
     </>
   )
 }
@@ -52,11 +61,15 @@ function mapStateToProps(state) {
   return {
     user: state.user,
     twitter: state.twitter,
+    spotify: state.spotify,
   }
 }
 
 function matchDispatchToProps(dispatch) {
-  return bindActionCreators({ TwitterConnect, TwitterAccessToken }, dispatch)
+  return bindActionCreators(
+    { TwitterConnect, TwitterAccessToken, SpotifyConnect },
+    dispatch
+  )
 }
 
 export default connect(mapStateToProps, matchDispatchToProps)(SetupPage)

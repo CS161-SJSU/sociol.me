@@ -1,5 +1,4 @@
 import webbrowser
-
 import pandas
 from django.shortcuts import render
 
@@ -26,7 +25,6 @@ import base64
 import datetime
 
 from spotify.models import SpotifyModel
-
 
 # Client info
 CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
@@ -94,6 +92,9 @@ def recently_played(access_token):
 
     #print(recently_played_dict )
     return Response({'message': data})
+
+
+FRONTEND_URI = 'http://localhost:3000/'
 
 
 class SpotifyAPI(object):
@@ -260,10 +261,10 @@ def spotify_callback(request):
 
     res_data = res.json()
     print("Response Data is : ", res_data)
-
     access_token = res_data.get('access_token')
 
     print("Access TOKEN ", access_token)
+
 
     if res_data.get('error') or res.status_code != 200:
         Response({"Failed to receive token: %s "},
@@ -278,11 +279,14 @@ def spotify_callback(request):
 
     r = requests.get(ME_URL, headers=headers)
     user_data = r.json()
+
     print("User Data: ", user_data)
+
 
     if r.status_code != 200:
         Response({"Failed to get Profile info %s "},
                  user_data.get('error', 'No error message returned.'))
+
 
     # spotify_user_model = SpotifyModel.objects.create(country=user_data['country'],
     #                                                display_name=user_data['display_name'], email=user_data['email'],
@@ -297,6 +301,7 @@ def spotify_callback(request):
     #  return redirect(url_for('me'))
 
 
+
 @api_view(['POST', 'GET'])
 def get_spotify_info(request):
     email = request.data.get('email')
@@ -306,7 +311,6 @@ def get_spotify_info(request):
     # print(auth_token)
     if email is None:
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
-
 
 # These following functions could be changed later
 @api_view(['GET'])
@@ -326,6 +330,7 @@ def spotify_refresh():
 
     # Loading new token into session
     session['tokens']['access_token'] = res_data.get('access_token')
+
     return json.dumps(session['tokens'])
 
 
@@ -333,6 +338,12 @@ def spotify_refresh():
 def spotify_me():
     # if 'tokens' not in session:
     #   print("Error not in session")
+
+def spotify_me(request):
+     
+    # if 'tokens' not in session:
+    #   print("Error not in session")
+
 
     # Get profile info
     headers = {'Authorization': f"Bearer {session['tokens'].get('access_token')}"}

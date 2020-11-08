@@ -5,12 +5,7 @@ import {
   twitterAccessTokenSuccess,
   twitterAccessTokenFailed,
 } from '../store/actions/twitter.action'
-import {
-  HOST,
-  USER_EMAIL,
-  TWITTER_AUTH,
-  TWITTER_ACCESS_TOKEN,
-} from '../constants/main'
+import { HOST, TWITTER_AUTH, TWITTER_ACCESS_TOKEN } from '../constants/main'
 import { setTokenToLocalStorage } from '../utils'
 
 // eslint-disable-next-line import/prefer-default-export
