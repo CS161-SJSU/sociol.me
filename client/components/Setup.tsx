@@ -16,14 +16,21 @@ import styled from 'styled-components'
 
 interface SetupProps {
   onTwitterConnect: Function
+  onSpotifyConnect: Function
   email: string
   props: object
 }
 
-const Setup: React.FC<SetupProps> = (props, onTwitterConnect, email) => {
+const Setup: React.FC<SetupProps> = (
+  props,
+  onTwitterConnect,
+  onSpotifyConnect,
+  email
+) => {
   console.log('Hello email: ', email)
   console.log('props: ', props)
   const twitter = props.twitter || {}
+  const spotify = props.spotify || {}
   console.log('twitter: ', twitter)
 
   useEffect(() => {
@@ -34,7 +41,9 @@ const Setup: React.FC<SetupProps> = (props, onTwitterConnect, email) => {
     props.onTwitterConnect()
   }
 
-  const GoogleSignIn = styled.div``
+  const handleSpotifyConnect = () => {
+    props.onSpotifyConnect()
+  }
 
   return (
     <>
@@ -74,17 +83,34 @@ const Setup: React.FC<SetupProps> = (props, onTwitterConnect, email) => {
                   size="lg"
                   block
                   pill
-                  onClick={handleTwitterConnect}
+                  onClick={handleSpotifyConnect}
                 >
-                  Connect to Twitter
+                  Connect to Spotify
                 </Button>
               )}
 
               {/* <Button loading color="success" block size="lg" /> */}
 
-              <Button color="gray" size="lg" block pill>
-                <Icon prefix="fa" name="spotify" /> Connect with Spotify
-              </Button>
+              {spotify.loading ? (
+                <Button color="green" size="lg" block pill loading>
+                  <Icon prefix="fa" name="spotify" />{' '}
+                </Button>
+              ) : spotify.display_name ? (
+                <Button color="green" size="lg" block pill>
+                  <Icon prefix="fa" name="spotify" />
+                  Connected to @{spotify.display_name}
+                </Button>
+              ) : (
+                <Button
+                  color="gray"
+                  size="lg"
+                  block
+                  pill
+                  onClick={handleSpotifyConnect}
+                >
+                  <Icon prefix="fa" name="spotify" /> Connect with Spotify
+                </Button>
+              )}
             </Button.List>
             <Card.Footer className="pb-0">
               {twitter.name ? (
@@ -123,6 +149,7 @@ function mapStateToProps(state) {
   return {
     user: state.user,
     twitter: state.twitter,
+    spotify: state.spotify,
   }
 }
 

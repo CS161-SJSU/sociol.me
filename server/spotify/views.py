@@ -203,11 +203,11 @@ def spotify_callback(request):
     res = requests.post(TOKEN_URL, auth=(CLIENT_ID, CLIENT_SECRET), data=auth_options)
 
     res_data = res.json()
-    print("Response Data is : ", res_data)
+    print("----Response Data is : ", res_data)
 
     access_token = res_data.get('access_token')
 
-    print("Access TOKEN ", access_token)
+    print("----Access TOKEN ", access_token)
 
     if res_data.get('error') or res.status_code != 200:
         Response({"Failed to receive token: %s "},
@@ -222,7 +222,7 @@ def spotify_callback(request):
 
     r = requests.get(ME_URL, headers=headers)
     user_data = r.json()
-    print("User Data: ", user_data)
+    print("----User Data: ", user_data)
 
     if r.status_code != 200:
         Response({"Failed to get Profile info %s "},
@@ -261,9 +261,12 @@ def spotify_refresh():
 
 
 @api_view(['GET'])
-def spotify_me():
+def spotify_me(request):
+     
     # if 'tokens' not in session:
     #   print("Error not in session")
+
+
 
     # Get profile info
     headers = {'Authorization': f"Bearer {session['tokens'].get('access_token')}"}

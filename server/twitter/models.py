@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser 
-#from authenticate.models
 
 # Create your models here.
 class TwitterModel(models.Model):

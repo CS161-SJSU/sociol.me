@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 import userReducer from './userReducer'
-import TwitterReducer from './twitterReducer'
+import twitterReducer from './twitterReducer'
+import spotifyReducer from './spotifyReducer'
 
 export interface State {
   loading: boolean
@@ -9,5 +10,6 @@ export interface State {
 
 export default combineReducers({
   user: userReducer,
-  twitter: TwitterReducer,
+  twitter: twitterReducer,
+  spotify: spotifyReducer,
 })
