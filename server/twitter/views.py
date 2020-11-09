@@ -24,6 +24,7 @@ import tweepy
 import json
 import webbrowser
 import time
+from django.core import serializers
 
 
 mongo_client = MongoClient('mongodb://localhost:27017')
@@ -137,7 +138,7 @@ def verify(request):
 
 @api_view(['GET'])
 def get_twitter_info(request): 
-    email = request.GET.get('email')
+    email = request.data.get('email')
     #auth_token = request.data.get('auth_token')
     print(email)
     #print(auth_token)
@@ -165,7 +166,7 @@ def get_twitter_info(request):
 
 
 @api_view(['POST','GET'])
-def get_top_worst(request):
+def top_worst(request):
     email = request.data.get('email')
     print(email)
     if email is None:
@@ -224,22 +225,6 @@ def get_top_worst(request):
             tweet_index = tweet_index - 1
             print(twitter_object)
 
-        # for item in public_tweets:
-
-        #     mined = {
-        #         'tweet_id':        item.id,
-        #         'name':            item.user.name,
-        #         'screen_name':     item.user.screen_name,
-        #         'retweet_count':   item.retweet_count,
-        #         'text':            item.full_text,
-        #         'mined_at':        datetime.datetime.now(),
-        #         'created_at':      item.created_at,
-        #         'favourite_count': item.favorite_count,
-        #         'hashtags':        item.entities['hashtags'],
-        #         'status_count':    item.user.statuses_count,
-        #         'location':        item.place,
-        #         'source_device':   item.source
-        #     }
 
         return Response({'message': 'timeline is perfect!'}, status=status.HTTP_202_ACCEPTED)
 
@@ -248,3 +233,23 @@ def get_top_worst(request):
         return Response({'message': 'timeline failed!'}, status=status.HTTP_401_UNAUTHORIZED)
 
     return Response({'message': 'topworst failed!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def get_top_worst(request):
+    email = request.data.get('email')
+    #auth_token = request.data.get('auth_token')
+    print(email)
+    #print(auth_token)
+    if email is None:
+        return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    user = TwitterModel.objects.get(email = email)
+    if user.email != email:
+        return Response({"err": "invalid email"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    queryset = TwitterTopWorst.objects.filter(user_twitter_id__in = TwitterModel.objects.filter(email = email))
+    
+    twitter_info = serializers.serialize('json', queryset)
+    print(twitter_info)
+    
+    return Response(twitter_info , status=status.HTTP_202_ACCEPTED)
