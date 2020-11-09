@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='SpotifyModel',
+            name='SpotifyUser',
             fields=[
                 ('id', models.CharField(default='', max_length=70, primary_key=True, serialize=False)),
                 ('country', models.CharField(default='', max_length=2)),

@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 # from authenticate.models
 
 # Create your models here.
-class SpotifyModel(models.Model):
+class SpotifyUser(models.Model):
     id = models.CharField(max_length=70, blank=False, default='', primary_key=True)
     country = models.CharField(max_length=2, blank=False, default='')
     display_name = models.CharField(max_length=70, blank=False, default='')
