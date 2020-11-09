@@ -5,6 +5,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
  
 from twitter.models import TwitterModel
+from twitter.models import TwitterTopWorst
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -164,7 +165,7 @@ def get_twitter_info(request):
 
 
 @api_view(['POST','GET'])
-def topworst(request):
+def get_top_worst(request):
     email = request.data.get('email')
     print(email)
     if email is None:
@@ -187,26 +188,49 @@ def topworst(request):
         user_id = user_info_dict.id
         print("User ID: ", user_id)
 
+        # create TwitterTopWorst object to store the tweets
+        # transactions = Transactions.objects.filter(account_id__in=list(accounts)).values('category').order_by('category').annotate(total=Sum('amount'))
+        # try:
+        #     twitter_object = TwitterTopWorst.objects.filter(user_twitter_id__in=)
+
         print("try timeline")
         
         count = 2000
         public_tweets = api.user_timeline(user_id, count = count)
+        # check for the top and worst tweet of the user in DB
+        try:
+            twitter_object = TwitterTopWorst.objects.filter(user_twitter_id = twitter_user_model).delete()
+            # if it exist, delete them all
+            print("delete the old tweets")
+        except TwitterModel.DoesNotExist:
+            print("no old tweets in DB")
+        
+        print("Either case, create new top worst tweets of the user")
 
         print("----------This is the top best 5 tweets: --------------")
         
         sorted_tweets = sorted(public_tweets, key=lambda x: x.retweet_count, reverse=True)[:5]
+        tweet_index = 1
         for sorted_tweet in sorted_tweets:
-            print("tweet name: ", sorted_tweet.user.name)
-            print("tweet text: ", sorted_tweet.text)
-            print("retweet count: ", sorted_tweet.retweet_count, "- tweet_id: ", sorted_tweet.id)
+            twitter_object = TwitterTopWorst.objects.create(tweet_id = sorted_tweet.id, name = sorted_tweet.user.name,
+            screen_name = sorted_tweet.user.screen_name, retweet_count = sorted_tweet.retweet_count,
+            text = sorted_tweet.text, favorite_count = sorted_tweet.favorite_count, tweet_index = tweet_index, user_twitter_id = twitter_user_model)
+            tweet_index = tweet_index + 1
+            print(twitter_object)
 
         print("------------This is the worst 5 tweets: ---------------")
 
+        tweet_index = 10
         sorted_tweets = sorted(public_tweets, key=lambda x: x.retweet_count, reverse=False)[:5]
         for sorted_tweet in sorted_tweets:
-            print("tweet screen name: ", sorted_tweet.user.screen_name)
-            print("tweet text: ", sorted_tweet.text)
-            print("retweet count: ", sorted_tweet.retweet_count, "- tweet_id: ", sorted_tweet.id)
+            # print("tweet screen name: ", sorted_tweet.user.screen_name)
+            # print("tweet text: ", sorted_tweet.text)
+            # print("retweet count: ", sorted_tweet.retweet_count, "- tweet_id: ", sorted_tweet.id)
+            twitter_object = TwitterTopWorst.objects.create(tweet_id = sorted_tweet.id, name = sorted_tweet.user.name,
+            screen_name = sorted_tweet.user.screen_name, retweet_count = sorted_tweet.retweet_count,
+            text = sorted_tweet.text, favorite_count = sorted_tweet.favorite_count, tweet_index = tweet_index, user_twitter_id = twitter_user_model)
+            tweet_index = tweet_index - 1
+            print(twitter_object)
 
 
         # for item in public_tweets:
