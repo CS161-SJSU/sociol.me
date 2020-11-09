@@ -168,6 +168,7 @@ def get_twitter_info(request):
 @api_view(['POST','GET'])
 def top_worst(request):
     email = request.data.get('email')
+
     print(email)
     if email is None:
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)

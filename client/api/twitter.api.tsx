@@ -6,12 +6,15 @@ import {
   twitterAccessTokenFailed,
   twitterGetUserSuccess,
   twitterGetUserFailed,
+  twitterGetTopWorstTweetsSuccess,
+  twitterGetTopWorstTweetsFailed,
 } from '../store/actions/twitter.action'
 import {
   HOST,
   TWITTER_AUTH,
   TWITTER_ACCESS_TOKEN,
   TWITTER_ME,
+  TWITTER_TOP_WORST,
 } from '../constants/main'
 import { setTokenToLocalStorage } from '../utils'
 
@@ -33,7 +36,7 @@ export const TwitterAccessToken = (userData) => (dispatch) => {
   return axios
     .post(`${HOST}${TWITTER_ACCESS_TOKEN}`, userData)
     .then((res) => {
-      console.log('TwitterVerify res: ', res)
+      console.log('TwitterAccessToken res: ', res)
       // console.log('userData: ', userData)
       dispatch(twitterAccessTokenSuccess(res.data))
     })
@@ -46,12 +49,26 @@ export const TwitterGetUserInfo = (email) => (dispatch) => {
   return axios
     .get(`${HOST}${TWITTER_ME}?email=${email}`)
     .then((res) => {
-      console.log('TwitterVerify res: ', res)
+      console.log('TwitterMe res: ', res)
       // console.log('userData: ', userData)
       dispatch(twitterGetUserSuccess(res.data))
     })
     .catch((err) => {
       console.log('err: ', err)
       dispatch(twitterGetUserFailed(err))
+    })
+}
+
+export const TwitterGetTopWorst = (email) => (dispatch) => {
+  return axios
+    .get(`${HOST}${TWITTER_TOP_WORST}?email=${email}`)
+    .then((res) => {
+      console.log('TwitterGetTopWorst res: ', res)
+      // console.log('userData: ', userData)
+      dispatch(twitterGetTopWorstTweetsSuccess(res.data))
+    })
+    .catch((err) => {
+      console.log('err: ', err)
+      dispatch(twitterGetTopWorstTweetsFailed(err))
     })
 }

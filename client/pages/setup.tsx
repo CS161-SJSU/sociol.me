@@ -9,6 +9,7 @@ import {
   TwitterConnect,
   TwitterAccessToken,
   TwitterGetUserInfo,
+  TwitterGetTopWorst,
 } from '../api/twitter.api'
 import { SpotifyConnect } from '../api/spotify.api'
 import Setup from '../components/Setup'
@@ -26,7 +27,7 @@ const SetupPage = (props) => {
     const email = window.localStorage.getItem(USER_EMAIL)
     if (email) {
       setEmail(email)
-      // props.TwitterGetUserInfo(email)
+      // props.TwitterGetTopWorst(email)
     }
   })
 
@@ -70,7 +71,13 @@ function mapStateToProps(state) {
 
 function matchDispatchToProps(dispatch) {
   return bindActionCreators(
-    { TwitterConnect, TwitterAccessToken, TwitterGetUserInfo, SpotifyConnect },
+    {
+      TwitterConnect,
+      TwitterAccessToken,
+      TwitterGetUserInfo,
+      TwitterGetTopWorst,
+      SpotifyConnect,
+    },
     dispatch
   )
 }
