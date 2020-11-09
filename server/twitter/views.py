@@ -188,11 +188,6 @@ def get_top_worst(request):
         user_id = user_info_dict.id
         print("User ID: ", user_id)
 
-        # create TwitterTopWorst object to store the tweets
-        # transactions = Transactions.objects.filter(account_id__in=list(accounts)).values('category').order_by('category').annotate(total=Sum('amount'))
-        # try:
-        #     twitter_object = TwitterTopWorst.objects.filter(user_twitter_id__in=)
-
         print("try timeline")
         
         count = 2000
@@ -223,15 +218,11 @@ def get_top_worst(request):
         tweet_index = 10
         sorted_tweets = sorted(public_tweets, key=lambda x: x.retweet_count, reverse=False)[:5]
         for sorted_tweet in sorted_tweets:
-            # print("tweet screen name: ", sorted_tweet.user.screen_name)
-            # print("tweet text: ", sorted_tweet.text)
-            # print("retweet count: ", sorted_tweet.retweet_count, "- tweet_id: ", sorted_tweet.id)
             twitter_object = TwitterTopWorst.objects.create(tweet_id = sorted_tweet.id, name = sorted_tweet.user.name,
             screen_name = sorted_tweet.user.screen_name, retweet_count = sorted_tweet.retweet_count,
             text = sorted_tweet.text, favorite_count = sorted_tweet.favorite_count, tweet_index = tweet_index, user_twitter_id = twitter_user_model)
             tweet_index = tweet_index - 1
             print(twitter_object)
-
 
         # for item in public_tweets:
 
@@ -250,13 +241,10 @@ def get_top_worst(request):
         #         'source_device':   item.source
         #     }
 
-
         return Response({'message': 'timeline is perfect!'}, status=status.HTTP_202_ACCEPTED)
-
 
     except Exception as e:
         print("error: ", e)
         return Response({'message': 'timeline failed!'}, status=status.HTTP_401_UNAUTHORIZED)
-
 
     return Response({'message': 'topworst failed!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
