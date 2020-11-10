@@ -73,15 +73,15 @@ conda create --name your_env_name
 # Start virtual env
 source activate your_env_name
 ```
-# For Windows
+--- For Windows
 Create the virtual environment named "env":
-> python -m venv env 
+python -m venv env 
 
 Add the path to the git ignore file (optional):
-> echo env/ >> .gitignore
+echo env/ >> .gitignore
 
 Activate the virtual env:
-> .\env\Scripts\activate
+.\env\Scripts\activate
 
 ```
 # Setup Environment Variables
