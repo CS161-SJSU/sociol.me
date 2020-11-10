@@ -73,6 +73,15 @@ conda create --name your_env_name
 # Start virtual env
 source activate your_env_name
 ```
+# For Windows
+Create the virtual environment named "env":
+> python -m venv env 
+
+Add the path to the git ignore file (optional):
+> echo env/ >> .gitignore
+
+Activate the virtual env:
+> .\env\Scripts\activate
 
 ```
 # Setup Environment Variables
@@ -89,7 +98,7 @@ cd server
 pip3 install -r requirements.txt or python -m pip3 install -r requirements.txt
 
 # Create new migrations
-python3 manage.py makemigrations
+python3 manage.py makemigrations or Python manage.py makemigrations (Windows)
 
 # Apply new migrations
 python3 manage.py migrate
