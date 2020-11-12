@@ -42,85 +42,14 @@ type navItem = {
 
 const navBarItems: Array<navItem> = [
   {
-    value: 'Home',
-    to: '/',
+    value: 'Twitter',
     icon: 'home',
     // LinkComponent: withRouter(NavLink),
     useExact: true,
   },
   {
-    value: 'Interface',
+    value: 'Spotify',
     icon: 'box',
-    subItems: [
-      {
-        value: 'Cards Design',
-        to: '/cards',
-        // LinkComponent: withRouter(NavLink),
-      },
-      { value: 'Charts', to: '/charts', LinkComponent: withRouter(NavLink) },
-      {
-        value: 'Pricing Cards',
-        to: '/pricing-cards',
-        // LinkComponent: withRouter(NavLink),
-      },
-    ],
-  },
-  {
-    value: 'Components',
-    icon: 'calendar',
-    subItems: [
-      { value: 'Maps', to: '/maps' },
-      { value: 'Icons', to: '/icons' },
-      { value: 'Store', to: '/store' },
-      { value: 'Blog', to: '/blog' },
-    ],
-  },
-  {
-    value: 'Pages',
-    icon: 'file',
-    subItems: [
-      { value: 'Profile', to: '/profile' },
-      { value: 'Login', to: '/login' },
-      {
-        value: 'Register',
-        to: '/register',
-      },
-      {
-        value: 'Forgot password',
-        to: '/forgot-password',
-        LinkComponent: withRouter(NavLink),
-      },
-      { value: '401 error', to: '/401' },
-      { value: '400 error', to: '/400' },
-      { value: '403 error', to: '/403' },
-      { value: '404 error', to: '/404' },
-      { value: '500 error', to: '/500' },
-      { value: '503 error', to: '/503' },
-      { value: 'Email', to: '/email' },
-      {
-        value: 'Empty page',
-        to: '/empty-page',
-      },
-      { value: 'RTL', to: '/rtl' },
-    ],
-  },
-  {
-    value: 'Forms',
-    to: '/form-elements',
-    icon: 'check-square',
-  },
-  {
-    value: 'Gallery',
-    to: '/gallery',
-    icon: 'image',
-  },
-  {
-    icon: 'file-text',
-    value: 'Documentation',
-    to:
-      process.env.NODE_ENV === 'production'
-        ? 'https://tabler.github.io/tabler-react/documentation'
-        : '/documentation',
   },
 ]
 

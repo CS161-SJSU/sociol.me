@@ -114,7 +114,7 @@ const Setup: React.FC<SetupProps> = (
             </Button.List>
             <Card.Footer className="pb-0">
               {twitter.name ? (
-                <Link href="/dashboard">
+                <Link href="/tempdashboard">
                   <Button
                     icon="check-square"
                     color="success"
