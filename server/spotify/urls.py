@@ -6,6 +6,5 @@ urlpatterns = [
     url(r'^spotify/login/', views.spotify_login),
     url(r'^spotify/callback/$', views.spotify_callback),
     url(r'^spotify/me/$', views.spotify_me),
-    url(r'^spotify/refresh/$', views.spotify_refresh),
-    url(r'^spotify/info/', views.get_spotify_info),
+    url(r'^spotify/refresh/$', views.spotify_refresh)
 ]
