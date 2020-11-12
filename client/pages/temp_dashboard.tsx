@@ -25,7 +25,9 @@ import C3Chart from 'react-c3js'
 
 import SiteWrapper from '../components/SiteWrapper'
 
-function Home() {
+import { TwitterGetUserInfo, TwitterGetTopWorst } from '../api/twitter.api'
+
+function Dashboard() {
   return (
     <SiteWrapper>
       <Page.Content title="Dashboard">
@@ -922,4 +924,16 @@ function Home() {
   )
 }
 
-export default Home
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+    twitter: state.twitter,
+    spotify: state.spotify,
+  }
+}
+
+function matchDispatchToProps(dispatch) {
+  return bindActionCreators({}, dispatch)
+}
+
+export default connect(mapStateToProps, matchDispatchToProps)(Dashboard)

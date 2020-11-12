@@ -22,6 +22,10 @@ export default function twitterReducer(
       return { ...state, ...action.payload, ...{ loading: false } }
     case types.TWITTER_GET_USER_FAILED:
       return { ...state, ...{ loading: false }, ...{ errors: action.payload } }
+    case types.TWITTER_TOP_WORST_TWEETS_SUCCESS:
+      return { ...state, ...action.payload, ...{ loading: false } }
+    case types.TWITTER_TOP_WORST_TWEETS_FAILED:
+      return { ...state, ...{ loading: false }, ...{ errors: action.payload } }
     case types.TWITTER_GET_TOP_WORST_TWEETS_SUCCESS:
       return { ...state, ...action.payload, ...{ loading: false } }
     case types.TWITTER_GET_TOP_WORST_TWEETS_FAILED:

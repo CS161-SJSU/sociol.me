@@ -9,6 +9,7 @@ import {
   TwitterConnect,
   TwitterAccessToken,
   TwitterGetUserInfo,
+  TwitterTopWorst,
 } from '../api/twitter.api'
 import { SpotifyConnect } from '../api/spotify.api'
 import Setup from '../components/Setup'
@@ -26,7 +27,7 @@ const SetupPage = (props) => {
     const email = window.localStorage.getItem(USER_EMAIL)
     if (email) {
       setEmail(email)
-      // props.TwitterGetUserInfo(email)
+      // props.TwitterGetTopWorst(email)
     }
   })
 
@@ -34,7 +35,10 @@ const SetupPage = (props) => {
     const twitterTokens = router.query
     if (twitterTokens.oauth_verifier && email) {
       console.log('{ ...twitterTokens, email }: ', { ...twitterTokens, email })
-      props.TwitterAccessToken({ ...twitterTokens, email })
+      props.TwitterAccessToken({ ...twitterTokens, email }).then(() => {
+        console.log('then')
+        props.TwitterTopWorst({ email })
+      })
       router.push('/setup')
     }
   }
@@ -70,7 +74,13 @@ function mapStateToProps(state) {
 
 function matchDispatchToProps(dispatch) {
   return bindActionCreators(
-    { TwitterConnect, TwitterAccessToken, TwitterGetUserInfo, SpotifyConnect },
+    {
+      TwitterConnect,
+      TwitterAccessToken,
+      TwitterGetUserInfo,
+      TwitterTopWorst,
+      SpotifyConnect,
+    },
     dispatch
   )
 }
