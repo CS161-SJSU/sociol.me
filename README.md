@@ -126,12 +126,12 @@ npm test
 
 👩🏻‍💻 **Trinity Nguyen** - [trinwin](https://github.com/trinwin) (Project Lead + Frontend Lead)
 
-👨🏻‍💻 **Cagan Sevencan** - [cagansevencan](https://github.com/orgs/CS161-SJSU/people/cagansevencan) (Frontend Developer)
+👨🏻‍💻 **Cagan Sevencan** - [cagansevencan](https://github.com/cagansevencan) (Frontend Developer)
 
-👩🏻‍💻 **Julia Chin** - [juliachin123](https://github.com/orgs/CS161-SJSU/people/juliachin123) (Backend Developer)
+👩🏻‍💻 **Julia Chin** - [juliachin123](https://github.com/juliachin123) (Backend Developer)
 
-👨🏻‍💻 **Eric Wu** - [ericwu12345](https://github.com/orgs/CS161-SJSU/people/ericwu12345) (Backend Developer)
+👨🏻‍💻 **Eric Wu** - [ericwu12345](https://github.com/ericwu12345) (Backend Developer)
 
-👨🏻‍💻 **Toan Dao** - [toandaosjsu](https://github.com/orgs/CS161-SJSU/people/toandaosjsu) (Backend Developer)
+👨🏻‍💻 **Toan Dao** - [toandaosjsu](https://github.com/toandaosjsu) (Backend Developer)
 
 See also the list of [contributors](https://github.com/CS161-SJSU/social-analytics/graphs/contributors) who participated in this project.
