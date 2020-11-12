@@ -9,7 +9,7 @@ import {
   TwitterConnect,
   TwitterAccessToken,
   TwitterGetUserInfo,
-  TwitterGetTopWorst,
+  TwitterTopWorst,
 } from '../api/twitter.api'
 import { SpotifyConnect } from '../api/spotify.api'
 import Setup from '../components/Setup'
@@ -35,7 +35,10 @@ const SetupPage = (props) => {
     const twitterTokens = router.query
     if (twitterTokens.oauth_verifier && email) {
       console.log('{ ...twitterTokens, email }: ', { ...twitterTokens, email })
-      props.TwitterAccessToken({ ...twitterTokens, email })
+      props.TwitterAccessToken({ ...twitterTokens, email }).then(() => {
+        console.log('then')
+        props.TwitterTopWorst({ email })
+      })
       router.push('/setup')
     }
   }
@@ -75,7 +78,7 @@ function matchDispatchToProps(dispatch) {
       TwitterConnect,
       TwitterAccessToken,
       TwitterGetUserInfo,
-      TwitterGetTopWorst,
+      TwitterTopWorst,
       SpotifyConnect,
     },
     dispatch

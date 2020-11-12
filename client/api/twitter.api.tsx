@@ -15,16 +15,15 @@ import {
   TWITTER_ACCESS_TOKEN,
   TWITTER_ME,
   TWITTER_TOP_WORST,
+  TWITTER_GET_TOP_WORST,
 } from '../constants/main'
 import { setTokenToLocalStorage } from '../utils'
 
-// eslint-disable-next-line import/prefer-default-export
 export const TwitterConnect = () => (dispatch) => {
   return axios
     .post(`${HOST}${TWITTER_AUTH}`)
     .then((res) => {
       console.log('TwitterConnect res: ', res.data)
-      // console.log('userData: ', userData)
       dispatch(twitterAuthSuccess(res.data))
     })
     .catch((err) => {
@@ -37,7 +36,6 @@ export const TwitterAccessToken = (userData) => (dispatch) => {
     .post(`${HOST}${TWITTER_ACCESS_TOKEN}`, userData)
     .then((res) => {
       console.log('TwitterAccessToken res: ', res)
-      // console.log('userData: ', userData)
       dispatch(twitterAccessTokenSuccess(res.data))
     })
     .catch((err) => {
@@ -46,12 +44,12 @@ export const TwitterAccessToken = (userData) => (dispatch) => {
 }
 
 export const TwitterGetUserInfo = (email) => (dispatch) => {
-  return axios
+  axios
     .get(`${HOST}${TWITTER_ME}?email=${email}`)
     .then((res) => {
       console.log('TwitterMe res: ', res)
-      // console.log('userData: ', userData)
       dispatch(twitterGetUserSuccess(res.data))
+      return res.data
     })
     .catch((err) => {
       console.log('err: ', err)
@@ -59,12 +57,24 @@ export const TwitterGetUserInfo = (email) => (dispatch) => {
     })
 }
 
+export const TwitterTopWorst = (userData) => (dispatch) => {
+  return axios
+    .post(`${HOST}${TWITTER_TOP_WORST}`, userData)
+    .then((res) => {
+      console.log('TwitterTopWorst res: ', res)
+      dispatch(twitterGetTopWorstTweetsSuccess(res.data))
+    })
+    .catch((err) => {
+      console.log('err: ', err)
+      dispatch(twitterGetTopWorstTweetsFailed(err))
+    })
+}
+
 export const TwitterGetTopWorst = (email) => (dispatch) => {
   return axios
-    .get(`${HOST}${TWITTER_TOP_WORST}?email=${email}`)
+    .get(`${HOST}${TWITTER_GET_TOP_WORST}?email=${email}`)
     .then((res) => {
       console.log('TwitterGetTopWorst res: ', res)
-      // console.log('userData: ', userData)
       dispatch(twitterGetTopWorstTweetsSuccess(res.data))
     })
     .catch((err) => {

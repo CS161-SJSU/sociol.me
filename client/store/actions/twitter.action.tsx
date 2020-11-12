@@ -31,6 +31,16 @@ export const twitterGetUserFailed = (error) => ({
   payload: error,
 })
 
+export const twitterTopWorstTweetsSuccess = (user) => ({
+  type: types.TWITTER_TOP_WORST_TWEETS_SUCCESS,
+  payload: user,
+})
+
+export const twitterTopWorstTweetsFailed = (error) => ({
+  type: types.TWITTER_TOP_WORST_TWEETS_FAILED,
+  payload: error,
+})
+
 export const twitterGetTopWorstTweetsSuccess = (user) => ({
   type: types.TWITTER_GET_TOP_WORST_TWEETS_SUCCESS,
   payload: user,
