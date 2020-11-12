@@ -83,6 +83,8 @@ def verify(request):
     api = tweepy.API(auth, wait_on_rate_limit = True)
 
     user_info_dict = api.me()
+
+    print("!!!! ", user_info_dict)
     user_id = user_info_dict.id
     print("step 5", user_id)
     name = user_info_dict.name
@@ -96,6 +98,8 @@ def verify(request):
     description = user_info_dict.description
     print("step 10", description)
 
+    #statuses_count
+    
     try:
         twitter_user = TwitterModel.objects.get(user_id = user_id, email = email)
         twitter_user.followers_count = followers_count
@@ -125,7 +129,7 @@ def verify(request):
         'auth_token' : auth_token
     }
 
-    print(user_twitter_info)
+    print("~~ ", user_twitter_info)
     
     try:
         info_json = json.dumps(user_twitter_info)

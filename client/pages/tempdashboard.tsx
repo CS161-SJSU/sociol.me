@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import C3Chart from 'react-c3js'
+
 import {
   Page,
   Avatar,
@@ -21,49 +24,40 @@ import {
   Badge,
 } from 'tabler-react'
 
-import C3Chart from 'react-c3js'
-
 import SiteWrapper from '../components/SiteWrapper'
 
-function Home() {
+import { USER_TOKEN } from '../constants/main'
+
+import { TwitterGetUserInfo } from '../api/twitter.api'
+import { SpotifyMe } from '../api/spotify.api'
+
+function Dashboard() {
   return (
     <SiteWrapper>
       <Page.Content title="Dashboard">
-        <Grid.Row cards={true}>
+        <Grid.Row cards={true} alignItems="center">
           <Grid.Col width={6} sm={4} lg={2}>
-            <StatsCard layout={1} movement={6} total="43" label="New Tickets" />
+            <StatsCard layout={1} movement={0} total="--" label="Screen name" />
           </Grid.Col>
           <Grid.Col width={6} sm={4} lg={2}>
             <StatsCard
               layout={1}
-              movement={-3}
-              total="17"
-              label="Closed Today"
+              movement={6}
+              total="43"
+              label="Numbers of tweets"
             />
           </Grid.Col>
           <Grid.Col width={6} sm={4} lg={2}>
-            <StatsCard layout={1} movement={9} total="7" label="New Replies" />
+            <StatsCard layout={1} movement={-3} total="17" label="Followers" />
           </Grid.Col>
           <Grid.Col width={6} sm={4} lg={2}>
-            <StatsCard
-              layout={1}
-              movement={3}
-              total="27.3k"
-              label="Followers"
-            />
+            <StatsCard layout={1} movement={9} total="7" label="Frends" />
           </Grid.Col>
           <Grid.Col width={6} sm={4} lg={2}>
-            <StatsCard
-              layout={1}
-              movement={-2}
-              total="$95"
-              label="Daily earnings"
-            />
-          </Grid.Col>
-          <Grid.Col width={6} sm={4} lg={2}>
-            <StatsCard layout={1} movement={-1} total="621" label="Products" />
+            <StatsCard layout={1} movement={3} total="--" label="---" />
           </Grid.Col>
         </Grid.Row>
+
         <Grid.Row cards deck>
           <Grid.Col width={12}>
             <Card>
@@ -80,8 +74,8 @@ function Home() {
                     <Table.ColHeader alignContent="center" className="w-1">
                       <i className="icon-people" />
                     </Table.ColHeader>
-                    <Table.ColHeader>User</Table.ColHeader>
-                    <Table.ColHeader>Usage</Table.ColHeader>
+                    <Table.ColHeader>Name</Table.ColHeader>
+                    <Table.ColHeader>Description</Table.ColHeader>
                     <Table.ColHeader alignContent="center">
                       Payment
                     </Table.ColHeader>
@@ -98,7 +92,7 @@ function Home() {
                   <Table.Row>
                     <Table.Col alignContent="center">
                       <Avatar
-                        imageURL="demo/faces/female/26.jpg"
+                        imageURL="/users/trinity.jpg"
                         className="d-block"
                         status="green"
                       />
@@ -168,18 +162,17 @@ function Home() {
           </Grid.Col>
 
           <Grid.Col width={12}>
-            <Card title="Invoices">
+            <Card title="Top 5 Tweets">
               <Table
                 responsive
                 className="card-table table-vcenter text-nowrap"
                 headerItems={[
                   { content: 'No.', className: 'w-1' },
-                  { content: 'Invoice Subject' },
-                  { content: 'Client' },
-                  { content: 'VAT No.' },
-                  { content: 'Created' },
-                  { content: 'Status' },
-                  { content: 'Price' },
+                  { content: 'Date Tweeted' },
+                  { content: 'Text' },
+                  { content: 'Likes' },
+                  { content: 'Retweets' },
+                  { content: 'Shares' },
                   { content: null },
                   { content: null },
                 ]}
@@ -202,7 +195,76 @@ function Home() {
                         ),
                       },
                       { content: 'Carlson Limited' },
-                      { content: '87956621' },
+                      { content: '15 Dec 2017' },
+                      {
+                        content: (
+                          <React.Fragment>
+                            <span className="status-icon bg-success" /> Paid
+                          </React.Fragment>
+                        ),
+                      },
+                      { content: '$887' },
+                      {
+                        alignContent: 'right',
+                        content: (
+                          <React.Fragment>
+                            <Button size="sm" color="secondary">
+                              Manage
+                            </Button>
+                            <div className="dropdown">
+                              <Button
+                                color="secondary"
+                                size="sm"
+                                isDropdownToggle
+                              >
+                                Actions
+                              </Button>
+                            </div>
+                          </React.Fragment>
+                        ),
+                      },
+                      { content: <Icon link name="edit" /> },
+                    ],
+                  },
+                ]}
+              />
+            </Card>
+          </Grid.Col>
+
+          <Grid.Col width={12}>
+            <Card title="Worst 5 Tweets">
+              <Table
+                responsive
+                className="card-table table-vcenter text-nowrap"
+                headerItems={[
+                  { content: 'No.', className: 'w-1' },
+                  { content: 'Date Tweeted' },
+                  { content: 'Text' },
+                  { content: 'Likes' },
+                  { content: 'Retweets' },
+                  { content: 'Shares' },
+                  { content: null },
+                  { content: null },
+                ]}
+                bodyItems={[
+                  {
+                    key: '1',
+                    item: [
+                      {
+                        content: (
+                          <Text RootComponent="span" muted>
+                            001401
+                          </Text>
+                        ),
+                      },
+                      {
+                        content: (
+                          <a href="invoice.html" className="text-inherit">
+                            Design Works
+                          </a>
+                        ),
+                      },
+                      { content: 'Carlson Limited' },
                       { content: '15 Dec 2017' },
                       {
                         content: (
@@ -244,4 +306,16 @@ function Home() {
   )
 }
 
-export default Home
+Dashboard.getInitialProps = () => ({})
+
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+  }
+}
+
+function matchDispatchToProps(dispatch) {
+  return bindActionCreators({}, dispatch)
+}
+
+export default connect(mapStateToProps, matchDispatchToProps)(Dashboard)
