@@ -11,6 +11,7 @@ class TwitterModel(models.Model):
     description = models.CharField(max_length=1000, blank=False, default='')
     followers_count =  models.IntegerField(blank=False, default=0)
     friends_count = models.IntegerField(blank=False, default=0)
+    #statuses_count
     auth_token =  models.CharField(max_length=2000, blank=False, default='')
     auth_token_secret = models.CharField(max_length=2000, blank=False, default='')
     #worst_tweet = models.IntegerField(blank=False, default=0)
