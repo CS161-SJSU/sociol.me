@@ -200,6 +200,7 @@ def spotify_callback(request):
 
     # Post request in order to get callback URL
     # Might have to add headers into this?
+    #EDGE CASE call it often etc
     res = requests.post(TOKEN_URL, auth=(CLIENT_ID, CLIENT_SECRET), data=auth_options)
 
     res_data = res.json()
@@ -228,14 +229,65 @@ def spotify_callback(request):
         Response({"Failed to get Profile info %s "},
                  user_data.get('error', 'No error message returned.'))
 
-    spotify_user_model = SpotifyModel.objects.create(country=user_data['country'],
-                                                     display_name=user_data['display_name'], email=user_data['email'],
-                                                     id=user_data['id'], href=user_data['href'],
-                                                     followers=user_data['followers']['total'])
+    print("User Data: ", user_data)
 
-    return redirect(FRONTEND_URI + '?access_token=' + access_token)
+    # Update DB if any of the user info has changed
+    user_ID = user_data['id']
+    print("USER ID: " , user_ID)
+    try:
+        print("INSIDE TRY METHOD")
+        entries = SpotifyUser.objects.filter(id=user_data['id'])
+        print("ENTRY IS: ", entries)
+        user_id = SpotifyUser.objects.get(id=user_data['id'])
+        print("USER ID: ", user_id)
+
+
+        #print("DB IS UPDATED")
+
+    except SpotifyUser.DoesNotExist:
+        print("INSIDE CREATE FUNC")
+        spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
+                                                        display_name=user_data['display_name'],
+                                                        id=user_data['id'], href=user_data['href'],
+                                                        followers=user_data['followers']['total'],
+                                                        access_token=access_token)
+
+        print("MODEL : ", spotify_user_model)
+
+        return Response({'message': 'New User Created'}, status=status.HTTP_202_ACCEPTED)
+
+    print("CALLING RECENTLY PLAYED")
+    #recently_played(access_token)
+
+    return redirect(FRONTEND_URI + '?access_token=' + access_token + '&id=' + user_ID)
 
     #  return redirect(url_for('me'))
+
+
+@api_view(['POST', 'GET'])
+def get_spotify_update_email(request):
+    #UPDATE EMAIL IF THEY DONT HAVE
+    email = request.data.get('email')
+    id = request.data.get('id')
+    print(request.data)
+    # auth_token = request.data.get('auth_token')
+    print(email)
+    # print(auth_token)
+    if email is None:
+        return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    try:
+        spotify_user_info = SpotifyUser.objects.get(id = id)
+        print("USER ID ", spotify_user_info)
+        spotify_user_info.email = email
+        spotify_user_info.save()
+        print("updated data")
+    except Exception as e:
+        print("Error: ", e)
+
+    return Response(spotify_user_info, status=status.HTTP_202_ACCEPTED)
+
+
 
 
 # These following functions could be changed later
