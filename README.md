@@ -102,10 +102,10 @@ pip3 install -r requirements.txt or python -m pip3 install -r requirements.txt
 python3 manage.py makemigrations or Python manage.py makemigrations (Windows)
 
 # Apply new migrations
-python3 manage.py migrate
+python3 manage.py migrate or Python manage.py migrate (Windows)
 
 # Start server on localhost:8000
-python3 manage.py runserver
+python3 manage.py runserver or Python manage.py runserver (Windows)
 ```
 
 ## ⚙️ Testing
