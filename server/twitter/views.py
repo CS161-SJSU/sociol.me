@@ -138,7 +138,7 @@ def verify(request):
 
 @api_view(['GET'])
 def get_twitter_info(request): 
-    email = request.data.get('email')
+    email = request.GET.get('email')
     #auth_token = request.data.get('auth_token')
     print(email)
     #print(auth_token)
@@ -162,7 +162,7 @@ def get_twitter_info(request):
 
     print(user_twitter_info)
     
-    return Response(user_twitter_info, status=status.HTTP_202_ACCEPTED)
+    return Response({"user": user_twitter_info}, status=status.HTTP_202_ACCEPTED)
 
 
 @api_view(['POST','GET'])
@@ -237,7 +237,7 @@ def top_worst(request):
 
 @api_view(['GET'])
 def get_top_worst(request):
-    email = request.data.get('email')
+    email = request.GET.get('email')
     #auth_token = request.data.get('auth_token')
     print(email)
     #print(auth_token)
@@ -248,9 +248,20 @@ def get_top_worst(request):
     if user.email != email:
         return Response({"err": "invalid email"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    queryset = TwitterTopWorst.objects.filter(user_twitter_id__in = TwitterModel.objects.filter(email = email))
+    tweets = TwitterTopWorst.objects.filter(user_twitter_id__in = TwitterModel.objects.filter(email = email))
     
-    twitter_info = serializers.serialize('json', queryset)
-    print(twitter_info)
+    twitter_info = serializers.serialize('json', tweets)
+    print(tweets)
+
+    responses = []
+    for tweet in tweets:
+        response = {
+            "tweet_index": tweet.tweet_index,
+            "tweet_id": tweet.tweet_id,
+            "text": tweet.text,
+            "retweet_count": tweet.retweet_count,
+            "favorite_count": tweet.favorite_count, 
+        }
+        responses.append(response)
     
-    return Response(twitter_info , status=status.HTTP_202_ACCEPTED)
+    return Response({"topworst": responses} , status=status.HTTP_202_ACCEPTED)

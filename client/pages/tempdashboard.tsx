@@ -26,298 +26,236 @@ import {
 
 import SiteWrapper from '../components/SiteWrapper'
 
-import { USER_TOKEN } from '../constants/main'
+import { USER_TOKEN, USER_EMAIL } from '../constants/main'
 
-import { TwitterGetUserInfo } from '../api/twitter.api'
+import { TwitterGetUserInfo, TwitterGetTopWorst } from '../api/twitter.api'
 import { SpotifyMe } from '../api/spotify.api'
 
-const Dashboard = (props) => {
-  props.TwitterGetUserInfo('thn.trinity@gmail.com')
+class Dashboard extends React.Component {
+  //
 
-  return (
-    <SiteWrapper>
-      <Page.Content title="Dashboard">
-        <Grid.Row cards={true} alignItems="center">
-          <Grid.Col width={6} sm={4} lg={2}>
-            <StatsCard layout={1} movement={0} total="--" label="Screen name" />
-          </Grid.Col>
-          <Grid.Col width={6} sm={4} lg={2}>
-            <StatsCard
-              layout={1}
-              movement={6}
-              total="43"
-              label="Numbers of tweets"
-            />
-          </Grid.Col>
-          <Grid.Col width={6} sm={4} lg={2}>
-            <StatsCard layout={1} movement={-3} total="17" label="Followers" />
-          </Grid.Col>
-          <Grid.Col width={6} sm={4} lg={2}>
-            <StatsCard layout={1} movement={9} total="7" label="Frends" />
-          </Grid.Col>
-          <Grid.Col width={6} sm={4} lg={2}>
-            <StatsCard layout={1} movement={3} total="--" label="---" />
-          </Grid.Col>
-        </Grid.Row>
+  // static getInitialProps = async (ctx) => {
+  //   console.log('hi')
+  //   const data = await TwitterGetUserInfo('thn.trinity@gmail.com')
+  //   return { data }
+  // }
 
-        <Grid.Row cards deck>
-          <Grid.Col width={12}>
-            <Card>
-              <Table
-                responsive
-                highlightRowOnHover
-                hasOutline
-                verticalAlign="center"
-                cards
-                className="text-nowrap"
-              >
-                <Table.Header>
-                  <Table.Row>
-                    <Table.ColHeader alignContent="center" className="w-1">
-                      <i className="icon-people" />
-                    </Table.ColHeader>
-                    <Table.ColHeader>Name</Table.ColHeader>
-                    <Table.ColHeader>Description</Table.ColHeader>
-                    <Table.ColHeader alignContent="center">
-                      Payment
-                    </Table.ColHeader>
-                    <Table.ColHeader>Activity</Table.ColHeader>
-                    <Table.ColHeader alignContent="center">
-                      Satisfaction
-                    </Table.ColHeader>
-                    <Table.ColHeader alignContent="center">
-                      <i className="icon-settings" />
-                    </Table.ColHeader>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  <Table.Row>
-                    <Table.Col alignContent="center">
-                      <Avatar
-                        imageURL="/users/trinity.jpg"
-                        className="d-block"
-                        status="green"
-                      />
-                    </Table.Col>
-                    <Table.Col>
-                      <div>Elizabeth Martin</div>
-                      <Text size="sm" muted>
-                        Registered: Mar 19, 2018
-                      </Text>
-                    </Table.Col>
-                    <Table.Col>
-                      <div className="clearfix">
-                        <div className="float-left">
-                          <strong>42%</strong>
-                        </div>
-                        <div className="float-right">
-                          <Text.Small muted>
-                            Jun 11, 2015 - Jul 10, 2015
-                          </Text.Small>
-                        </div>
-                      </div>
-                      <Progress size="xs">
-                        <Progress.Bar color="yellow" width={42} />
-                      </Progress>
-                    </Table.Col>
-                    <Table.Col alignContent="center">
-                      <Icon payment name="visa" />
-                    </Table.Col>
-                    <Table.Col>
-                      <Text size="sm" muted>
-                        Last login
-                      </Text>
-                      <div>4 minutes ago</div>
-                    </Table.Col>
-                    <Table.Col alignContent="center">42%</Table.Col>
-                    <Table.Col alignContent="center">
-                      <Dropdown
-                        trigger={
-                          <Dropdown.Trigger
-                            icon="more-vertical"
-                            toggle={false}
-                          />
-                        }
-                        position="right"
-                        items={
-                          <React.Fragment>
-                            <Dropdown.Item icon="tag">Action </Dropdown.Item>
-                            <Dropdown.Item icon="edit-2">
-                              Another action{' '}
-                            </Dropdown.Item>
-                            <Dropdown.Item icon="message-square">
-                              Something else here
-                            </Dropdown.Item>
-                            <Dropdown.ItemDivider />
-                            <Dropdown.Item icon="link">
-                              {' '}
-                              Separated link
-                            </Dropdown.Item>
-                          </React.Fragment>
-                        }
-                      />
-                    </Table.Col>
-                  </Table.Row>
-                </Table.Body>
-              </Table>
-            </Card>
-          </Grid.Col>
+  componentDidMount() {
+    const token = localStorage.getItem(USER_TOKEN)
+    const email = localStorage.getItem(USER_EMAIL)
 
-          <Grid.Col width={12}>
-            <Card title="Top 5 Tweets">
-              <Table
-                responsive
-                className="card-table table-vcenter text-nowrap"
-                headerItems={[
-                  { content: 'No.', className: 'w-1' },
-                  { content: 'Date Tweeted' },
-                  { content: 'Text' },
-                  { content: 'Likes' },
-                  { content: 'Retweets' },
-                  { content: 'Shares' },
-                  { content: null },
-                  { content: null },
-                ]}
-                bodyItems={[
-                  {
-                    key: '1',
-                    item: [
-                      {
-                        content: (
-                          <Text RootComponent="span" muted>
-                            001401
-                          </Text>
-                        ),
-                      },
-                      {
-                        content: (
-                          <a href="invoice.html" className="text-inherit">
-                            Design Works
-                          </a>
-                        ),
-                      },
-                      { content: 'Carlson Limited' },
-                      { content: '15 Dec 2017' },
-                      {
-                        content: (
-                          <React.Fragment>
-                            <span className="status-icon bg-success" /> Paid
-                          </React.Fragment>
-                        ),
-                      },
-                      { content: '$887' },
-                      {
-                        alignContent: 'right',
-                        content: (
-                          <React.Fragment>
-                            <Button size="sm" color="secondary">
-                              Manage
-                            </Button>
-                            <div className="dropdown">
-                              <Button
-                                color="secondary"
-                                size="sm"
-                                isDropdownToggle
-                              >
-                                Actions
-                              </Button>
-                            </div>
-                          </React.Fragment>
-                        ),
-                      },
-                      { content: <Icon link name="edit" /> },
-                    ],
-                  },
-                ]}
+    if (token) {
+      this.props.TwitterGetUserInfo(email)
+      this.props.TwitterGetTopWorst(email)
+    }
+  }
+
+  render() {
+    const { user } = this.props || {}
+    const { twitter } = this.props || {}
+
+    const twitterUser = twitter.user || []
+    const topworst = twitter.topworst || []
+
+    const topTweets = topworst.filter((tweet) => tweet.tweet_index < 6)
+    const worstTweets = topworst.filter((tweet) => tweet.tweet_index > 5)
+
+    return (
+      <SiteWrapper>
+        <Page.Content title="Twitter Dashboard">
+          <Grid.Row cards={true} alignItems="center">
+            <Grid.Col width={6} sm={4} lg={2}>
+              <StatsCard
+                layout={1}
+                movement={0}
+                total={twitterUser.screen_name}
+                label="Screen name"
               />
-            </Card>
-          </Grid.Col>
-
-          <Grid.Col width={12}>
-            <Card title="Worst 5 Tweets">
-              <Table
-                responsive
-                className="card-table table-vcenter text-nowrap"
-                headerItems={[
-                  { content: 'No.', className: 'w-1' },
-                  { content: 'Date Tweeted' },
-                  { content: 'Text' },
-                  { content: 'Likes' },
-                  { content: 'Retweets' },
-                  { content: 'Shares' },
-                  { content: null },
-                  { content: null },
-                ]}
-                bodyItems={[
-                  {
-                    key: '1',
-                    item: [
-                      {
-                        content: (
-                          <Text RootComponent="span" muted>
-                            001401
-                          </Text>
-                        ),
-                      },
-                      {
-                        content: (
-                          <a href="invoice.html" className="text-inherit">
-                            Design Works
-                          </a>
-                        ),
-                      },
-                      { content: 'Carlson Limited' },
-                      { content: '15 Dec 2017' },
-                      {
-                        content: (
-                          <React.Fragment>
-                            <span className="status-icon bg-success" /> Paid
-                          </React.Fragment>
-                        ),
-                      },
-                      { content: '$887' },
-                      {
-                        alignContent: 'right',
-                        content: (
-                          <React.Fragment>
-                            <Button size="sm" color="secondary">
-                              Manage
-                            </Button>
-                            <div className="dropdown">
-                              <Button
-                                color="secondary"
-                                size="sm"
-                                isDropdownToggle
-                              >
-                                Actions
-                              </Button>
-                            </div>
-                          </React.Fragment>
-                        ),
-                      },
-                      { content: <Icon link name="edit" /> },
-                    ],
-                  },
-                ]}
+            </Grid.Col>
+            <Grid.Col width={6} sm={4} lg={2}>
+              <StatsCard
+                layout={1}
+                movement={0}
+                total="103"
+                label="Numbers of tweets"
               />
-            </Card>
-          </Grid.Col>
-        </Grid.Row>
-      </Page.Content>
-    </SiteWrapper>
-  )
+            </Grid.Col>
+            <Grid.Col width={6} sm={4} lg={2}>
+              <StatsCard
+                layout={1}
+                movement={0}
+                total={twitterUser.followers_count}
+                label="Followers"
+              />
+            </Grid.Col>
+            <Grid.Col width={6} sm={4} lg={2}>
+              <StatsCard
+                layout={1}
+                movement={0}
+                total={twitterUser.friends_count}
+                label="Following"
+              />
+            </Grid.Col>
+            <Grid.Col width={6} sm={4} lg={2}>
+              <StatsCard
+                layout={1}
+                movement={0}
+                total="--"
+                la
+                label="Tweet Impressions"
+              />
+            </Grid.Col>
+            <Grid.Col width={6} sm={4} lg={2}>
+              <StatsCard
+                layout={1}
+                movement={0}
+                total="--"
+                la
+                label="Profile Visits"
+              />
+            </Grid.Col>
+          </Grid.Row>
+
+          <Grid.Row cards deck>
+            <Grid.Col width={12}>
+              <Card>
+                <Table
+                  responsive
+                  highlightRowOnHover
+                  hasOutline
+                  verticalAlign="center"
+                  cards
+                  className="text-nowrap"
+                >
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.ColHeader alignContent="center" className="w-1">
+                        <i className="icon-people" />
+                      </Table.ColHeader>
+                      <Table.ColHeader>Name</Table.ColHeader>
+                      <Table.ColHeader>Description</Table.ColHeader>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.Col alignContent="center">
+                        <Avatar
+                          imageURL="/users/trinity.jpg"
+                          className="d-block"
+                          status="green"
+                        />
+                      </Table.Col>
+                      <Table.Col>
+                        <div>{twitterUser.name}</div>
+                      </Table.Col>
+                      <Table.Col>
+                        <div>{twitterUser.description}</div>
+                      </Table.Col>
+                    </Table.Row>
+                  </Table.Body>
+                </Table>
+              </Card>
+            </Grid.Col>
+
+            <Grid.Col width={12}>
+              <Card title="Top 5 Tweets">
+                <Table
+                  responsive
+                  highlightRowOnHover
+                  hasOutline
+                  verticalAlign="center"
+                  cards
+                  className="text-nowrap"
+                >
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.ColHeader>Rank</Table.ColHeader>
+                      <Table.ColHeader>Retweets</Table.ColHeader>
+                      <Table.ColHeader>Likes</Table.ColHeader>
+                      <Table.ColHeader>Text</Table.ColHeader>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {topTweets.map((tweet, idx) => (
+                      <Table.Row>
+                        <Table.Col>
+                          <div>{tweet.tweet_index}</div>
+                        </Table.Col>
+                        <Table.Col>
+                          <div>{tweet.retweet_count}</div>
+                        </Table.Col>
+                        <Table.Col>
+                          <div>{tweet.favorite_count}</div>
+                        </Table.Col>
+                        <Table.Col>
+                          <div>{tweet.text}</div>
+                        </Table.Col>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table>
+              </Card>
+            </Grid.Col>
+
+            <Grid.Col width={12}>
+              <Card title="Worst 5 Tweets">
+                <Table
+                  responsive
+                  highlightRowOnHover
+                  hasOutline
+                  verticalAlign="center"
+                  cards
+                  className="text-nowrap"
+                >
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.ColHeader>Rank</Table.ColHeader>
+                      <Table.ColHeader>Retweets</Table.ColHeader>
+                      <Table.ColHeader>Likes</Table.ColHeader>
+                      <Table.ColHeader>Text</Table.ColHeader>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {worstTweets.map((tweet, idx) => (
+                      <Table.Row>
+                        <Table.Col>
+                          <div>{tweet.tweet_index}</div>
+                        </Table.Col>
+                        <Table.Col>
+                          <div>{tweet.retweet_count}</div>
+                        </Table.Col>
+                        <Table.Col>
+                          <div>{tweet.favorite_count}</div>
+                        </Table.Col>
+                        <Table.Col>
+                          <div>{tweet.text}</div>
+                        </Table.Col>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table>
+              </Card>
+            </Grid.Col>
+          </Grid.Row>
+        </Page.Content>
+      </SiteWrapper>
+    )
+  }
 }
-
-Dashboard.getInitialProps = () => ({})
 
 function mapStateToProps(state) {
   return {
     user: state.user,
+    twitter: state.twitter,
+    spotify: state.spotify,
   }
 }
 
 function matchDispatchToProps(dispatch) {
-  return bindActionCreators({ TwitterGetUserInfo }, dispatch)
+  return bindActionCreators(
+    { TwitterGetUserInfo, TwitterGetTopWorst, SpotifyMe },
+    dispatch
+  )
 }
 
 export default connect(mapStateToProps, matchDispatchToProps)(Dashboard)
