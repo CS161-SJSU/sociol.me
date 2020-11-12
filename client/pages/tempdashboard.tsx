@@ -31,7 +31,9 @@ import { USER_TOKEN } from '../constants/main'
 import { TwitterGetUserInfo } from '../api/twitter.api'
 import { SpotifyMe } from '../api/spotify.api'
 
-function Dashboard() {
+const Dashboard = (props) => {
+  props.TwitterGetUserInfo('thn.trinity@gmail.com')
+
   return (
     <SiteWrapper>
       <Page.Content title="Dashboard">
@@ -315,7 +317,7 @@ function mapStateToProps(state) {
 }
 
 function matchDispatchToProps(dispatch) {
-  return bindActionCreators({}, dispatch)
+  return bindActionCreators({ TwitterGetUserInfo }, dispatch)
 }
 
 export default connect(mapStateToProps, matchDispatchToProps)(Dashboard)
