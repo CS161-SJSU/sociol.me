@@ -16,6 +16,11 @@ from rest_framework.response import Response
 import requests
 import os
 import json
+import secrets
+import string
+import pandas
+import numpy
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -39,6 +44,66 @@ TOKEN_URL = 'https://accounts.spotify.com/api/token'
 ME_URL = 'https://api.spotify.com/v1/me'
 
 FRONTEND_URI = 'http://localhost:3000/'
+
+
+
+# API STATS ENDPOINTS
+RECENTLY_PLAYED = 'https://api.spotify.com/v1/me/player/recently-played'
+
+
+
+def recently_played(access_token):
+    print("INSIDE RECENTLY PLAYED")
+
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {token}".format(token=access_token)
+    }
+
+    today = datetime.datetime.now()
+    yesterday = today - datetime.timedelta(days=1)  # We want to run the feed daily, last 24 hours played songs
+    yesterday_unix_timestamp = int(yesterday.timestamp()) * 1000
+
+    #print("PRINT THE CALL ")
+    #print(RECENTLY_PLAYED + '?after={time}'.format(time=yesterday_unix_timestamp))
+
+    #r = requests.get("https://api.spotify.com/v1/me/player/recently-played?limit=10&after=0", headers=headers)
+    r = requests.get(RECENTLY_PLAYED + '?limit=10&after={time}'.format(time=yesterday_unix_timestamp), headers=headers)
+
+    data = r.json()
+
+    #print("Recently played data: ", data)
+
+    song_titles = []
+    artist_names = []
+    played_at_list = []
+    timestamps = []
+
+    for song in data["items"]:
+        song_titles.append(song["track"]["name"])
+        artist_names.append(song["track"]["album"]["artists"][0]["name"])
+        played_at_list.append(song["played_at"])
+        timestamps.append(song["played_at"][0:10])
+
+    recently_played_dict = {
+        "song_title": song_titles,
+        "artist_name": artist_names,
+        "played_at": played_at_list,
+        "timestamp": timestamps
+    }
+
+
+
+    # Saving into Pandas dataframe in order to show in table format
+    dataframe = pandas.DataFrame(recently_played_dict, columns=["song_title", "artist_name", "played_at", "timestamp"])
+
+    print(dataframe)
+
+    # print(recently_played_dict )
+    return Response({'message': data})
+
+
 
 
 class SpotifyAPI(object):
@@ -158,28 +223,30 @@ class SpotifyAPI(object):
         return self.base_search(query_params)
 
 
-@api_view(['GET'])
-def spotify_auth(request):
-    #spotify = SpotifyAPI(client_id, client_secret)
-    #spotify.perform_auth()
-   # print(spotify.access_token)
-    # # spotify.get_access_token()
-    # spotify.get_resource_header()
-    return Response({'message': 'yay'}, status=status.HTTP_401_UNAUTHORIZED)
-
 
 @api_view(['GET'])
 def spotify_login(request):
+
+    #Redirect URI can be guessed, hence build a random state
+    state = ''.join(
+        secrets.choice(string.ascii_uppercase + string.digits) for _ in range(16)
+    )
+
+    print("STATE BEFORE SENDING IT ", state)
+
+    scope = 'user-read-private user-read-email user-follow-read user-library-read user-read-recently-played ' \
+            'user-top-read user-follow-read user-follow-modify playlist-read-private playlist-read-collaborative ' \
+            'playlist-modify-public '
+
     payload = {
         'response_type': 'code',
         'client_id': os.environ.get('SPOTIFY_CLIENT_ID'),
-        'scope': 'user-read-private user-read-email user-follow-read',
+        'scope': scope,
         'redirect_uri': REDIRECT_URI
     }
 
-    # res = HttpResponseRedirect(f'{AUTH_URL}/?{urlencode(payload)}')
+    res = HttpResponseRedirect(f'{AUTH_URL}/?{urlencode(payload)}')
 
-    res = redirect(f'{AUTH_URL}/?{urlencode(payload)}')
     webbrowser.open(res.url)
     print(res.url)
     return Response({'message': "Returned token"}, status=status.HTTP_202_ACCEPTED)
@@ -187,6 +254,16 @@ def spotify_login(request):
 
 @api_view(['GET'])
 def spotify_callback(request):
+    #Keep these for now, we will check the states later
+    state = request.GET.get('state')
+
+    # Stored cookie is showing None, check on this later
+    stored_cookie = request.COOKIES.get('spotify_cookie')
+    print("STORED COOKIE ", stored_cookie)
+
+    print("Cookies ", request.COOKIES)
+    print("STATE: ", state)
+
     code = request.GET.get('code')
     print(request)
     print("CODE :", code)
@@ -200,7 +277,7 @@ def spotify_callback(request):
 
     # Post request in order to get callback URL
     # Might have to add headers into this?
-    #EDGE CASE call it often etc
+    #EDGE CASE - call it often etc?
     res = requests.post(TOKEN_URL, auth=(CLIENT_ID, CLIENT_SECRET), data=auth_options)
 
     res_data = res.json()
@@ -235,13 +312,10 @@ def spotify_callback(request):
     user_ID = user_data['id']
     print("USER ID: " , user_ID)
     try:
+        spotify_user_info = SpotifyUser.objects.get(id=user_data['id'])
         print("INSIDE TRY METHOD")
-        entries = SpotifyUser.objects.filter(id=user_data['id'])
-        print("ENTRY IS: ", entries)
-        user_id = SpotifyUser.objects.get(id=user_data['id'])
-        print("USER ID: ", user_id)
-
-
+        #user_id = SpotifyUser.objects.get(id=user_data['id'])
+        print("USER INFO: ", spotify_user_info)
         #print("DB IS UPDATED")
 
     except SpotifyUser.DoesNotExist:
@@ -250,6 +324,7 @@ def spotify_callback(request):
                                                         display_name=user_data['display_name'],
                                                         id=user_data['id'], href=user_data['href'],
                                                         followers=user_data['followers']['total'],
+                                                        image=user_data['images'][0]['url'],
                                                         access_token=access_token)
 
         print("MODEL : ", spotify_user_model)
@@ -257,6 +332,7 @@ def spotify_callback(request):
         return Response({'message': 'New User Created'}, status=status.HTTP_202_ACCEPTED)
 
     print("CALLING RECENTLY PLAYED")
+    #We will test this later
     #recently_played(access_token)
 
     return redirect(FRONTEND_URI + '?access_token=' + access_token + '&id=' + user_ID)
@@ -281,35 +357,11 @@ def get_spotify_update_email(request):
         print("USER ID ", spotify_user_info)
         spotify_user_info.email = email
         spotify_user_info.save()
-        print("updated data")
+        print("updated email data")
     except Exception as e:
         print("Error: ", e)
 
     return Response(spotify_user_info, status=status.HTTP_202_ACCEPTED)
-
-
-
-
-# These following functions could be changed later
-@api_view(['GET'])
-def spotify_refresh():
-    # Refreshes access token
-
-    payload = {
-        'grant_type': 'refresh_token',
-        'refresh_token': session.get('tokens').get('refresh_token'),
-    }
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-
-    res = requests.post(
-        TOKEN_URL, auth=(CLIENT_ID, CLIENT_SECRET), data=payload, headers=headers
-    )
-    res_data = res.json()
-
-    # Loading new token into session
-    session['tokens']['access_token'] = res_data.get('access_token')
-    afafa
-    return json.dumps(session['tokens'])
 
 
 @api_view(['GET'])
@@ -337,3 +389,25 @@ def spotify_me(request):
     print(user_spotify_info)
     
     return Response(user_spotify_info, status=status.HTTP_202_ACCEPTED)
+
+
+
+# These following function not used atm - could be changed later
+@api_view(['GET'])
+def spotify_refresh():
+    # Refreshes access token
+
+    payload = {
+        'grant_type': 'refresh_token',
+        'refresh_token': session.get('tokens').get('refresh_token'),
+    }
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+
+    res = requests.post(
+        TOKEN_URL, auth=(CLIENT_ID, CLIENT_SECRET), data=payload, headers=headers
+    )
+    res_data = res.json()
+
+    # Loading new token into session
+    session['tokens']['access_token'] = res_data.get('access_token')
+    return json.dumps(session['tokens'])
