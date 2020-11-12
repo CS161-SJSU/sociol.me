@@ -5,6 +5,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
  
 from twitter.models import TwitterModel
+from twitter.models import TwitterTopWorst
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -23,6 +24,7 @@ import tweepy
 import json
 import webbrowser
 import time
+from django.core import serializers
 
 
 mongo_client = MongoClient('mongodb://localhost:27017')
@@ -136,7 +138,7 @@ def verify(request):
 
 @api_view(['GET'])
 def get_twitter_info(request): 
-    email = request.GET.get('email')
+    email = request.data.get('email')
     #auth_token = request.data.get('auth_token')
     print(email)
     #print(auth_token)
@@ -164,7 +166,7 @@ def get_twitter_info(request):
 
 
 @api_view(['POST','GET'])
-def topworst(request):
+def top_worst(request):
     email = request.data.get('email')
     print(email)
     if email is None:
@@ -191,48 +193,63 @@ def topworst(request):
         
         count = 2000
         public_tweets = api.user_timeline(user_id, count = count)
+        # check for the top and worst tweet of the user in DB
+        try:
+            twitter_object = TwitterTopWorst.objects.filter(user_twitter_id = twitter_user_model).delete()
+            # if it exist, delete them all
+            print("delete the old tweets")
+        except TwitterModel.DoesNotExist:
+            print("no old tweets in DB")
+        
+        print("Either case, create new top worst tweets of the user")
 
         print("----------This is the top best 5 tweets: --------------")
         
         sorted_tweets = sorted(public_tweets, key=lambda x: x.retweet_count, reverse=True)[:5]
+        tweet_index = 1
         for sorted_tweet in sorted_tweets:
-            print("tweet name: ", sorted_tweet.user.name)
-            print("tweet text: ", sorted_tweet.text)
-            print("retweet count: ", sorted_tweet.retweet_count, "- tweet_id: ", sorted_tweet.id)
+            twitter_object = TwitterTopWorst.objects.create(tweet_id = sorted_tweet.id, name = sorted_tweet.user.name,
+            screen_name = sorted_tweet.user.screen_name, retweet_count = sorted_tweet.retweet_count,
+            text = sorted_tweet.text, favorite_count = sorted_tweet.favorite_count, tweet_index = tweet_index, user_twitter_id = twitter_user_model)
+            tweet_index = tweet_index + 1
+            print(twitter_object)
 
         print("------------This is the worst 5 tweets: ---------------")
 
+        tweet_index = 10
         sorted_tweets = sorted(public_tweets, key=lambda x: x.retweet_count, reverse=False)[:5]
         for sorted_tweet in sorted_tweets:
-            print("tweet screen name: ", sorted_tweet.user.screen_name)
-            print("tweet text: ", sorted_tweet.text)
-            print("retweet count: ", sorted_tweet.retweet_count, "- tweet_id: ", sorted_tweet.id)
-
-
-        # for item in public_tweets:
-
-        #     mined = {
-        #         'tweet_id':        item.id,
-        #         'name':            item.user.name,
-        #         'screen_name':     item.user.screen_name,
-        #         'retweet_count':   item.retweet_count,
-        #         'text':            item.full_text,
-        #         'mined_at':        datetime.datetime.now(),
-        #         'created_at':      item.created_at,
-        #         'favourite_count': item.favorite_count,
-        #         'hashtags':        item.entities['hashtags'],
-        #         'status_count':    item.user.statuses_count,
-        #         'location':        item.place,
-        #         'source_device':   item.source
-        #     }
+            twitter_object = TwitterTopWorst.objects.create(tweet_id = sorted_tweet.id, name = sorted_tweet.user.name,
+            screen_name = sorted_tweet.user.screen_name, retweet_count = sorted_tweet.retweet_count,
+            text = sorted_tweet.text, favorite_count = sorted_tweet.favorite_count, tweet_index = tweet_index, user_twitter_id = twitter_user_model)
+            tweet_index = tweet_index - 1
+            print(twitter_object)
 
 
         return Response({'message': 'timeline is perfect!'}, status=status.HTTP_202_ACCEPTED)
-
 
     except Exception as e:
         print("error: ", e)
         return Response({'message': 'timeline failed!'}, status=status.HTTP_401_UNAUTHORIZED)
 
-
     return Response({'message': 'topworst failed!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def get_top_worst(request):
+    email = request.data.get('email')
+    #auth_token = request.data.get('auth_token')
+    print(email)
+    #print(auth_token)
+    if email is None:
+        return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    user = TwitterModel.objects.get(email = email)
+    if user.email != email:
+        return Response({"err": "invalid email"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    queryset = TwitterTopWorst.objects.filter(user_twitter_id__in = TwitterModel.objects.filter(email = email))
+    
+    twitter_info = serializers.serialize('json', queryset)
+    print(twitter_info)
+    
+    return Response(twitter_info , status=status.HTTP_202_ACCEPTED)
