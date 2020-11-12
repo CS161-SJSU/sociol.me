@@ -11,7 +11,7 @@ import {
   TwitterGetUserInfo,
   TwitterTopWorst,
 } from '../api/twitter.api'
-import { SpotifyConnect } from '../api/spotify.api'
+import { SpotifyConnect, SpotifyUpdateEmail } from '../api/spotify.api'
 import Setup from '../components/Setup'
 
 const SetupPage = (props) => {
@@ -27,19 +27,29 @@ const SetupPage = (props) => {
     const email = window.localStorage.getItem(USER_EMAIL)
     if (email) {
       setEmail(email)
-      // props.TwitterGetTopWorst(email)
     }
   })
 
   if (router.query) {
-    const twitterTokens = router.query
-    if (twitterTokens.oauth_verifier && email) {
-      console.log('{ ...twitterTokens, email }: ', { ...twitterTokens, email })
-      props.TwitterAccessToken({ ...twitterTokens, email }).then(() => {
+    const token = router.query
+
+    if (token.oauth_verifier && email) {
+      console.log('{ ...twitterTokens, email }: ', { ...token, email })
+      props.TwitterAccessToken({ ...token, email }).then(() => {
         console.log('then')
+        router.push('/setup')
         props.TwitterTopWorst({ email })
       })
-      router.push('/setup')
+    }
+
+    if (token.access_token && token.id) {
+      console.log('token.id: ', token.id)
+      console.log('token.access_token: ', token.access_token)
+      props.SpotifyUpdateEmail({ ...token, email }).then(() => {
+        console.log('SpotifyUpdateEmail then')
+        router.push('/setup')
+        // props.TwitterTopWorst({ email })
+      })
     }
   }
 
@@ -80,6 +90,7 @@ function matchDispatchToProps(dispatch) {
       TwitterGetUserInfo,
       TwitterTopWorst,
       SpotifyConnect,
+      SpotifyUpdateEmail,
     },
     dispatch
   )

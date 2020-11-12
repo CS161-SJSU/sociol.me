@@ -14,6 +14,10 @@ export default function spotifyReducer(
       return { ...state, ...action.payload, ...{ loading: false } }
     case types.SPOTIFY_AUTH_FAILED:
       return { ...state, ...{ loading: false }, ...{ errors: action.payload } }
+    case types.SPOTIFY_UPDATE_EMAIL_SUCCESS:
+      return { ...state, ...action.payload, ...{ loading: false } }
+    case types.SPOTIFY_UPDATE_EMAIL_FAILED:
+      return { ...state, ...{ loading: false }, ...{ errors: action.payload } }
     case types.SPOTIFY_GET_USER_SUCCESS:
       return { ...state, ...action.payload, ...{ loading: false } }
     case types.SPOTIFY_GET_USER_FAILED:

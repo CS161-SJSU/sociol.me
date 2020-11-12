@@ -43,7 +43,7 @@ AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
 ME_URL = 'https://api.spotify.com/v1/me'
 
-FRONTEND_URI = 'http://localhost:3000/'
+FRONTEND_URI = 'http://localhost:3000/setup/'
 
 
 
@@ -320,24 +320,30 @@ def spotify_callback(request):
 
     except SpotifyUser.DoesNotExist:
         print("INSIDE CREATE FUNC")
-        spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
+        if (user_data['images']):
+            spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
                                                         display_name=user_data['display_name'],
                                                         id=user_data['id'], href=user_data['href'],
                                                         followers=user_data['followers']['total'],
                                                         image=user_data['images'][0]['url'],
                                                         access_token=access_token)
+        else:
+            spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
+                                                        display_name=user_data['display_name'],
+                                                        id=user_data['id'], href=user_data['href'],
+                                                        followers=user_data['followers']['total'],
+                                                        image="",
+                                                        access_token=access_token)                                            
 
         print("MODEL : ", spotify_user_model)
-
-        return Response({'message': 'New User Created'}, status=status.HTTP_202_ACCEPTED)
+        
+        redirect(FRONTEND_URI + '?access_token=' + access_token + '&id=' + user_ID)
 
     print("CALLING RECENTLY PLAYED")
     #We will test this later
     #recently_played(access_token)
-
     return redirect(FRONTEND_URI + '?access_token=' + access_token + '&id=' + user_ID)
-
-    #  return redirect(url_for('me'))
+    
 
 
 @api_view(['POST', 'GET'])
@@ -352,16 +358,30 @@ def get_spotify_update_email(request):
     if email is None:
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    try:
-        spotify_user_info = SpotifyUser.objects.get(id = id)
-        print("USER ID ", spotify_user_info)
-        spotify_user_info.email = email
-        spotify_user_info.save()
-        print("updated email data")
-    except Exception as e:
-        print("Error: ", e)
 
-    return Response(spotify_user_info, status=status.HTTP_202_ACCEPTED)
+    spotify_user_info = SpotifyUser.objects.get(id = id)
+    if spotify_user_info is None:
+        return Response({"err": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    print("USER ID ", spotify_user_info)
+    spotify_user_info.email = email
+    spotify_user_info.save()
+    print("updated email data")
+
+    user_spotify_info = {
+        'id': spotify_user_info.id,
+        'country': spotify_user_info.country,
+        'display_name': spotify_user_info.display_name,
+        'email': spotify_user_info.email,
+        'href': spotify_user_info.href,
+        'followers': spotify_user_info.followers,
+        'image': spotify_user_info.image
+    }
+
+    print("Updated: ", user_spotify_info)
+    
+    return Response({"user": user_spotify_info}, status=status.HTTP_202_ACCEPTED)
+
 
 
 @api_view(['GET'])
