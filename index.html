@@ -1,85 +1,20 @@
-import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import { useRouter } from 'next/router'
-import { USER_EMAIL, USER_TOKEN } from '../constants/main'
+<p align="center">
+    <img width="150" src="./client/public/sociol_logo.png">
+</p>
 
-import {
-  TwitterConnect,
-  TwitterAccessToken,
-  TwitterGetUserInfo,
-  TwitterGetTopWorst,
-} from '../api/twitter.api'
-import { SpotifyConnect } from '../api/spotify.api'
-import Setup from '../components/Setup'
+<h1 align="center">Sociol</h1>
 
-const SetupPage = (props) => {
-  const [email, setEmail] = useState('')
-  console.log('email: ', email)
+<div align="center">
+Analysts for your Social Media</br></br>
+</div>
+## ⭐️ Team
 
-  console.log('SETUP PAGE props: ', props)
-  const router = useRouter()
-  console.log(router.query)
+👩🏻‍💻 **Trinity Nguyen** - [trinwin](https://github.com/trinwin) (Project Lead + Frontend Lead)
 
-  useEffect(() => {
-    const token = window.localStorage.getItem(USER_TOKEN)
-    const email = window.localStorage.getItem(USER_EMAIL)
-    if (email) {
-      setEmail(email)
-      // props.TwitterGetTopWorst(email)
-    }
-  })
+👨🏻‍💻 **Cagan Sevencan** - [cagansevencan](https://github.com/cagansevencan) (Frontend Developer)
 
-  if (router.query) {
-    const twitterTokens = router.query
-    if (twitterTokens.oauth_verifier && email) {
-      console.log('{ ...twitterTokens, email }: ', { ...twitterTokens, email })
-      props.TwitterAccessToken({ ...twitterTokens, email })
-      router.push('/setup')
-    }
-  }
+👩🏻‍💻 **Julia Chin** - [juliachin123](https://github.com/juliachin123) (Backend Developer)
 
-  const onTwitterConnect = () => {
-    props.TwitterConnect()
-  }
+👨🏻‍💻 **Eric Wu** - [ericwu12345](https://github.com/ericwu12345) (Backend Developer)
 
-  const onSpotifyConnect = () => {
-    props.SpotifyConnect()
-  }
-
-  return (
-    <>
-      <Setup
-        email={email}
-        onTwitterConnect={onTwitterConnect}
-        onSpotifyConnect={onSpotifyConnect}
-      ></Setup>
-    </>
-  )
-}
-
-SetupPage.getInitialProps = (props) => ({})
-
-function mapStateToProps(state) {
-  return {
-    user: state.user,
-    twitter: state.twitter,
-    spotify: state.spotify,
-  }
-}
-
-function matchDispatchToProps(dispatch) {
-  return bindActionCreators(
-    {
-      TwitterConnect,
-      TwitterAccessToken,
-      TwitterGetUserInfo,
-      TwitterGetTopWorst,
-      SpotifyConnect,
-    },
-    dispatch
-  )
-}
-
-export default connect(mapStateToProps, matchDispatchToProps)(SetupPage)
+👨🏻‍💻 **Toan Dao** - [toandaosjsu](https://github.com/toandaosjsu) (Backend Developer)
