@@ -36,6 +36,7 @@ const Setup: React.FC<SetupProps> = (
 
   useEffect(() => {
     const token = window.localStorage.getItem(USER_TOKEN)
+    console.log("TOKEN IN Component ", token)
   })
 
   const handleTwitterConnect = () => {

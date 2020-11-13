@@ -22,7 +22,7 @@ export const SpotifyConnect = () => (dispatch) => {
   return axios
     .get(`${HOST}${SPOTIFIY_AUTH}`)
     .then((res) => {
-      console.log('TwitterConnect res: ', res.data)
+      console.log('Spotify Connect res: ', res.data)
       // console.log('userData: ', userData)
       dispatch(spotifyAuthSuccess(res.data))
     })
@@ -35,8 +35,8 @@ export const SpotifyUpdateEmail = (userData) => (dispatch) => {
   return axios
     .post(`${HOST}${SPOTIFIY_UPDATE_EMAIL}`, userData)
     .then((res) => {
-      console.log('TwitterConnect res: ', res.data)
-      // console.log('userData: ', userData)
+      console.log('Spotify Connect res: ', res.data)
+      console.log('userData from Spotify: ', userData)
       dispatch(spotifyAuthSuccess(res.data))
     })
     .catch((err) => {
@@ -48,8 +48,8 @@ export const SpotifyMe = (userData) => (dispatch) => {
   return axios
     .get(`${HOST}${SPOTIFIY_ME}`, userData)
     .then((res) => {
-      console.log('TwitterVerify res: ', res)
-      // console.log('userData: ', userData)
+      console.log('SpotifyVerify res: ', res)
+      console.log('userData from SpotifyME: ', userData)
       dispatch(spotifyGetUserSuccess(res.data))
     })
     .catch((err) => {
