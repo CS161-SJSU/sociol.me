@@ -30,6 +30,7 @@ import base64
 import datetime
 
 from spotify.models import SpotifyUser
+from spotify.models import SpotifyRecentlyPlayed
 
 
 
@@ -51,8 +52,16 @@ FRONTEND_URI = 'http://localhost:3000/'
 RECENTLY_PLAYED = 'https://api.spotify.com/v1/me/player/recently-played'
 
 
+@api_view(['GET'])
+def recently_played(request):
+    email = request.data.get('email')
+    print("Email", email)
+    spotify_user_model = SpotifyUser.objects.get(email=email)
+    print("USER MODEL", spotify_user_model)
+    access_token = spotify_user_model.access_token
+    print("ACCESS TOKEN ", access_token)
 
-def recently_played(access_token):
+
     print("INSIDE RECENTLY PLAYED")
 
     headers = {
@@ -68,35 +77,74 @@ def recently_played(access_token):
     #print("PRINT THE CALL ")
     #print(RECENTLY_PLAYED + '?after={time}'.format(time=yesterday_unix_timestamp))
 
-    #r = requests.get("https://api.spotify.com/v1/me/player/recently-played?limit=10&after=0", headers=headers)
+    #r = requests.get("https://api.spotify.com/v1/me/player/recently-played?limit=20&after=0", headers=headers)
     r = requests.get(RECENTLY_PLAYED + '?limit=10&after={time}'.format(time=yesterday_unix_timestamp), headers=headers)
 
     data = r.json()
 
-    #print("Recently played data: ", data)
+    print("SPOTIFY USER ID ", spotify_user_model.id)
+
+    try:
+        spotify_deleted = SpotifyRecentlyPlayed.objects.filter(user=spotify_user_model.id).delete()
+        print("DELETED STUFF ", spotify_deleted)
+
+    except SpotifyRecentlyPlayed.DoesNotExist:
+        print("User has no previous playlists")
+
+
+
+    print("Recently played data: ", data)
 
     song_titles = []
     artist_names = []
     played_at_list = []
     timestamps = []
+    track_id = []
+
+
+
+    if not data.items:
+        return Response({'message': "No Recently Played Tracks"})
 
     for song in data["items"]:
         song_titles.append(song["track"]["name"])
         artist_names.append(song["track"]["album"]["artists"][0]["name"])
         played_at_list.append(song["played_at"])
         timestamps.append(song["played_at"][0:10])
+        track_id.append(song["track"]["id"])
+
+
+        try:
+            print("INSIDE TRY")
+            SpotifyRecentlyPlayed.objects.get(track_id=song["track"]["id"]).delete()
+            print("ADD +1 played EDGE CASE")
+
+        except SpotifyRecentlyPlayed.DoesNotExist:
+            print("No OLD TRACKS")
+
+        spotify_recently_played = SpotifyRecentlyPlayed.objects.create(user=spotify_user_model,
+                                                                    song_title=song["track"]["name"],
+                                                                    artist_name=song["track"]["album"]["artists"][0]["name"],
+                                                                    played_at=song["played_at"][0:10],
+                                                                    track_id=song["track"]["id"])
+
+
+        print("SPOTIFY DB OBJ ", spotify_recently_played)
 
     recently_played_dict = {
         "song_title": song_titles,
         "artist_name": artist_names,
         "played_at": played_at_list,
-        "timestamp": timestamps
+        "timestamp": timestamps,
+        "track_id": track_id
     }
 
 
 
+
+
     # Saving into Pandas dataframe in order to show in table format
-    dataframe = pandas.DataFrame(recently_played_dict, columns=["song_title", "artist_name", "played_at", "timestamp"])
+    dataframe = pandas.DataFrame(recently_played_dict, columns=["song_title", "artist_name", "played_at", "timestamp", "track_id"])
 
     print(dataframe)
 
@@ -311,12 +359,16 @@ def spotify_callback(request):
     # Update DB if any of the user info has changed
     user_ID = user_data['id']
     print("USER ID: " , user_ID)
+    if not user_data['images'][0]['url']:
+        user_data['images'][0]['url'] = ''
+
     try:
-        spotify_user_info = SpotifyUser.objects.get(id=user_data['id'])
         print("INSIDE TRY METHOD")
-        #user_id = SpotifyUser.objects.get(id=user_data['id'])
+        spotify_user_info = SpotifyUser.objects.get(id=user_data['id'])
         print("USER INFO: ", spotify_user_info)
-        #print("DB IS UPDATED")
+        print("SAVING NEW ACCESS TOKEN ", access_token)
+        spotify_user_info.access_token = access_token
+        spotify_user_info.save()
 
     except SpotifyUser.DoesNotExist:
         print("INSIDE CREATE FUNC")
@@ -342,17 +394,21 @@ def spotify_callback(request):
 
 @api_view(['POST', 'GET'])
 def get_spotify_update_email(request):
+    print("WE ARE INSIDE UPDATE")
     #UPDATE EMAIL IF THEY DONT HAVE
     email = request.data.get('email')
     id = request.data.get('id')
-    print(request.data)
-    # auth_token = request.data.get('auth_token')
-    print(email)
-    # print(auth_token)
+    print("REQUEST DATA", request.data)
+    print("ID ", id)
+
+
+    print("Email", email)
+
     if email is None:
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
     try:
+        print("INSIDE TRY METHOD")
         spotify_user_info = SpotifyUser.objects.get(id = id)
         print("USER ID ", spotify_user_info)
         spotify_user_info.email = email
@@ -361,7 +417,7 @@ def get_spotify_update_email(request):
     except Exception as e:
         print("Error: ", e)
 
-    return Response(spotify_user_info, status=status.HTTP_202_ACCEPTED)
+    return Response({'message': "Returned token"}, status=status.HTTP_202_ACCEPTED)
 
 
 @api_view(['GET'])
