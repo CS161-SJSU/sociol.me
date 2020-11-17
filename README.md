@@ -126,7 +126,7 @@ npm test
 
 👩🏻‍💻 **Trinity Nguyen** - [trinwin](https://github.com/trinwin) (Project Lead + Frontend Lead)
 
-👨🏻‍💻 **Cagan Sevencan** - [cagansevencan](https://github.com/cagansevencan) (Frontend Developer)
+👨🏻‍💻 **Cagan Sevencan** - [cagansevencan](https://github.com/cagansevencan) (Frontend + Backend / QA)
 
 👩🏻‍💻 **Julia Chin** - [juliachin123](https://github.com/juliachin123) (Backend Developer)
 
