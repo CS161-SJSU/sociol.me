@@ -32,8 +32,6 @@ import datetime
 from spotify.models import SpotifyUser
 from spotify.models import SpotifyRecentlyPlayed
 
-
-
 # Client info
 CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
 CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
@@ -46,13 +44,11 @@ ME_URL = 'https://api.spotify.com/v1/me'
 
 FRONTEND_URI = 'http://localhost:3000/setup/'
 
-
-
 # API STATS ENDPOINTS
 RECENTLY_PLAYED = 'https://api.spotify.com/v1/me/player/recently-played'
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def recently_played(request):
     email = request.data.get('email')
     print("Email", email)
@@ -80,7 +76,8 @@ def recently_played(request):
         # print(RECENTLY_PLAYED + '?after={time}'.format(time=yesterday_unix_timestamp))
 
         # r = requests.get("https://api.spotify.com/v1/me/player/recently-played?limit=20&after=0", headers=headers)
-        r = requests.get(RECENTLY_PLAYED + '?limit=20&after={time}'.format(time=yesterday_unix_timestamp), headers=headers)
+        r = requests.get(RECENTLY_PLAYED + '?limit=20&after={time}'.format(time=yesterday_unix_timestamp),
+                         headers=headers)
 
         data = r.json()
 
@@ -93,7 +90,7 @@ def recently_played(request):
         except SpotifyRecentlyPlayed.DoesNotExist:
             print("User has no previous playlists in the DB")
 
-        print("Recently played data: ", data)
+        # print("Recently played data: ", data)
 
         song_titles = []
         artist_names = []
@@ -121,7 +118,8 @@ def recently_played(request):
 
             spotify_recently_played = SpotifyRecentlyPlayed.objects.create(user=spotify_user_model,
                                                                            song_title=song["track"]["name"],
-                                                                           artist_name=song["track"]["album"]["artists"][0][
+                                                                           artist_name=
+                                                                           song["track"]["album"]["artists"][0][
                                                                                "name"],
                                                                            played_at=song["played_at"][0:10],
                                                                            track_id=song["track"]["id"])
@@ -147,6 +145,44 @@ def recently_played(request):
 
     except SpotifyUser.DoesNotExist:
         return Response({"message": "Email is not in the DB"})
+
+
+@api_view(['GET'])
+def get_recently_played(request):
+    email = request.data.get('email')
+    # auth_token = request.data.get('auth_token')
+    print("Inside get method, email is : ", email)
+    # print(auth_token)
+    if email is None:
+        return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    # Find the user thru email first then find their ID, since other users might have similar ids?
+
+    spotify_user = SpotifyUser.objects.get(email=email)
+    if spotify_user.email != email:
+        return Response({"err": "invalid email"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    print("Spotify user is: ", spotify_user)
+
+    spotify_id = spotify_user.id
+
+    print("Spotify ID is: ", spotify_id)
+
+    recent_tracks = SpotifyRecentlyPlayed.objects.filter(user_id=spotify_id)
+    print("RECENT TRACKS ARE : ", recent_tracks)
+
+    tracks = []
+    for track in recent_tracks:
+        response = {
+            "user_id": track.user_id,
+            "song_title": track.song_title,
+            "artist_name": track.artist_name,
+            "track_id": track.track_id,
+            "played_at": track.played_at
+        }
+        tracks.append(response)
+
+    return Response({"Recently Played: ": tracks}, status=status.HTTP_202_ACCEPTED)
 
 
 
@@ -267,11 +303,9 @@ class SpotifyAPI(object):
         return self.base_search(query_params)
 
 
-
 @api_view(['GET'])
 def spotify_login(request):
-
-    #Redirect URI can be guessed, hence build a random state
+    # Redirect URI can be guessed, hence build a random state
     state = ''.join(
         secrets.choice(string.ascii_uppercase + string.digits) for _ in range(16)
     )
@@ -298,7 +332,7 @@ def spotify_login(request):
 
 @api_view(['GET'])
 def spotify_callback(request):
-    #Keep these for now, we will check the states later
+    # Keep these for now, we will check the states later
     state = request.GET.get('state')
 
     # Stored cookie is showing None, check on this later
@@ -321,7 +355,7 @@ def spotify_callback(request):
 
     # Post request in order to get callback URL
     # Might have to add headers into this?
-    #EDGE CASE - call it often etc?
+    # EDGE CASE - call it often etc?
     res = requests.post(TOKEN_URL, auth=(CLIENT_ID, CLIENT_SECRET), data=auth_options)
 
     res_data = res.json()
@@ -354,7 +388,7 @@ def spotify_callback(request):
 
     # Update DB if any of the user info has changed
     user_ID = user_data['id']
-    print("USER ID: " , user_ID)
+    print("USER ID: ", user_ID)
 
     if not user_data['images'][0]['url']:
         user_data['images'][0]['url'] = ''
@@ -378,19 +412,17 @@ def spotify_callback(request):
                                                         access_token=access_token)
 
         print("MODEL : ", spotify_user_model)
-        
+
         redirect(FRONTEND_URI + '?access_token=' + access_token + '&id=' + user_ID)
 
     return redirect(FRONTEND_URI + '?access_token=' + access_token + '&id=' + user_ID)
-    
 
 
 @api_view(['POST', 'GET'])
 def get_spotify_update_email(request):
-    #UPDATE EMAIL IF THEY DONT HAVE
+    # UPDATE EMAIL IF THEY DONT HAVE
     email = request.data.get('email')
     id = request.data.get('id')
-
 
     print("REQUEST DATA", request.data)
     print("ID ", id)
@@ -399,8 +431,7 @@ def get_spotify_update_email(request):
     if email is None:
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-
-    spotify_user_info = SpotifyUser.objects.get(id = id)
+    spotify_user_info = SpotifyUser.objects.get(id=id)
     if spotify_user_info is None:
         return Response({"err": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -420,21 +451,21 @@ def get_spotify_update_email(request):
     }
 
     print("Updated: ", user_spotify_info)
-    
-    return Response({"user": user_spotify_info}, status=status.HTTP_202_ACCEPTED)
 
+    return Response({"user": user_spotify_info}, status=status.HTTP_202_ACCEPTED)
 
 
 @api_view(['GET'])
 def spotify_me(request):
     email = request.GET.get('email')
     #auth_token = request.data.get('auth_token')
+
     print(email)
-    #print(auth_token)
+    # print(auth_token)
     if email is None:
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    spotify_user_info = SpotifyUser.objects.get(email = email)
+    spotify_user_info = SpotifyUser.objects.get(email=email)
     if spotify_user_info.email != email:
         return Response({"err": "invalid email"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
@@ -448,7 +479,6 @@ def spotify_me(request):
     }
 
     print(user_spotify_info)
-    
     return Response({"user":user_spotify_info}, status=status.HTTP_202_ACCEPTED)
 
 
