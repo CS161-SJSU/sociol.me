@@ -24,6 +24,10 @@ class SpotifyRecentlyPlayed(models.Model):
     artist_name = models.CharField(max_length=70, blank=False, default='')
     played_at = models.DateField()
     track_id = models.CharField(max_length=70, blank=False, default='', unique=True)
+    image = models.CharField(max_length=200, blank=False, default='')
+    track_url = models.CharField(max_length=200, blank=False, default='')
+    preview_url = models.CharField(max_length=200, blank=False, default='')
+
 
 
 
