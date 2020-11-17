@@ -1,6 +1,4 @@
-import React, { useEffect } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
+import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import C3Chart from 'react-c3js'
@@ -29,7 +27,7 @@ import SiteWrapper from '../components/SiteWrapper'
 import { USER_TOKEN, USER_EMAIL } from '../constants/main'
 
 import { TwitterGetUserInfo, TwitterGetTopWorst } from '../api/twitter.api'
-import { SpotifyMe } from '../api/spotify.api'
+import { SpotifyGetUserInfo } from '../api/spotify.api'
 
 class Dashboard extends React.Component {
   //
@@ -253,7 +251,7 @@ function mapStateToProps(state) {
 
 function matchDispatchToProps(dispatch) {
   return bindActionCreators(
-    { TwitterGetUserInfo, TwitterGetTopWorst, SpotifyMe },
+    { TwitterGetUserInfo, TwitterGetTopWorst, SpotifyGetUserInfo },
     dispatch
   )
 }

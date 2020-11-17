@@ -7,6 +7,8 @@ export const ACCOUNTS_INFO = 'ACCOUNTS_INFO'
 
 // User Token
 export const USER_TOKEN = 'USER_TOKEN'
+export const SPOTIFY_USERNAME = 'SPOTIFY_USERNAME'
+export const TWITTER_USERNAME = 'TWITTER_USERNAME'
 export const TWITTER_TOKEN = 'TWITTER_TOKEN'
 
 // Server URI

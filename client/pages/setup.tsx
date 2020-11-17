@@ -8,15 +8,14 @@ import { USER_EMAIL, USER_TOKEN } from '../constants/main'
 import {
   TwitterConnect,
   TwitterAccessToken,
-  TwitterGetUserInfo,
   TwitterTopWorst,
 } from '../api/twitter.api'
 import { SpotifyConnect, SpotifyUpdateEmail } from '../api/spotify.api'
 import Setup from '../components/Setup'
 
 const SetupPage = (props) => {
+  const { user } = props || {}
   const [email, setEmail] = useState('')
-  console.log('email: ', email)
 
   console.log('SETUP PAGE props: ', props)
   const router = useRouter()
@@ -28,7 +27,7 @@ const SetupPage = (props) => {
     if (email) {
       setEmail(email)
     }
-  })
+  }, [])
 
   if (router.query) {
     const token = router.query
@@ -48,7 +47,6 @@ const SetupPage = (props) => {
       props.SpotifyUpdateEmail({ ...token, email }).then(() => {
         console.log('SpotifyUpdateEmail then')
         router.push('/setup')
-        // props.TwitterTopWorst({ email })
       })
     }
   }
@@ -64,7 +62,6 @@ const SetupPage = (props) => {
   return (
     <>
       <Setup
-        email={email}
         onTwitterConnect={onTwitterConnect}
         onSpotifyConnect={onSpotifyConnect}
       ></Setup>
@@ -87,7 +84,6 @@ function matchDispatchToProps(dispatch) {
     {
       TwitterConnect,
       TwitterAccessToken,
-      TwitterGetUserInfo,
       TwitterTopWorst,
       SpotifyConnect,
       SpotifyUpdateEmail,
