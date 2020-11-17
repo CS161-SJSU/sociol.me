@@ -23,7 +23,10 @@ class SpotifyRecentlyPlayed(models.Model):
     song_title = models.CharField(max_length=70, blank=False, default='')
     artist_name = models.CharField(max_length=70, blank=False, default='')
     played_at = models.DateField()
+<<<<<<< HEAD
     track_id = models.CharField(max_length=70, blank=False, default='',  unique=True)
+=======
+>>>>>>> master
 
 
 

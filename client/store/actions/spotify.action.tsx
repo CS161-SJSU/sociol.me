@@ -11,6 +11,16 @@ export const spotifyAuthFailed = (error) => ({
   payload: error,
 })
 
+export const spotifyUpdateEmailSuccess = (user) => ({
+  type: types.SPOTIFY_UPDATE_EMAIL_SUCCESS,
+  payload: user,
+})
+
+export const spotifyUpdateEmailFailed = (error) => ({
+  type: types.SPOTIFY_UPDATE_EMAIL_FAILED,
+  payload: error,
+})
+
 export const spotifyGetUserSuccess = (user) => ({
   type: types.SPOTIFY_GET_USER_SUCCESS,
   payload: user,

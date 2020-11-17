@@ -22,3 +22,4 @@ export const TWITTER_GET_TOP_WORST = '/twitter/gettopworst/'
 
 export const SPOTIFIY_AUTH = '/spotify/login/'
 export const SPOTIFIY_ME = '/spotify/me/'
+export const SPOTIFIY_UPDATE_EMAIL = '/spotify/update_email/'

@@ -193,7 +193,7 @@ def top_worst(request):
         print("try timeline")
         
         count = 2000
-        public_tweets = api.user_timeline(user_id, count = count)
+        public_tweets = api.user_timeline(user_id, count = count, include_rts = False)
         # check for the top and worst tweet of the user in DB
         try:
             twitter_object = TwitterTopWorst.objects.filter(user_twitter_id = twitter_user_model).delete()

@@ -8,5 +8,8 @@ urlpatterns = [
     url(r'^spotify/me/$', views.spotify_me),
     url(r'^spotify/refresh/$', views.spotify_refresh),
     url(r'^spotify/update_email/', views.get_spotify_update_email),
+<<<<<<< HEAD
     url(r'^spotify/recently_played/', views.recently_played),
+=======
+>>>>>>> master
 ]

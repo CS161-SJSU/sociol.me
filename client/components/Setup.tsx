@@ -12,7 +12,8 @@ import styled from 'styled-components'
 // TODO: Check for token
 // TODO: Add 1 account first and then add multiple account
 
-// Change color after successful connection
+// For Cagan
+// Spotify button turn green and displays Connect
 
 interface SetupProps {
   onTwitterConnect: Function
@@ -114,7 +115,7 @@ const Setup: React.FC<SetupProps> = (
             </Button.List>
             <Card.Footer className="pb-0">
               {twitter.name ? (
-                <Link href="/tempdashboard">
+                <Link href="/dashboard">
                   <Button
                     icon="check-square"
                     color="success"
