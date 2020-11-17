@@ -6,145 +6,130 @@ import { useRouter } from 'next/router'
 import { Card, Form, Button, Icon } from 'tabler-react'
 import { USER_EMAIL, USER_TOKEN } from '../constants/main'
 import FormPage from '../components/FormPage'
-
 import styled from 'styled-components'
 
-// TODO: Check for token
-// TODO: Add 1 account first and then add multiple account
+import { TwitterGetUserInfo } from '../api/twitter.api'
+import { SpotifyGetUserInfo } from '../api/spotify.api'
 
-// For Cagan
-// Spotify button turn green and displays Connect
+class Setup extends React.Component {
+  componentDidMount() {
+    const token = localStorage.getItem(USER_TOKEN)
+    const email = localStorage.getItem(USER_EMAIL)
 
-interface SetupProps {
-  onTwitterConnect: Function
-  onSpotifyConnect: Function
-  email: string
-  props: object
-}
-
-const Setup: React.FC<SetupProps> = (
-  props,
-  onTwitterConnect,
-  onSpotifyConnect,
-  email
-) => {
-  console.log('Hello email: ', email)
-  console.log('props: ', props)
-  const twitter = props.twitter || {}
-  const spotify = props.spotify || {}
-  console.log('twitter: ', twitter)
-
-  useEffect(() => {
-    const token = window.localStorage.getItem(USER_TOKEN)
-    console.log("TOKEN IN Component ", token)
-  })
-
-  const handleTwitterConnect = () => {
-    props.onTwitterConnect()
+    if (token) {
+      this.props.TwitterGetUserInfo(email)
+      this.props.SpotifyGetUserInfo(email)
+    }
   }
 
-  const handleSpotifyConnect = () => {
-    props.onSpotifyConnect()
+  handleTwitterConnect = () => {
+    this.props.onTwitterConnect()
   }
 
-  return (
-    <>
-      <FormPage imageURL={'./images/logo.svg'}>
-        <Card>
-          <Card.Header>
-            <Card.Title className="center-content">
-              Connect to at least 1 account
-            </Card.Title>
-          </Card.Header>
-          <Card.Body>
-            <Button.List className="mb-4">
-              {twitter.loading ? (
-                <Button
-                  icon="twitter"
-                  color="info"
-                  size="lg"
-                  block
-                  pill
-                  loading
-                />
-              ) : twitter.name ? (
-                <Button
-                  icon="twitter"
-                  color="info"
-                  size="lg"
-                  block
-                  pill
-                  onClick={handleTwitterConnect}
-                >
-                  Connected to @{twitter.screen_name}
-                </Button>
-              ) : (
-                <Button
-                  icon="twitter"
-                  color="gray"
-                  size="lg"
-                  block
-                  pill
-                  onClick={handleTwitterConnect}
-                >
-                  Connect to Twitter
-                </Button>
-              )}
+  handleSpotifyConnect = () => {
+    this.props.onSpotifyConnect()
+  }
 
-              {/* <Button loading color="success" block size="lg" /> */}
+  render() {
+    console.log('Setup Comp props: ', this.props)
+    const { twitter } = this.props || {}
+    const twitterUser = twitter.user || {}
+    console.log('twitterUser: ', twitterUser)
+    const { spotify } = this.props || {}
+    const spotityUser = spotify.user || {}
 
-              {spotify.loading ? (
-                <Button color="green" size="lg" block pill loading>
-                  <Icon prefix="fa" name="spotify" />{' '}
-                </Button>
-              ) : spotify.display_name ? (
-                <Button color="green" size="lg" block pill>
-                  <Icon prefix="fa" name="spotify" />
-                  Connected to @{spotify.display_name}
-                </Button>
-              ) : (
-                <Button
-                  color="gray"
-                  size="lg"
-                  block
-                  pill
-                  onClick={handleSpotifyConnect}
-                >
-                  <Icon prefix="fa" name="spotify" /> Connect with Spotify
-                </Button>
-              )}
-            </Button.List>
-            <Card.Footer className="pb-0">
-              {twitter.name ? (
-                <Link href="/dashboard">
+    console.log('twitter: ', twitter)
+
+    return (
+      <>
+        <FormPage imageURL={'./images/logo.svg'}>
+          <Card>
+            <Card.Header>
+              <Card.Title className="center-content">
+                Connect to at least 1 account
+              </Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Button.List className="mb-4">
+                {twitterUser.screen_name ? (
                   <Button
-                    icon="check-square"
-                    color="success"
+                    icon="twitter"
+                    color="info"
                     size="lg"
                     block
                     pill
+                    onClick={this.handleTwitterConnect}
                   >
-                    Proceed to dashboard
+                    Connected to @{twitterUser.screen_name}
                   </Button>
-                </Link>
-              ) : (
-                <Button
-                  icon="x-circle"
-                  color="danger"
-                  size="lg"
-                  block
-                  pill
-                  disabled
-                >
-                  Connect before Proceed
-                </Button>
-              )}
-            </Card.Footer>
-          </Card.Body>
-        </Card>
-      </FormPage>
-    </>
-  )
+                ) : (
+                  <Button
+                    icon="twitter"
+                    color="gray"
+                    size="lg"
+                    block
+                    pill
+                    onClick={this.handleTwitterConnect}
+                  >
+                    Connect to Twitter
+                  </Button>
+                )}
+
+                {/* <Button loading color="success" block size="lg" /> */}
+
+                {spotify.loading ? (
+                  <Button color="green" size="lg" block pill loading>
+                    <Icon prefix="fa" name="spotify" />{' '}
+                  </Button>
+                ) : spotityUser.display_name ? (
+                  <Button color="info" size="lg" block pill>
+                    <Icon prefix="fa" name="spotify" />
+                    Connected to @{spotityUser.display_name}
+                  </Button>
+                ) : (
+                  <Button
+                    color="gray"
+                    size="lg"
+                    block
+                    pill
+                    onClick={this.handleSpotifyConnect}
+                  >
+                    <Icon prefix="fa" name="spotify" /> Connect with Spotify
+                  </Button>
+                )}
+              </Button.List>
+              <Card.Footer className="pb-0">
+                {twitterUser.screen_name || spotityUser.display_name ? (
+                  <Link href="/dashboard">
+                    <Button
+                      icon="check-square"
+                      color="success"
+                      size="lg"
+                      block
+                      pill
+                    >
+                      Proceed to dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button
+                    icon="x-circle"
+                    color="danger"
+                    size="lg"
+                    block
+                    pill
+                    disabled
+                  >
+                    Connect before Proceed
+                  </Button>
+                )}
+              </Card.Footer>
+            </Card.Body>
+          </Card>
+        </FormPage>
+      </>
+    )
+  }
 }
 
 function mapStateToProps(state) {
@@ -156,7 +141,13 @@ function mapStateToProps(state) {
 }
 
 function matchDispatchToProps(dispatch) {
-  return bindActionCreators({}, dispatch)
+  return bindActionCreators(
+    {
+      TwitterGetUserInfo,
+      SpotifyGetUserInfo,
+    },
+    dispatch
+  )
 }
 
 export default connect(mapStateToProps, matchDispatchToProps)(Setup)

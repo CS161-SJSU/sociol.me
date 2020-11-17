@@ -457,8 +457,9 @@ def get_spotify_update_email(request):
 
 @api_view(['GET'])
 def spotify_me(request):
-    email = request.data.get('email')
-    # auth_token = request.data.get('auth_token')
+    email = request.GET.get('email')
+    #auth_token = request.data.get('auth_token')
+
     print(email)
     # print(auth_token)
     if email is None:
@@ -478,8 +479,8 @@ def spotify_me(request):
     }
 
     print(user_spotify_info)
+    return Response({"user":user_spotify_info}, status=status.HTTP_202_ACCEPTED)
 
-    return Response(user_spotify_info, status=status.HTTP_202_ACCEPTED)
 
 
 # These following function not used atm - could be changed later

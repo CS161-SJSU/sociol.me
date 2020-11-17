@@ -44,7 +44,7 @@ export const TwitterAccessToken = (userData) => (dispatch) => {
 }
 
 export const TwitterGetUserInfo = (email) => (dispatch) => {
-  axios
+  return axios
     .get(`${HOST}${TWITTER_ME}?email=${email}`)
     .then((res) => {
       console.log('TwitterMe res: ', res)

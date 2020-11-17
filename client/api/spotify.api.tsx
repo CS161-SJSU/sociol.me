@@ -44,9 +44,9 @@ export const SpotifyUpdateEmail = (userData) => (dispatch) => {
     })
 }
 
-export const SpotifyMe = (userData) => (dispatch) => {
+export const SpotifyGetUserInfo = (email) => (dispatch) => {
   return axios
-    .get(`${HOST}${SPOTIFIY_ME}`, userData)
+    .get(`${HOST}${SPOTIFIY_ME}?email=${email}`)
     .then((res) => {
       console.log('SpotifyVerify res: ', res)
       console.log('userData from SpotifyME: ', userData)
