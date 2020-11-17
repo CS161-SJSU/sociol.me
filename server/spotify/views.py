@@ -80,7 +80,7 @@ def recently_played(request):
                          headers=headers)
 
         data = r.json()
-        print("+++++++++ data", data)
+        #print("+++++++++ data", data)
 
         print("SPOTIFY USER ID ", spotify_user_model.id)
 
@@ -98,6 +98,9 @@ def recently_played(request):
         played_at_list = []
         timestamps = []
         track_id = []
+        images = []
+        track_urls = []
+        preview_urls = []
 
         if not data.items:
             return Response({'message': "No Recently Played Tracks"})
@@ -108,6 +111,9 @@ def recently_played(request):
             played_at_list.append(song["played_at"])
             timestamps.append(song["played_at"][0:10])
             track_id.append(song["track"]["id"])
+            images.append(song["track"]["album"]["images"][1]["url"])
+            track_urls.append(song["track"]["external_urls"]["spotify"])
+            preview_urls.append(song["track"]["preview_url"])
 
             try:
                 print("INSIDE TRY")
@@ -119,11 +125,13 @@ def recently_played(request):
 
             spotify_recently_played = SpotifyRecentlyPlayed.objects.create(user=spotify_user_model,
                                                                            song_title=song["track"]["name"],
-                                                                           artist_name=
-                                                                           song["track"]["album"]["artists"][0][
-                                                                               "name"],
+                                                                           artist_name=song["track"]["album"]["artists"][0]["name"],
                                                                            played_at=song["played_at"][0:10],
-                                                                           track_id=song["track"]["id"])
+                                                                           track_id=song["track"]["id"],
+                                                                           image=song["track"]["album"]["images"][1]["url"],
+                                                                           track_url=song["track"]["external_urls"]["spotify"],
+                                                                           preview_url=song["track"]["preview_url"]
+                                                                           )
 
             print("SPOTIFY DB OBJ ", spotify_recently_played)
 
@@ -132,12 +140,16 @@ def recently_played(request):
             "artist_name": artist_names,
             "played_at": played_at_list,
             "timestamp": timestamps,
-            "track_id": track_id
+            "track_id": track_id,
+            "image": images,
+            "track_urls": track_urls,
+            "preview_urls": preview_urls
         }
 
         # Saving into Pandas dataframe in order to show in table format
         dataframe = pandas.DataFrame(recently_played_dict,
-                                     columns=["song_title", "artist_name", "played_at", "timestamp", "track_id"])
+                                     columns=["song_title", "artist_name", "played_at", "timestamp", "track_id", "image",
+                                              "track_urls", "preview_urls"])
 
         print(dataframe)
 
@@ -150,7 +162,7 @@ def recently_played(request):
 
 @api_view(['GET'])
 def get_recently_played(request):
-    email = request.GET.get('email')
+    email = request.data.get('email')
     # auth_token = request.data.get('auth_token')
     print("Inside get method, email is : ", email)
     # print(auth_token)
@@ -179,7 +191,10 @@ def get_recently_played(request):
             "song_title": track.song_title,
             "artist_name": track.artist_name,
             "track_id": track.track_id,
-            "played_at": track.played_at
+            "played_at": track.played_at,
+            "image": track.image,
+            "track_url": track.track_url,
+            "preview_url": track.preview_url
         }
         tracks.append(response)
 
