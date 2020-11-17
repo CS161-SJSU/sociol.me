@@ -44,12 +44,32 @@ AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
 ME_URL = 'https://api.spotify.com/v1/me'
 
-FRONTEND_URI = 'http://localhost:3000/'
+FRONTEND_URI = 'http://localhost:3000/setup/'
 
 
 
 # API STATS ENDPOINTS
 RECENTLY_PLAYED = 'https://api.spotify.com/v1/me/player/recently-played'
+TOP_ARTISTS = 'https://api.spotify.com/v1/me/top/artists'
+
+@api_view(['GET'])
+def top_artists(request):
+    email = request.data.get('email')
+    print("Email", email)
+    spotify_user_model = SpotifyUser.objects.get(email=email)
+    print("USER MODEL", spotify_user_model)
+    access_token = spotify_user_model.access_token
+    print("ACCESS TOKEN ", access_token)
+
+    headers = {
+        "Accept: application/json"
+        "Content-type: application/json"
+        "Authorization: Bearer {token}".format(token=access_token)
+    }
+
+    r = requests.get(TOP_ARTISTS + '?time_range=short_term&limit=5', headers=headers)
+
+
 
 
 @api_view(['GET'])
