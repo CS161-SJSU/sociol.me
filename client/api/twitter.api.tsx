@@ -6,6 +6,8 @@ import {
   twitterAccessTokenFailed,
   twitterGetUserSuccess,
   twitterGetUserFailed,
+  twitterTopWorstTweetsSuccess,
+  twitterTopWorstTweetsFailed,
   twitterGetTopWorstTweetsSuccess,
   twitterGetTopWorstTweetsFailed,
 } from '../store/actions/twitter.action'
@@ -62,11 +64,11 @@ export const TwitterTopWorst = (userData) => (dispatch) => {
     .post(`${HOST}${TWITTER_TOP_WORST}`, userData)
     .then((res) => {
       console.log('TwitterTopWorst res: ', res)
-      dispatch(twitterGetTopWorstTweetsSuccess(res.data))
+      dispatch(twitterTopWorstTweetsSuccess(res.data))
     })
     .catch((err) => {
       console.log('err: ', err)
-      dispatch(twitterGetTopWorstTweetsFailed(err))
+      dispatch(twitterTopWorstTweetsFailed(err))
     })
 }
 

@@ -59,42 +59,24 @@ def verify(request):
 
     token = request.data.get('oauth_token')
     verifier = request.data.get('oauth_verifier')
-    print(token)
-    print (verifier)
     consumer_key = os.environ.get('TWITTER_ID')
-    print(consumer_key)
     consumer_secret = os.environ.get('TWITTER_SECRET')
-    print(consumer_secret)
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 
     auth.request_token = { 'oauth_token' : token, 'oauth_token_secret' : verifier }
-    print("---", auth.request_token)
-
     auth.get_access_token(verifier)
-
-    
     auth_token = auth.access_token
-    print("hello Access token", auth_token)
     auth_token_secret = auth.access_token_secret
-    print("hello Access token secret",auth_token_secret)
-
     auth.set_access_token(auth_token, auth_token_secret)
 
     api = tweepy.API(auth, wait_on_rate_limit = True)
-
     user_info_dict = api.me()
     user_id = user_info_dict.id
-    print("step 5", user_id)
     name = user_info_dict.name
-    print("step 6", name)
     screen_name = user_info_dict.screen_name
-    print("step 7", screen_name)
     followers_count = user_info_dict.followers_count
-    print("step 8", followers_count)
     friends_count = user_info_dict.friends_count
-    print("step 9", friends_count)
     description = user_info_dict.description
-    print("step 10", description)
 
     try:
         twitter_user = TwitterModel.objects.get(user_id = user_id, email = email)
@@ -111,8 +93,6 @@ def verify(request):
         twitter_user_model = TwitterModel.objects.create(email = email, name = name, user_id = user_id, screen_name = screen_name, description = description, 
         followers_count = followers_count, friends_count = friends_count, auth_token = auth_token, auth_token_secret = auth_token_secret)
         print("make new document")
-    #print("no twitter model problem")
-    #send back to frontend auth_token, screen_name, name
 
     user_twitter_info = {
         'auth_token': auth_token, 
@@ -127,21 +107,13 @@ def verify(request):
 
     print(user_twitter_info)
     
-    try:
-        info_json = json.dumps(user_twitter_info)
-        print(info_json)
-    except Exception as e:
-        print("error: ", e)
-    
     return Response(user_twitter_info, status=status.HTTP_202_ACCEPTED)
 
 
 @api_view(['GET'])
 def get_twitter_info(request): 
     email = request.GET.get('email')
-    #auth_token = request.data.get('auth_token')
     print(email)
-    #print(auth_token)
     if email is None:
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
@@ -172,7 +144,7 @@ def top_worst(request):
     print(email)
     if email is None:
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
-# find user with that email
+
     try:
         print("try to get the email")
         twitter_user_model = TwitterModel.objects.get(email=email)
@@ -208,6 +180,8 @@ def top_worst(request):
         
         sorted_tweets = sorted(public_tweets, key=lambda x: x.retweet_count, reverse=True)[:5]
         tweet_index = 1
+
+        
         for sorted_tweet in sorted_tweets:
             twitter_object = TwitterTopWorst.objects.create(tweet_id = sorted_tweet.id, name = sorted_tweet.user.name,
             screen_name = sorted_tweet.user.screen_name, retweet_count = sorted_tweet.retweet_count,

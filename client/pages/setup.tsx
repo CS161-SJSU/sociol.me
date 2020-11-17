@@ -37,7 +37,6 @@ const SetupPage = (props) => {
       props.TwitterAccessToken({ ...token, email }).then(() => {
         console.log('then')
         router.push('/setup')
-        props.TwitterTopWorst({ email })
       })
     }
 

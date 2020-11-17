@@ -44,12 +44,13 @@ const navBarItems: Array<navItem> = [
   {
     value: 'Twitter',
     icon: 'twitter',
-    // LinkComponent: withRouter(NavLink),
+    to: '/dashboard',
     useExact: true,
   },
   {
     value: 'Spotify',
     icon: 'music',
+    to: '/spotifyDashboard',
   },
 ]
 

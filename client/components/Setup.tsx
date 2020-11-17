@@ -8,7 +8,7 @@ import { USER_EMAIL, USER_TOKEN } from '../constants/main'
 import FormPage from '../components/FormPage'
 import styled from 'styled-components'
 
-import { TwitterGetUserInfo } from '../api/twitter.api'
+import { TwitterGetUserInfo, TwitterTopWorst } from '../api/twitter.api'
 import { SpotifyGetUserInfo } from '../api/spotify.api'
 
 class Setup extends React.Component {
@@ -18,6 +18,7 @@ class Setup extends React.Component {
 
     if (token) {
       this.props.TwitterGetUserInfo(email)
+      this.props.TwitterTopWorst({ email })
       this.props.SpotifyGetUserInfo(email)
     }
   }
@@ -144,6 +145,7 @@ function matchDispatchToProps(dispatch) {
   return bindActionCreators(
     {
       TwitterGetUserInfo,
+      TwitterTopWorst,
       SpotifyGetUserInfo,
     },
     dispatch

@@ -30,14 +30,6 @@ import { TwitterGetUserInfo, TwitterGetTopWorst } from '../api/twitter.api'
 import { SpotifyGetUserInfo } from '../api/spotify.api'
 
 class Dashboard extends React.Component {
-  //
-
-  // static getInitialProps = async (ctx) => {
-  //   console.log('hi')
-  //   const data = await TwitterGetUserInfo('thn.trinity@gmail.com')
-  //   return { data }
-  // }
-
   componentDidMount() {
     const token = localStorage.getItem(USER_TOKEN)
     const email = localStorage.getItem(USER_EMAIL)
@@ -55,8 +47,8 @@ class Dashboard extends React.Component {
     const twitterUser = twitter.user || []
     const topworst = twitter.topworst || []
 
-    const topTweets = topworst.filter((tweet) => tweet.tweet_index < 6)
-    const worstTweets = topworst.filter((tweet) => tweet.tweet_index > 5)
+    const topTweets = topworst.filter((tweet) => tweet.tweet_index < 6).sort()
+    const worstTweets = topworst.filter((tweet) => tweet.tweet_index > 5).sort()
 
     return (
       <SiteWrapper>
@@ -217,7 +209,7 @@ class Dashboard extends React.Component {
                     {worstTweets.map((tweet, idx) => (
                       <Table.Row>
                         <Table.Col>
-                          <div>{tweet.tweet_index}</div>
+                          <div>{(tweet.tweet_index - 11) * -1}</div>
                         </Table.Col>
                         <Table.Col>
                           <div>{tweet.retweet_count}</div>
