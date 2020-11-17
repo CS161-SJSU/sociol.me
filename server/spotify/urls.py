@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^spotify/refresh/$', views.spotify_refresh),
     url(r'^spotify/update_email/', views.get_spotify_update_email),
     url(r'^spotify/recently_played/', views.recently_played),
+    url(r'^spotify/get_recently_played/', views.get_recently_played),
 ]
