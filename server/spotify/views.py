@@ -80,6 +80,7 @@ def recently_played(request):
                          headers=headers)
 
         data = r.json()
+        print("+++++++++ data", data)
 
         print("SPOTIFY USER ID ", spotify_user_model.id)
 
@@ -149,7 +150,7 @@ def recently_played(request):
 
 @api_view(['GET'])
 def get_recently_played(request):
-    email = request.data.get('email')
+    email = request.GET.get('email')
     # auth_token = request.data.get('auth_token')
     print("Inside get method, email is : ", email)
     # print(auth_token)
@@ -182,7 +183,7 @@ def get_recently_played(request):
         }
         tracks.append(response)
 
-    return Response({"Recently Played: ": tracks}, status=status.HTTP_202_ACCEPTED)
+    return Response({'recent_played': tracks}, status=status.HTTP_202_ACCEPTED)
 
 
 
@@ -390,8 +391,8 @@ def spotify_callback(request):
     user_ID = user_data['id']
     print("USER ID: ", user_ID)
 
-    if not user_data['images'][0]['url']:
-        user_data['images'][0]['url'] = ''
+    if not user_data['images']:
+        user_data['images'] = ''
 
     try:
         print("INSIDE TRY METHOD")
@@ -404,12 +405,20 @@ def spotify_callback(request):
 
     except SpotifyUser.DoesNotExist:
         print("INSIDE CREATE FUNC")
-        spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
+        if (user_data['images']):
+            spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
                                                         display_name=user_data['display_name'],
                                                         id=user_data['id'], href=user_data['href'],
                                                         followers=user_data['followers']['total'],
                                                         image=user_data['images'][0]['url'],
                                                         access_token=access_token)
+        # else:
+        #     spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
+        #                                                 display_name=user_data['display_name'],
+        #                                                 id=user_data['id'], href=user_data['href'],
+        #                                                 followers=user_data['followers']['total'],
+        #                                                 image="",
+        #                                                 access_token=access_token)     
 
         print("MODEL : ", spotify_user_model)
 

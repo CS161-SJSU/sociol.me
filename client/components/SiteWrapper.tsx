@@ -52,6 +52,16 @@ const navBarItems: Array<navItem> = [
     icon: 'music',
     to: '/spotifyDashboard',
   },
+  {
+    value: 'Add Account',
+    icon: 'plus',
+    to: '/setup',
+  },
+  {
+    value: 'Logout',
+    icon: 'log-out',
+    to: '/logout',
+  },
 ]
 
 const accountDropdownProps = {

@@ -50,3 +50,23 @@ export const spotifyGetTopPlaylistsFailed = (error) => ({
   type: types.SPOTIFY_GET_TOP_PLAYLISTS_FAILED,
   payload: error,
 })
+
+export const spotifyRecentPlaylistsSuccess = (user) => ({
+  type: types.SPOTIFY_RECENT_PLAYLISTS_SUCCESS,
+  payload: user,
+})
+
+export const spotifyRecentPlaylistsFailed = (error) => ({
+  type: types.SPOTIFY_RECENT_PLAYLISTS_FAILED,
+  payload: error,
+})
+
+export const spotifyGetRecentPlaylistsSuccess = (user) => ({
+  type: types.SPOTIFY_GET_RECENT_PLAYLISTS_SUCCESS,
+  payload: user,
+})
+
+export const spotifyGetRecentPlaylistsFailed = (error) => ({
+  type: types.SPOTIFY_GET_RECENT_PLAYLISTS_FAILED,
+  payload: error,
+})

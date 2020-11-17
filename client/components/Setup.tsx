@@ -9,7 +9,7 @@ import FormPage from '../components/FormPage'
 import styled from 'styled-components'
 
 import { TwitterGetUserInfo, TwitterTopWorst } from '../api/twitter.api'
-import { SpotifyGetUserInfo } from '../api/spotify.api'
+import { SpotifyGetUserInfo, SpotifyRecentPlaylists } from '../api/spotify.api'
 
 class Setup extends React.Component {
   componentDidMount() {
@@ -20,6 +20,7 @@ class Setup extends React.Component {
       this.props.TwitterGetUserInfo(email)
       this.props.TwitterTopWorst({ email })
       this.props.SpotifyGetUserInfo(email)
+      this.props.SpotifyRecentPlaylists({ email })
     }
   }
 
@@ -83,7 +84,13 @@ class Setup extends React.Component {
                     <Icon prefix="fa" name="spotify" />{' '}
                   </Button>
                 ) : spotityUser.display_name ? (
-                  <Button color="info" size="lg" block pill>
+                  <Button
+                    color="info"
+                    size="lg"
+                    block
+                    pill
+                    onClick={this.handleSpotifyConnect}
+                  >
                     <Icon prefix="fa" name="spotify" />
                     Connected to @{spotityUser.display_name}
                   </Button>
@@ -147,6 +154,7 @@ function matchDispatchToProps(dispatch) {
       TwitterGetUserInfo,
       TwitterTopWorst,
       SpotifyGetUserInfo,
+      SpotifyRecentPlaylists,
     },
     dispatch
   )
