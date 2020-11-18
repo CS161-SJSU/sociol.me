@@ -20,6 +20,7 @@ import secrets
 import string
 import pandas
 import numpy
+from base64 import b64encode
 
 from dotenv import load_dotenv
 
@@ -39,7 +40,7 @@ REDIRECT_URI = os.getenv('SPOTIFY_REDIRECT_URI')
 
 # Spotify API endpoints
 AUTH_URL = 'https://accounts.spotify.com/authorize'
-TOKEN_URL = 'https://accounts.spotify.com/api/token'
+REFRESH_TOKEN_URL = 'https://accounts.spotify.com/api/token'
 ME_URL = 'https://api.spotify.com/v1/me'
 
 FRONTEND_URI = 'http://localhost:3000/setup/'
@@ -48,6 +49,7 @@ FRONTEND_URI = 'http://localhost:3000/setup/'
 RECENTLY_PLAYED = 'https://api.spotify.com/v1/me/player/recently-played'
 
 
+@api_view([])
 @api_view(['POST'])
 def recently_played(request):
     email = request.data.get('email')
@@ -80,7 +82,7 @@ def recently_played(request):
                          headers=headers)
 
         data = r.json()
-        #print("+++++++++ data", data)
+        # print("+++++++++ data", data)
 
         print("SPOTIFY USER ID ", spotify_user_model.id)
 
@@ -125,11 +127,14 @@ def recently_played(request):
 
             spotify_recently_played = SpotifyRecentlyPlayed.objects.create(user=spotify_user_model,
                                                                            song_title=song["track"]["name"],
-                                                                           artist_name=song["track"]["album"]["artists"][0]["name"],
+                                                                           artist_name=
+                                                                           song["track"]["album"]["artists"][0]["name"],
                                                                            played_at=song["played_at"][0:10],
                                                                            track_id=song["track"]["id"],
-                                                                           image=song["track"]["album"]["images"][1]["url"],
-                                                                           track_url=song["track"]["external_urls"]["spotify"],
+                                                                           image=song["track"]["album"]["images"][1][
+                                                                               "url"],
+                                                                           track_url=song["track"]["external_urls"][
+                                                                               "spotify"],
                                                                            preview_url=song["track"]["preview_url"]
                                                                            )
 
@@ -148,7 +153,8 @@ def recently_played(request):
 
         # Saving into Pandas dataframe in order to show in table format
         dataframe = pandas.DataFrame(recently_played_dict,
-                                     columns=["song_title", "artist_name", "played_at", "timestamp", "track_id", "image",
+                                     columns=["song_title", "artist_name", "played_at", "timestamp", "track_id",
+                                              "image",
                                               "track_urls", "preview_urls"])
 
         print(dataframe)
@@ -199,7 +205,6 @@ def get_recently_played(request):
         tracks.append(response)
 
     return Response({'recent_played': tracks}, status=status.HTTP_202_ACCEPTED)
-
 
 
 class SpotifyAPI(object):
@@ -378,8 +383,10 @@ def spotify_callback(request):
     print("----Response Data is : ", res_data)
 
     access_token = res_data.get('access_token')
+    refresh_token = res_data.get('refresh_token')
 
     print("----Access TOKEN ", access_token)
+    print("----REFRESH TOKEN ", refresh_token)
 
     if res_data.get('error') or res.status_code != 200:
         Response({"Failed to receive token: %s "},
@@ -412,9 +419,10 @@ def spotify_callback(request):
     try:
         print("INSIDE TRY METHOD")
         spotify_user_info = SpotifyUser.objects.get(id=user_data['id'])
-        print("USER INFO: ", spotify_user_info)
         print("SAVING NEW ACCESS TOKEN ", access_token)
+        print("SAVING NEW REFRESH TOKEN ", refresh_token)
         spotify_user_info.access_token = access_token
+        spotify_user_info.refresh_token = refresh_token
         spotify_user_info.save()
         print("DB IS UPDATED")
 
@@ -422,11 +430,12 @@ def spotify_callback(request):
         print("INSIDE CREATE FUNC")
         if (user_data['images']):
             spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
-                                                        display_name=user_data['display_name'],
-                                                        id=user_data['id'], href=user_data['href'],
-                                                        followers=user_data['followers']['total'],
-                                                        image=user_data['images'][0]['url'],
-                                                        access_token=access_token)
+                                                            display_name=user_data['display_name'],
+                                                            id=user_data['id'], href=user_data['href'],
+                                                            followers=user_data['followers']['total'],
+                                                            image=user_data['images'][0]['url'],
+                                                            access_token=access_token,
+                                                            refresh_token=refresh_token)
         # else:
         #     spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
         #                                                 display_name=user_data['display_name'],
@@ -482,7 +491,7 @@ def get_spotify_update_email(request):
 @api_view(['GET'])
 def spotify_me(request):
     email = request.GET.get('email')
-    #auth_token = request.data.get('auth_token')
+    # auth_token = request.data.get('auth_token')
 
     print(email)
     # print(auth_token)
@@ -503,26 +512,48 @@ def spotify_me(request):
     }
 
     print(user_spotify_info)
-    return Response({"user":user_spotify_info}, status=status.HTTP_202_ACCEPTED)
+    return Response({"user": user_spotify_info}, status=status.HTTP_202_ACCEPTED)
 
 
+def get_credentials():
+    return b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode(
+        "ascii"
+    )
 
-# These following function not used atm - could be changed later
+
 @api_view(['GET'])
-def spotify_refresh():
+def spotify_refresh(request):
     # Refreshes access token
+    email = request.data.get('email')
+    print("Email", email)
+    spotify_user = SpotifyUser.objects.get(email=email)
+    refresh_token = spotify_user.refresh_token
+
+    print("spotify refresh", spotify_user.refresh_token)
+    print("spotify access", spotify_user.access_token)
+
+
+    client_creds_b64 = get_credentials()
 
     payload = {
         'grant_type': 'refresh_token',
-        'refresh_token': session.get('tokens').get('refresh_token'),
+        'refresh_token': refresh_token
     }
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    headers = {"Authorization": f"Basic {client_creds_b64}"}
 
     res = requests.post(
-        TOKEN_URL, auth=(CLIENT_ID, CLIENT_SECRET), data=payload, headers=headers
+        REFRESH_TOKEN_URL, data=payload, headers=headers
     )
     res_data = res.json()
+    print(res_data)
+    new_access_token = res_data["access_token"]
 
-    # Loading new token into session
-    session['tokens']['access_token'] = res_data.get('access_token')
-    return json.dumps(session['tokens'])
+    print("RES DATA ", res_data)
+    print("New Access Token ", new_access_token)
+
+    spotify_user.access_token = new_access_token
+    spotify_user.save()
+
+    print("DB is updated")
+
+    return Response({"Response Data ": res_data}, status=status.HTTP_202_ACCEPTED)
