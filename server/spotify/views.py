@@ -24,6 +24,8 @@ from base64 import b64encode
 
 from dotenv import load_dotenv
 
+from spotify.models import SpotifyTopArtistsLongTerm
+
 load_dotenv()
 from django.shortcuts import render
 from urllib.parse import urlencode
@@ -40,16 +42,99 @@ REDIRECT_URI = os.getenv('SPOTIFY_REDIRECT_URI')
 
 # Spotify API endpoints
 AUTH_URL = 'https://accounts.spotify.com/authorize'
-REFRESH_TOKEN_URL = 'https://accounts.spotify.com/api/token'
+TOKEN_URL = 'https://accounts.spotify.com/api/token'
 ME_URL = 'https://api.spotify.com/v1/me'
 
 FRONTEND_URI = 'http://localhost:3000/setup/'
 
 # API STATS ENDPOINTS
 RECENTLY_PLAYED = 'https://api.spotify.com/v1/me/player/recently-played'
+TOP_ARTISTS_LONG_TERM = 'https://api.spotify.com/v1/me/top/artists?limit=20&time_range=long_term'
+TOP_ARTISTS_MEDIUM_TERM = 'https://api.spotify.com/v1/me/top/artists?limit=20&time_range=long_term'
+TOP_ARTISTS_SHORT_TERM = 'https://api.spotify.com/v1/me/top/artists?limit=20&time_range=long_term'
 
 
-@api_view([])
+@api_view(['POST'])
+def top_artist_long(request):
+    email = request.data.get('email')
+    print("Email", email)
+    try:
+        SpotifyUser.objects.get(email=email)
+        spotify_user_model = SpotifyUser.objects.get(email=email)
+        access_token = spotify_user_model.access_token
+
+        print("INSIDE TOP ARTISTS")
+
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {token}".format(token=access_token)
+        }
+
+        r = requests.get(TOP_ARTISTS_LONG_TERM, headers=headers)
+        data = r.json()
+
+        print("heres the data ", data)
+
+        try:
+            spotify_deleted = SpotifyTopArtistsLongTerm.objects.filter(user=spotify_user_model.id).delete()
+            print("DELETED STUFF ", spotify_deleted)
+
+        except SpotifyTopArtistsLongTerm.DoesNotExist:
+            print("User has no previous playlists in the DB")
+
+        artist_names = []
+        images = []
+        artist_urls = []
+        artist_ids = []
+
+        if not data.items:
+            return Response({'message': "No Top Artists"})
+
+        for song in data["items"]:
+            artist_names.append(song["name"])
+            images.append(song["images"][1]["url"])
+            artist_urls.append(song["external_urls"]["spotify"])
+            artist_ids.append(song["id"])
+
+            try:
+                print("DELETES DUPLICATES")
+                SpotifyTopArtistsLongTerm.objects.get(artist_id=song["id"]).delete()
+                print("AFTER DELETE")
+
+            except SpotifyTopArtistsLongTerm.DoesNotExist:
+                print("No OLD Artist")
+
+            spotify_top_artists_long_term = SpotifyTopArtistsLongTerm.objects.create(user=spotify_user_model,
+                                                                                     artist_name=song["name"],
+                                                                                     artist_url=song["external_urls"][
+                                                                                         "spotify"],
+                                                                                     artist_id=song["id"],
+                                                                                     image=song["images"][1]["url"]
+                                                                                     )
+
+            print("SPOTIFY DB OBJ ", spotify_top_artists_long_term)
+
+        top_artist_long_term = {
+            "artist_name": artist_names,
+            "image": images,
+            "artist_url" : artist_urls,
+            "artists_ids" : artist_ids
+        }
+
+        # Saving into Pandas dataframe in order to show in table format
+        dataframe = pandas.DataFrame(top_artist_long_term,
+                                     columns=["artist_name", "image", "played_at", "artist_url", "artists_ids",
+                                              ])
+
+        print(dataframe)
+
+        return Response({'message': data})
+
+    except SpotifyTopArtistsLongTerm.DoesNotExist:
+        print("User has no previous playlists in the DB")
+
+
 @api_view(['POST'])
 def recently_played(request):
     email = request.data.get('email')
@@ -77,7 +162,7 @@ def recently_played(request):
         # print("PRINT THE CALL ")
         # print(RECENTLY_PLAYED + '?after={time}'.format(time=yesterday_unix_timestamp))
 
-        # r = requests.get("https://api.spotify.com/v1/me/player/recently-played?limit=20&after=0", headers=headers)
+        r = requests.get("https://api.spotify.com/v1/me/player/recently-played?limit=20&after=0", headers=headers)
         r = requests.get(RECENTLY_PLAYED + '?limit=20&after={time}'.format(time=yesterday_unix_timestamp),
                          headers=headers)
 
@@ -168,7 +253,7 @@ def recently_played(request):
 
 @api_view(['GET'])
 def get_recently_played(request):
-    email = request.GET.get('email')
+    email = request.data.get('email')
     # auth_token = request.data.get('auth_token')
     print("Inside get method, email is : ", email)
     # print(auth_token)
@@ -407,8 +492,6 @@ def spotify_callback(request):
         Response({"Failed to get Profile info %s "},
                  user_data.get('error', 'No error message returned.'))
 
-    print("User Data: ", user_data)
-
     # Update DB if any of the user info has changed
     user_ID = user_data['id']
     print("USER ID: ", user_ID)
@@ -532,7 +615,6 @@ def spotify_refresh(request):
     print("spotify refresh", spotify_user.refresh_token)
     print("spotify access", spotify_user.access_token)
 
-
     client_creds_b64 = get_credentials()
 
     payload = {
@@ -542,7 +624,7 @@ def spotify_refresh(request):
     headers = {"Authorization": f"Basic {client_creds_b64}"}
 
     res = requests.post(
-        REFRESH_TOKEN_URL, data=payload, headers=headers
+        TOKEN_URL, data=payload, headers=headers
     )
     res_data = res.json()
     print(res_data)
