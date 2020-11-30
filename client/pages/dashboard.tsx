@@ -66,7 +66,7 @@ class Dashboard extends React.Component {
               <StatsCard
                 layout={1}
                 movement={0}
-                total="103"
+                total={twitterUser.statuses_count}
                 label="Numbers of tweets"
               />
             </Grid.Col>

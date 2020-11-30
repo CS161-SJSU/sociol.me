@@ -162,7 +162,7 @@ def recently_played(request):
 
 @api_view(['GET'])
 def get_recently_played(request):
-    email = request.data.get('email')
+    email = request.GET.get('email')
     # auth_token = request.data.get('auth_token')
     print("Inside get method, email is : ", email)
     # print(auth_token)
@@ -427,13 +427,13 @@ def spotify_callback(request):
                                                         followers=user_data['followers']['total'],
                                                         image=user_data['images'][0]['url'],
                                                         access_token=access_token)
-        # else:
-        #     spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
-        #                                                 display_name=user_data['display_name'],
-        #                                                 id=user_data['id'], href=user_data['href'],
-        #                                                 followers=user_data['followers']['total'],
-        #                                                 image="",
-        #                                                 access_token=access_token)     
+        else:
+            spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
+                                                        display_name=user_data['display_name'],
+                                                        id=user_data['id'], href=user_data['href'],
+                                                        followers=user_data['followers']['total'],
+                                                        image="",
+                                                        access_token=access_token)     
 
         print("MODEL : ", spotify_user_model)
 

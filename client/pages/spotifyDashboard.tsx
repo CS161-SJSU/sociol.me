@@ -115,7 +115,9 @@ class SpotifyDashboard extends React.Component {
                           <div>{idx + 1}</div>
                         </Table.Col>
                         <Table.Col>
-                          <div>{item.song_title}</div>
+                          <a href={item.track_url} target="_blank">
+                            <div>{item.song_title}</div>
+                          </a>
                         </Table.Col>
                         <Table.Col>
                           <div>{item.artist_name}</div>

@@ -76,12 +76,14 @@ def verify(request):
     screen_name = user_info_dict.screen_name
     followers_count = user_info_dict.followers_count
     friends_count = user_info_dict.friends_count
+    statuses_count = user_info_dict.statuses_count
     description = user_info_dict.description
 
     try:
         twitter_user = TwitterModel.objects.get(user_id = user_id, email = email)
         twitter_user.followers_count = followers_count
         twitter_user.friends_count = friends_count
+        twitter_user.statuses_count = statuses_count
         twitter_user.auth_token = auth_token
         twitter_user.auth_token_secret = auth_token_secret
         twitter_user.description = description
@@ -101,6 +103,7 @@ def verify(request):
         'user_id' : user_id,
         'followers_count' : followers_count,
         'friends_count' : friends_count,
+        'statuses_count' : statuses_count,
         'description' : description,
         'auth_token' : auth_token
     }
@@ -129,6 +132,7 @@ def get_twitter_info(request):
         'user_id' : twitter_user_info.user_id,
         'followers_count' : twitter_user_info.followers_count,
         'friends_count' : twitter_user_info.friends_count,
+        'statuses_count' : twitter_user_info.statuses_count,
         'description' : twitter_user_info.description
     }
 
