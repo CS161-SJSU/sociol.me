@@ -16,6 +16,7 @@ class SpotifyUser(models.Model):
     href = models.CharField(max_length=50, blank=False, default='')
     followers = models.IntegerField(blank=False, default=0)
     access_token = models.CharField(max_length=2000, blank=False, default='')
+    refresh_token = models.CharField(max_length=2000, blank=False, default='')
     image = models.CharField(max_length=2000, default='')
 
 class SpotifyRecentlyPlayed(models.Model):
