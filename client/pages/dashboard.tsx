@@ -35,7 +35,7 @@ class Dashboard extends React.Component {
       <SiteWrapper>
         <Page.Content title="Twitter Dashboard">
           <Grid.Row cards={true} alignItems="center">
-            <Grid.Col width={6} sm={4} lg={2}>
+            <Grid.Col width={6} sm={4} lg={3}>
               <StatsCard
                 layout={1}
                 movement={0}
@@ -43,7 +43,7 @@ class Dashboard extends React.Component {
                 label="Screen name"
               />
             </Grid.Col>
-            <Grid.Col width={6} sm={4} lg={2}>
+            <Grid.Col width={6} sm={4} lg={3}>
               <StatsCard
                 layout={1}
                 movement={0}
@@ -51,7 +51,7 @@ class Dashboard extends React.Component {
                 label="Numbers of tweets"
               />
             </Grid.Col>
-            <Grid.Col width={6} sm={4} lg={2}>
+            <Grid.Col width={6} sm={4} lg={3}>
               <StatsCard
                 layout={1}
                 movement={0}
@@ -59,30 +59,12 @@ class Dashboard extends React.Component {
                 label="Followers"
               />
             </Grid.Col>
-            <Grid.Col width={6} sm={4} lg={2}>
+            <Grid.Col width={6} sm={4} lg={3}>
               <StatsCard
                 layout={1}
                 movement={0}
                 total={twitterUser.friends_count}
                 label="Following"
-              />
-            </Grid.Col>
-            <Grid.Col width={6} sm={4} lg={2}>
-              <StatsCard
-                layout={1}
-                movement={0}
-                total="--"
-                la
-                label="Tweet Impressions"
-              />
-            </Grid.Col>
-            <Grid.Col width={6} sm={4} lg={2}>
-              <StatsCard
-                layout={1}
-                movement={0}
-                total="--"
-                la
-                label="Profile Visits"
               />
             </Grid.Col>
           </Grid.Row>
