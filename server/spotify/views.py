@@ -30,9 +30,9 @@ from urllib.parse import urlencode
 import base64
 import datetime
 
-from spotify.models import SpotifyTopArtistsLONGTerm
-from spotify.models import SpotifyTopArtistsMEDIUMTerm
-from spotify.models import SpotifyTopArtistsSHORTTerm
+from spotify.models import SpotifyTopArtistsLongTerm
+from spotify.models import SpotifyTopArtistsMediumTerm
+from spotify.models import SpotifyTopArtistsShortTerm
 from spotify.models import SpotifyUser
 from spotify.models import SpotifyRecentlyPlayed
 
@@ -55,20 +55,20 @@ TOP_ARTISTS = 'https://api.spotify.com/v1/me/top/artists?limit=20&time_range='
 
 @api_view(['POST'])
 def top_artist_long(request):
-    top_artist_helper_method(request, 'long', SpotifyTopArtistsLONGTerm)
-    return Response({'message': 'Success!'})
+    artists = top_artist_helper_method(request, 'long', SpotifyTopArtistsLongTerm)
+    return Response({'Artists Info - All Time': artists})
 
 
 @api_view(['POST'])
 def top_artist_medium(request):
-    top_artist_helper_method(request, 'medium', SpotifyTopArtistsMEDIUMTerm)
-    return Response({'message': 'Success!'})
+    artists = top_artist_helper_method(request, 'medium', SpotifyTopArtistsMediumTerm)
+    return Response({'Artists Info -  Last 6 Months': artists})
 
 
 @api_view(['POST'])
 def top_artist_short(request):
-    top_artist_helper_method(request, 'short', SpotifyTopArtistsSHORTTerm)
-    return Response({'message': 'Success!'})
+    artists = top_artist_helper_method(request, 'short', SpotifyTopArtistsShortTerm)
+    return Response({'Artists Info - Last 4 Weeks': artists})
 
 
 def top_artist_helper_method(request, length, model):
@@ -90,7 +90,7 @@ def top_artist_helper_method(request, length, model):
         call_type = TOP_ARTISTS + length + '_term'
         r = requests.get(call_type, headers=headers)
         data = r.json()
-        #print("heres the data ", data)
+        # print("heres the data ", data)
 
         try:
             spotify_deleted = model.objects.filter(user=spotify_user_model.id).delete()
@@ -114,9 +114,7 @@ def top_artist_helper_method(request, length, model):
             artist_ids.append(song["id"])
 
             try:
-                print("DELETES DUPLICATES")
                 model.objects.get(artist_id=song["id"]).delete()
-                print("AFTER DELETE")
 
             except model.DoesNotExist:
                 print("No OLD Artist")
@@ -131,21 +129,21 @@ def top_artist_helper_method(request, length, model):
 
             print("SPOTIFY DB OBJ ", spotify_top_artists)
 
-        top_artist = {
-            "artist_name": artist_names,
-            "image": images,
-            "artist_url": artist_urls,
-            "artists_ids": artist_ids
-        }
+        spotify_id = spotify_user_model.id
+        top_artists = model.objects.filter(user_id=spotify_id)
 
-        # Saving into Pandas dataframe in order to show in table format
-        dataframe = pandas.DataFrame(top_artist,
-                                     columns=["artist_name", "image", "played_at", "artist_url", "artists_ids",
-                                              ])
+        artists_list = []
+        for artist in top_artists:
+            response = {
+                "artist_name": artist.artist_name,
+                "image": artist.image,
+                "artist_url": artist.artist_url,
+                "artists_id": artist.artist_id
+            }
+            artists_list.append(response)
+        # print("This is the artist list ", artists_list)
 
-        print(dataframe)
-
-        return Response({'message': data})
+        return artists_list
 
     except model.DoesNotExist:
         return Response({"message": "Email is not in the DB"})
@@ -501,6 +499,7 @@ def get_credentials():
     return b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode(
         "ascii"
     )
+
 
 @api_view(['GET'])
 def spotify_refresh(request):
