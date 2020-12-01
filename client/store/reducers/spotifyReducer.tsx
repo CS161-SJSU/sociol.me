@@ -26,6 +26,10 @@ export default function spotifyReducer(
       return { ...state, ...action.payload, ...{ loading: false } }
     case types.SPOTIFY_GET_TOP_TRACKS_FAILED:
       return { ...state, ...{ loading: false }, ...{ errors: action.payload } }
+    case types.SPOTIFY_GET_TOP_ARTISTS_SUCCESS:
+      return { ...state, ...action.payload, ...{ loading: false } }
+    case types.SPOTIFY_GET_TOP_ARTISTS_FAILED:
+      return { ...state, ...{ loading: false }, ...{ errors: action.payload } }
     case types.SPOTIFY_GET_TOP_PLAYLISTS_SUCCESS:
       return { ...state, ...action.payload, ...{ loading: false } }
     case types.SPOTIFY_GET_TOP_PLAYLISTS_FAILED:

@@ -56,19 +56,19 @@ TOP_ARTISTS = 'https://api.spotify.com/v1/me/top/artists?limit=20&time_range='
 @api_view(['POST'])
 def top_artist_long(request):
     artists = top_artist_helper_method(request, 'long', SpotifyTopArtistsLongTerm)
-    return Response({'Artists Info - All Time': artists})
+    return Response({'artist_all_time': artists})
 
 
 @api_view(['POST'])
 def top_artist_medium(request):
     artists = top_artist_helper_method(request, 'medium', SpotifyTopArtistsMediumTerm)
-    return Response({'Artists Info -  Last 6 Months': artists})
+    return Response({'artist_6_mons': artists})
 
 
 @api_view(['POST'])
 def top_artist_short(request):
     artists = top_artist_helper_method(request, 'short', SpotifyTopArtistsShortTerm)
-    return Response({'Artists Info - Last 4 Weeks': artists})
+    return Response({'artist_4_weeks': artists})
 
 
 def top_artist_helper_method(request, length, model):
@@ -106,6 +106,7 @@ def top_artist_helper_method(request, length, model):
 
         if not data.items:
             return Response({'message': "No Top Artists"})
+        print("~~~~~~~~~~~", data)
 
         for song in data["items"]:
             artist_names.append(song["name"])
@@ -266,7 +267,7 @@ def recently_played(request):
 
 @api_view(['GET'])
 def get_recently_played(request):
-    email = request.data.get('email')
+    email = request.GET.get('email')
     # auth_token = request.data.get('auth_token')
     print("Inside get method, email is : ", email)
     # print(auth_token)
@@ -358,7 +359,7 @@ def spotify_callback(request):
     # Post request in order to get callback URL
     # Might have to add headers into this?
     # EDGE CASE - call it often etc?
-    res = requests.post(REFRESH_TOKEN_URL, auth=(CLIENT_ID, CLIENT_SECRET), data=auth_options)
+    res = requests.post(TOKEN_URL, auth=(CLIENT_ID, CLIENT_SECRET), data=auth_options)
 
     res_data = res.json()
     print("----Response Data is : ", res_data)

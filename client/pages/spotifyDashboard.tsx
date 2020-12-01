@@ -10,17 +10,22 @@ import { GetUserInfo } from '../api/login.api'
 import {
   SpotifyGetUserInfo,
   SpotifyGetRecentPlaylists,
+  SpotifyGetTopArtists,
 } from '../api/spotify.api'
 
 class SpotifyDashboard extends React.Component {
   componentDidMount() {
     const token = localStorage.getItem(USER_TOKEN)
     const email = localStorage.getItem(USER_EMAIL)
-
+    const temp = {
+      email: 'cagan.sevencan@sjsu.edu',
+    }
     if (token) {
       this.props.GetUserInfo(email)
       this.props.SpotifyGetUserInfo(email)
       this.props.SpotifyGetRecentPlaylists(email)
+
+      this.props.SpotifyGetTopArtists(temp)
     }
   }
 
@@ -152,7 +157,12 @@ function mapStateToProps(state) {
 
 function matchDispatchToProps(dispatch) {
   return bindActionCreators(
-    { GetUserInfo, SpotifyGetUserInfo, SpotifyGetRecentPlaylists },
+    {
+      GetUserInfo,
+      SpotifyGetUserInfo,
+      SpotifyGetRecentPlaylists,
+      SpotifyGetTopArtists,
+    },
     dispatch
   )
 }

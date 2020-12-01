@@ -8,6 +8,8 @@ import {
   spotifyGetUserFailed,
   spotifyGetTopTracksSuccess,
   spotifyGetTopTracksFailed,
+  spotifyGetTopArtistsSuccess,
+  spotifyGetTopArtistsFailed,
   spotifyGetTopPlaylistsSuccess,
   spotifyGetTopPlaylistsFailed,
   spotifyRecentPlaylistsSuccess,
@@ -22,6 +24,7 @@ import {
   SPOTIFIY_UPDATE_EMAIL,
   SPOTIFIY_RECENT_PLAYLISTS,
   SPOTIFIY_GET_RECENT_PLAYLISTS,
+  SPOTIFIY_TOP_ARTIST,
 } from '../constants/main'
 import { setTokenToLocalStorage } from '../utils'
 
@@ -80,5 +83,16 @@ export const SpotifyGetRecentPlaylists = (email) => (dispatch) => {
     })
     .catch((err) => {
       dispatch(spotifyGetRecentPlaylistsFailed(err))
+    })
+}
+
+export const SpotifyGetTopArtists = (userData) => (dispatch) => {
+  return axios
+    .post(`${HOST}${SPOTIFIY_TOP_ARTIST}`, userData)
+    .then((res) => {
+      dispatch(spotifyGetTopArtistsSuccess(res.data))
+    })
+    .catch((err) => {
+      dispatch(spotifyGetTopArtistsFailed(err))
     })
 }
