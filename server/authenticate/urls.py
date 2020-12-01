@@ -2,5 +2,6 @@ from django.conf.urls import url
 from authenticate import views 
  
 urlpatterns = [ 
-    url(r'^authenticate/', views.to_authenticate)
+    url(r'^authenticate/', views.to_authenticate),
+    url(r'^get_user/', views.get_user)
 ]

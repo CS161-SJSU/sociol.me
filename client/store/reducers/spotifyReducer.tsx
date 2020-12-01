@@ -9,7 +9,7 @@ export default function spotifyReducer(
 ) {
   switch (action.type) {
     case HYDRATE:
-      return { ...state, ...action.payload.user }
+      return { ...state, ...action.payload }
     case types.SPOTIFY_AUTH_SUCCESS:
       return { ...state, ...action.payload, ...{ loading: false } }
     case types.SPOTIFY_AUTH_FAILED:

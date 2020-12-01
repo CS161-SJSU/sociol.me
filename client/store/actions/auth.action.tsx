@@ -3,6 +3,8 @@ import {
   SET_USER_INFO,
   LOGIN_SUCCESS,
   LOGIN_FAILED,
+  GET_USER_SUCCESS,
+  GET_USER_FAILED,
   VERIFY_GOOGLE_TOKEN_SUCCESS,
   VERIFY_GOOGLE_TOKEN_FAILED,
   REGISTER_SUCCESS,
@@ -41,8 +43,13 @@ export const registerFailed = (error) => ({
   payload: error,
 })
 
-export const setUserInfo = (user) => ({
-  type: SET_USER_INFO,
+export const getUserInfoSuccess = (user) => ({
+  type: GET_USER_SUCCESS,
+  payload: user,
+})
+
+export const getUserInfoFailed = (user) => ({
+  type: GET_USER_FAILED,
   payload: user,
 })
 

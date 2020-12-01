@@ -2,6 +2,8 @@ import axios from 'axios'
 import {
   spotifyAuthSuccess,
   spotifyAuthFailed,
+  spotifyUpdateEmailSuccess,
+  spotifyUpdateEmailFailed,
   spotifyGetUserSuccess,
   spotifyGetUserFailed,
   spotifyGetTopTracksSuccess,
@@ -39,10 +41,12 @@ export const SpotifyUpdateEmail = (userData) => (dispatch) => {
   return axios
     .post(`${HOST}${SPOTIFIY_UPDATE_EMAIL}`, userData)
     .then((res) => {
-      dispatch(spotifyAuthSuccess(res.data))
+      // SpotifyGetUserInfo(userData.email)
+      // SpotifyRecentPlaylists(userData)
+      dispatch(spotifyUpdateEmailSuccess(res.data))
     })
     .catch((err) => {
-      dispatch(spotifyAuthFailed(err))
+      dispatch(spotifyUpdateEmailFailed(err))
     })
 }
 

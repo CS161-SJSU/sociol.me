@@ -1,26 +1,30 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { Card, Form, Button, Icon } from 'tabler-react'
+import { Card, Button, Icon } from 'tabler-react'
 import { USER_EMAIL, USER_TOKEN } from '../constants/main'
 import FormPage from '../components/FormPage'
-import styled from 'styled-components'
 
 import { TwitterGetUserInfo, TwitterTopWorst } from '../api/twitter.api'
 import { SpotifyGetUserInfo, SpotifyRecentPlaylists } from '../api/spotify.api'
 
 class Setup extends React.Component {
-  componentDidMount() {
+  componentDidMount(props) {
     const token = localStorage.getItem(USER_TOKEN)
     const email = localStorage.getItem(USER_EMAIL)
+    const { spotify } = props || {}
+    const { user } = spotify || {}
 
     if (token) {
-      this.props.TwitterGetUserInfo(email)
-      this.props.TwitterTopWorst({ email })
-      this.props.SpotifyGetUserInfo(email)
-      this.props.SpotifyRecentPlaylists({ email })
+      this.props.TwitterGetUserInfo(email).then(() => {
+        this.props.TwitterTopWorst({ email })
+      })
+      this.props.SpotifyGetUserInfo(email).then(() => {
+        this.props.SpotifyRecentPlaylists({ email })
+      })
+
+      // this.props.SpotifyRecentPlaylists({ email })
     }
   }
 
@@ -33,14 +37,10 @@ class Setup extends React.Component {
   }
 
   render() {
-    console.log('Setup Comp props: ', this.props)
     const { twitter } = this.props || {}
     const twitterUser = twitter.user || {}
-    console.log('twitterUser: ', twitterUser)
     const { spotify } = this.props || {}
     const spotityUser = spotify.user || {}
-
-    console.log('twitter: ', twitter)
 
     return (
       <>

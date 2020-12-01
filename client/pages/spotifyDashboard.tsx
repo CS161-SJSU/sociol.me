@@ -1,31 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import C3Chart from 'react-c3js'
-
-import {
-  Page,
-  Avatar,
-  Icon,
-  Grid,
-  Card,
-  Text,
-  Table,
-  Alert,
-  Progress,
-  colors,
-  Dropdown,
-  Button,
-  StampCard,
-  StatsCard,
-  ProgressCard,
-  Badge,
-} from 'tabler-react'
-
+import { Page, Grid, GalleryCard, StatsCard } from 'tabler-react'
 import SiteWrapper from '../components/SiteWrapper'
-
+import Error401 from '../components/Error401'
 import { USER_TOKEN, USER_EMAIL } from '../constants/main'
 
+import { GetUserInfo } from '../api/login.api'
 import {
   SpotifyGetUserInfo,
   SpotifyGetRecentPlaylists,
@@ -37,6 +18,7 @@ class SpotifyDashboard extends React.Component {
     const email = localStorage.getItem(USER_EMAIL)
 
     if (token) {
+      this.props.GetUserInfo(email)
       this.props.SpotifyGetUserInfo(email)
       this.props.SpotifyGetRecentPlaylists(email)
     }
@@ -44,18 +26,20 @@ class SpotifyDashboard extends React.Component {
 
   render() {
     const { user } = this.props || {}
+    const { token } = user || ''
+
     const { spotify } = this.props || {}
     console.log('spotify: ', spotify)
 
     const spotifyUser = spotify.user || []
-    const recentSongs = spotify.recent_played || []
-    console.log('recentSongs: ', recentSongs)
+    const recent = spotify.recent_played || []
+    const recentSongs = recent.filter((song, idx) => idx < 12)
 
-    return (
+    return spotifyUser ? (
       <SiteWrapper>
         <Page.Content title="Spotify Dashboard">
           <Grid.Row cards={true} alignItems="center">
-            <Grid.Col width={6} sm={5} lg={3}>
+            <Grid.Col width={6} sm={5} lg={4}>
               <StatsCard
                 layout={1}
                 movement={0}
@@ -64,7 +48,7 @@ class SpotifyDashboard extends React.Component {
               />
             </Grid.Col>
 
-            <Grid.Col width={6} sm={4} lg={3}>
+            <Grid.Col width={6} sm={4} lg={4}>
               <StatsCard
                 layout={1}
                 movement={0}
@@ -72,15 +56,7 @@ class SpotifyDashboard extends React.Component {
                 label="Followers"
               />
             </Grid.Col>
-            <Grid.Col width={6} sm={4} lg={3}>
-              <StatsCard
-                layout={1}
-                movement={0}
-                total={spotifyUser.country}
-                label="Country"
-              />
-            </Grid.Col>
-            <Grid.Col width={6} sm={4} lg={3}>
+            <Grid.Col width={6} sm={4} lg={4}>
               <StatsCard
                 layout={1}
                 movement={0}
@@ -89,7 +65,7 @@ class SpotifyDashboard extends React.Component {
               />
             </Grid.Col>
           </Grid.Row>
-          <Grid.Row cards deck>
+          {/* <Grid.Row cards deck>
             <Grid.Col width={12} alignItems="center">
               <Card title="Recently Played Songs">
                 <Table
@@ -131,9 +107,37 @@ class SpotifyDashboard extends React.Component {
                 </Table>
               </Card>
             </Grid.Col>
-          </Grid.Row>
+          </Grid.Row> */}
+          {recentSongs && (
+            <>
+              <Page.Header title="Recently Played Songs" />
+              <Grid.Row className="row-cards">
+                {recentSongs.map((item, key) => (
+                  <Grid.Col sm={6} lg={3} key={key}>
+                    <GalleryCard>
+                      <a href={item.track_url} target="_blank">
+                        <GalleryCard.Image
+                          href={item.image}
+                          src={item.image}
+                          alt={`Song Title: ${item.song_title}`}
+                        />
+                        <GalleryCard.Footer>
+                          <GalleryCard.Details
+                            fullName={item.song_title}
+                            dateString={item.artist_name}
+                          />
+                        </GalleryCard.Footer>
+                      </a>
+                    </GalleryCard>
+                  </Grid.Col>
+                ))}
+              </Grid.Row>
+            </>
+          )}
         </Page.Content>
       </SiteWrapper>
+    ) : (
+      <Page.Header title="Please Connect your Spotify Account" />
     )
   }
 }
@@ -148,7 +152,7 @@ function mapStateToProps(state) {
 
 function matchDispatchToProps(dispatch) {
   return bindActionCreators(
-    { SpotifyGetUserInfo, SpotifyGetRecentPlaylists },
+    { GetUserInfo, SpotifyGetUserInfo, SpotifyGetRecentPlaylists },
     dispatch
   )
 }

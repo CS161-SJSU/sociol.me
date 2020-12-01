@@ -1,31 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import C3Chart from 'react-c3js'
-
-import {
-  Page,
-  Avatar,
-  Icon,
-  Grid,
-  Card,
-  Text,
-  Table,
-  Alert,
-  Progress,
-  colors,
-  Dropdown,
-  Button,
-  StampCard,
-  StatsCard,
-  ProgressCard,
-  Badge,
-} from 'tabler-react'
+import { Page, Avatar, Grid, Card, Table, StatsCard } from 'tabler-react'
 
 import SiteWrapper from '../components/SiteWrapper'
-
+import Error401 from '../components/Error401'
 import { USER_TOKEN, USER_EMAIL } from '../constants/main'
-
+import { GetUserInfo } from '../api/login.api'
 import { TwitterGetUserInfo, TwitterGetTopWorst } from '../api/twitter.api'
 import { SpotifyGetUserInfo } from '../api/spotify.api'
 
@@ -35,6 +16,7 @@ class Dashboard extends React.Component {
     const email = localStorage.getItem(USER_EMAIL)
 
     if (token) {
+      this.props.GetUserInfo(email)
       this.props.TwitterGetUserInfo(email)
       this.props.TwitterGetTopWorst(email)
     }
@@ -42,15 +24,14 @@ class Dashboard extends React.Component {
 
   render() {
     const { user } = this.props || {}
+    const { token } = user || ''
     const { twitter } = this.props || {}
-
     const twitterUser = twitter.user || []
     const topworst = twitter.topworst || []
-
     const topTweets = topworst.filter((tweet) => tweet.tweet_index < 6).sort()
     const worstTweets = topworst.filter((tweet) => tweet.tweet_index > 5).sort()
 
-    return (
+    return twitterUser ? (
       <SiteWrapper>
         <Page.Content title="Twitter Dashboard">
           <Grid.Row cards={true} alignItems="center">
@@ -146,89 +127,98 @@ class Dashboard extends React.Component {
                 </Table>
               </Card>
             </Grid.Col>
+            {topTweets && (
+              <>
+                <Grid.Col width={12}>
+                  <Card title="Top 5 Tweets">
+                    <Table
+                      responsive
+                      highlightRowOnHover
+                      hasOutline
+                      verticalAlign="center"
+                      cards
+                      className="text-nowrap"
+                    >
+                      <Table.Header>
+                        <Table.Row>
+                          <Table.ColHeader>Rank</Table.ColHeader>
+                          <Table.ColHeader>Retweets</Table.ColHeader>
+                          <Table.ColHeader>Likes</Table.ColHeader>
+                          <Table.ColHeader>Text</Table.ColHeader>
+                        </Table.Row>
+                      </Table.Header>
+                      <Table.Body>
+                        {topTweets.map((tweet, idx) => (
+                          <Table.Row>
+                            <Table.Col>
+                              <div>{tweet.tweet_index}</div>
+                            </Table.Col>
+                            <Table.Col>
+                              <div>{tweet.retweet_count}</div>
+                            </Table.Col>
+                            <Table.Col>
+                              <div>{tweet.favorite_count}</div>
+                            </Table.Col>
+                            <Table.Col>
+                              <div>{tweet.text}</div>
+                            </Table.Col>
+                          </Table.Row>
+                        ))}
+                      </Table.Body>
+                    </Table>
+                  </Card>
+                </Grid.Col>
+              </>
+            )}
 
-            <Grid.Col width={12}>
-              <Card title="Top 5 Tweets">
-                <Table
-                  responsive
-                  highlightRowOnHover
-                  hasOutline
-                  verticalAlign="center"
-                  cards
-                  className="text-nowrap"
-                >
-                  <Table.Header>
-                    <Table.Row>
-                      <Table.ColHeader>Rank</Table.ColHeader>
-                      <Table.ColHeader>Retweets</Table.ColHeader>
-                      <Table.ColHeader>Likes</Table.ColHeader>
-                      <Table.ColHeader>Text</Table.ColHeader>
-                    </Table.Row>
-                  </Table.Header>
-                  <Table.Body>
-                    {topTweets.map((tweet, idx) => (
-                      <Table.Row>
-                        <Table.Col>
-                          <div>{tweet.tweet_index}</div>
-                        </Table.Col>
-                        <Table.Col>
-                          <div>{tweet.retweet_count}</div>
-                        </Table.Col>
-                        <Table.Col>
-                          <div>{tweet.favorite_count}</div>
-                        </Table.Col>
-                        <Table.Col>
-                          <div>{tweet.text}</div>
-                        </Table.Col>
-                      </Table.Row>
-                    ))}
-                  </Table.Body>
-                </Table>
-              </Card>
-            </Grid.Col>
-
-            <Grid.Col width={12}>
-              <Card title="Worst 5 Tweets">
-                <Table
-                  responsive
-                  highlightRowOnHover
-                  hasOutline
-                  verticalAlign="center"
-                  cards
-                  className="text-nowrap"
-                >
-                  <Table.Header>
-                    <Table.Row>
-                      <Table.ColHeader>Rank</Table.ColHeader>
-                      <Table.ColHeader>Retweets</Table.ColHeader>
-                      <Table.ColHeader>Likes</Table.ColHeader>
-                      <Table.ColHeader>Text</Table.ColHeader>
-                    </Table.Row>
-                  </Table.Header>
-                  <Table.Body>
-                    {worstTweets.map((tweet, idx) => (
-                      <Table.Row>
-                        <Table.Col>
-                          <div>{(tweet.tweet_index - 11) * -1}</div>
-                        </Table.Col>
-                        <Table.Col>
-                          <div>{tweet.retweet_count}</div>
-                        </Table.Col>
-                        <Table.Col>
-                          <div>{tweet.favorite_count}</div>
-                        </Table.Col>
-                        <Table.Col>
-                          <div>{tweet.text}</div>
-                        </Table.Col>
-                      </Table.Row>
-                    ))}
-                  </Table.Body>
-                </Table>
-              </Card>
-            </Grid.Col>
+            {worstTweets && (
+              <>
+                <Grid.Col width={12}>
+                  <Card title="Worst 5 Tweets">
+                    <Table
+                      responsive
+                      highlightRowOnHover
+                      hasOutline
+                      verticalAlign="center"
+                      cards
+                      className="text-nowrap"
+                    >
+                      <Table.Header>
+                        <Table.Row>
+                          <Table.ColHeader>Rank</Table.ColHeader>
+                          <Table.ColHeader>Retweets</Table.ColHeader>
+                          <Table.ColHeader>Likes</Table.ColHeader>
+                          <Table.ColHeader>Text</Table.ColHeader>
+                        </Table.Row>
+                      </Table.Header>
+                      <Table.Body>
+                        {worstTweets.map((tweet, idx) => (
+                          <Table.Row>
+                            <Table.Col>
+                              <div>{(tweet.tweet_index - 11) * -1}</div>
+                            </Table.Col>
+                            <Table.Col>
+                              <div>{tweet.retweet_count}</div>
+                            </Table.Col>
+                            <Table.Col>
+                              <div>{tweet.favorite_count}</div>
+                            </Table.Col>
+                            <Table.Col>
+                              <div>{tweet.text}</div>
+                            </Table.Col>
+                          </Table.Row>
+                        ))}
+                      </Table.Body>
+                    </Table>
+                  </Card>
+                </Grid.Col>
+              </>
+            )}
           </Grid.Row>
         </Page.Content>
       </SiteWrapper>
+    ) : (
+      <Page.Header title="Please Connect your Twitter Account" />
     )
   }
 }
@@ -243,7 +233,7 @@ function mapStateToProps(state) {
 
 function matchDispatchToProps(dispatch) {
   return bindActionCreators(
-    { TwitterGetUserInfo, TwitterGetTopWorst, SpotifyGetUserInfo },
+    { GetUserInfo, TwitterGetUserInfo, TwitterGetTopWorst, SpotifyGetUserInfo },
     dispatch
   )
 }

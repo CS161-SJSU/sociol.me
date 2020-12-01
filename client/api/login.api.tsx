@@ -2,10 +2,12 @@ import axios from 'axios'
 import {
   verifyGoogleTokenSuccess,
   verifyGoogleTokenFailed,
+  getUserInfoSuccess,
+  getUserInfoFailed,
 } from '../store/actions/auth.action'
 import {
   HOST,
-  LOGIN_URI,
+  GET_USER_URI,
   USER_EMAIL,
   USER_TOKEN,
   USER_FIRST_NAME,
@@ -31,5 +33,16 @@ export const GoogleSignin = (userData) => (dispatch) => {
     })
     .catch((err) => {
       dispatch(verifyGoogleTokenFailed(err))
+    })
+}
+
+export const GetUserInfo = (email) => (dispatch) => {
+  return axios
+    .get(`${HOST}${GET_USER_URI}?email=${email}`)
+    .then((res) => {
+      dispatch(getUserInfoSuccess(res.data))
+    })
+    .catch((err) => {
+      dispatch(getUserInfoFailed(err))
     })
 }

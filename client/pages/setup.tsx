@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { useRouter } from 'next/router'
@@ -9,23 +8,36 @@ import {
   TwitterConnect,
   TwitterAccessToken,
   TwitterTopWorst,
+  TwitterGetUserInfo,
 } from '../api/twitter.api'
-import { SpotifyConnect, SpotifyUpdateEmail } from '../api/spotify.api'
+import {
+  SpotifyConnect,
+  SpotifyUpdateEmail,
+  SpotifyGetUserInfo,
+  SpotifyRecentPlaylists,
+} from '../api/spotify.api'
+
+import { GetUserInfo } from '../api/login.api'
+
 import Setup from '../components/Setup'
+import Error401 from '../components/Error401'
 
 const SetupPage = (props) => {
   const { user } = props || {}
+  const { twitter } = props || {}
+  const { spotify } = props || {}
+  const { token } = user || ''
   const [email, setEmail] = useState('')
 
-  console.log('SETUP PAGE props: ', props)
   const router = useRouter()
   console.log(router.query)
 
   useEffect(() => {
     const token = window.localStorage.getItem(USER_TOKEN)
     const email = window.localStorage.getItem(USER_EMAIL)
-    if (email) {
+    if (token && email) {
       setEmail(email)
+      props.GetUserInfo(email)
     }
   }, [])
 
@@ -33,20 +45,17 @@ const SetupPage = (props) => {
     const token = router.query
 
     if (token.oauth_verifier && email) {
-      console.log('{ ...twitterTokens, email }: ', { ...token, email })
       props.TwitterAccessToken({ ...token, email }).then(() => {
-        console.log('then')
         router.push('/setup')
       })
+      props.TwitterGetUserInfo(email)
     }
 
     if (token.access_token && token.id) {
-      console.log('token.id: ', token.id)
-      console.log('token.access_token: ', token.access_token)
       props.SpotifyUpdateEmail({ ...token, email }).then(() => {
-        console.log('SpotifyUpdateEmail then')
         router.push('/setup')
       })
+      props.SpotifyRecentPlaylists({ email })
     }
   }
 
@@ -81,11 +90,15 @@ function mapStateToProps(state) {
 function matchDispatchToProps(dispatch) {
   return bindActionCreators(
     {
+      GetUserInfo,
       TwitterConnect,
       TwitterAccessToken,
+      TwitterGetUserInfo,
       TwitterTopWorst,
       SpotifyConnect,
       SpotifyUpdateEmail,
+      SpotifyGetUserInfo,
+      SpotifyRecentPlaylists,
     },
     dispatch
   )

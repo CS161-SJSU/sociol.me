@@ -1,20 +1,32 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import GoogleLogin from 'react-google-login'
-import { Card, Form, Button, Icon } from 'tabler-react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { Card } from 'tabler-react'
 import FormPage from '../components/FormPage'
+import Error401 from '../components/Error401'
 import { GoogleLogout } from 'react-google-login'
-import { USER_TOKEN } from '../constants/main'
+import { USER_EMAIL, USER_TOKEN } from '../constants/main'
 
-import styled from 'styled-components'
+import { GetUserInfo } from '../api/login.api'
 
-const Dashboard = () => {
+const Logout = (props) => {
+  const { user } = props || {}
+  const { token } = user || ''
+
+  useEffect(() => {
+    const token = window.localStorage.getItem(USER_TOKEN)
+    const email = window.localStorage.getItem(USER_EMAIL)
+    if (token && email) {
+      props.GetUserInfo(email)
+    }
+  }, [])
   const router = useRouter()
   const logout = () => {
     console.log('logout')
+    localStorage.removeItem(USER_EMAIL)
     localStorage.removeItem(USER_TOKEN)
     router.push('/')
-    // props.logout()
   }
   return (
     <>
@@ -37,4 +49,19 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+  }
+}
+
+function matchDispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      GetUserInfo,
+    },
+    dispatch
+  )
+}
+
+export default connect(mapStateToProps, matchDispatchToProps)(Logout)

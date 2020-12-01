@@ -14,6 +14,7 @@ export const TWITTER_TOKEN = 'TWITTER_TOKEN'
 // Server URI
 export const LOGIN_URI = '/auth/login/'
 export const VERIFY_GOOGLE_TOKEN_URI = '/authenticate/'
+export const GET_USER_URI = '/get_user/'
 export const REGISTER_URI = '/auth/register/'
 
 export const TWITTER_AUTH = '/twitter/auth/'

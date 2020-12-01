@@ -1,18 +1,14 @@
 // @flow
 
 import * as React from 'react'
-import { NavLink, withRouter } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
-import {
-  Site,
-  Nav,
-  Grid,
-  List,
-  Button,
-  RouterContextProvider,
-} from 'tabler-react'
+import { Site, Nav, Grid, Button } from 'tabler-react'
 
+import { USER_TOKEN, USER_EMAIL } from '../constants/main'
 import type { NotificationProps } from 'tabler-react'
+import { GetUserInfo } from '../api/login.api'
 
 type Props = {
   children: React.Node
@@ -64,21 +60,6 @@ const navBarItems: Array<navItem> = [
   },
 ]
 
-const accountDropdownProps = {
-  avatarURL: './users/trinity.jpg',
-  name: 'Trinity Nguyen',
-  description: 'Administrator',
-  options: [
-    { icon: 'user', value: 'Profile' },
-    { icon: 'settings', value: 'Settings' },
-    { icon: 'mail', value: 'Inbox', badge: '6' },
-    { icon: 'send', value: 'Message' },
-    { isDivider: true },
-    { icon: 'help-circle', value: 'Need help?' },
-    { icon: 'log-out', value: 'Sign out' },
-  ],
-}
-
 class SiteWrapper extends React.Component<Props, State> {
   state = {
     notificationsObjects: [
@@ -116,12 +97,36 @@ class SiteWrapper extends React.Component<Props, State> {
     ],
   }
 
+  componentDidMount() {
+    const token = localStorage.getItem(USER_TOKEN)
+    const email = localStorage.getItem(USER_EMAIL)
+
+    if (token) {
+      this.props.GetUserInfo(email)
+    }
+  }
+
   render(): React.Node {
+    const { user } = this.props || {}
     const notificationsObjects = this.state.notificationsObjects | []
     const unreadCount = this.state.notificationsObjects.reduce(
       (a, v) => a | v.unread,
       false
     )
+
+    const accountDropdownProps = {
+      avatarURL: user.image_url,
+      name: user.full_name,
+      options: [
+        { icon: 'user', value: 'Profile' },
+        { icon: 'settings', value: 'Settings' },
+        { icon: 'mail', value: 'Inbox', badge: '6' },
+        { icon: 'send', value: 'Message' },
+        { isDivider: true },
+        { icon: 'help-circle', value: 'Need help?' },
+        { icon: 'log-out', value: 'Sign out' },
+      ],
+    }
     return (
       <Site.Wrapper
         headerProps={{
@@ -200,4 +205,16 @@ class SiteWrapper extends React.Component<Props, State> {
   }
 }
 
-export default SiteWrapper
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+    twitter: state.twitter,
+    spotify: state.spotify,
+  }
+}
+
+function matchDispatchToProps(dispatch) {
+  return bindActionCreators({ GetUserInfo }, dispatch)
+}
+
+export default connect(mapStateToProps, matchDispatchToProps)(SiteWrapper)

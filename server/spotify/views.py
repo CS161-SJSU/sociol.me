@@ -155,7 +155,6 @@ def recently_played(request):
     print("Email", email)
 
     try:
-        SpotifyUser.objects.get(email=email)
         spotify_user_model = SpotifyUser.objects.get(email=email)
         print("USER MODEL", spotify_user_model)
         access_token = spotify_user_model.access_token
@@ -359,7 +358,7 @@ def spotify_callback(request):
     # Post request in order to get callback URL
     # Might have to add headers into this?
     # EDGE CASE - call it often etc?
-    res = requests.post(TOKEN_URL, auth=(CLIENT_ID, CLIENT_SECRET), data=auth_options)
+    res = requests.post(REFRESH_TOKEN_URL, auth=(CLIENT_ID, CLIENT_SECRET), data=auth_options)
 
     res_data = res.json()
     print("----Response Data is : ", res_data)
@@ -478,6 +477,7 @@ def spotify_me(request):
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
     spotify_user_info = SpotifyUser.objects.get(email=email)
+
     if spotify_user_info.email != email:
         return Response({"err": "invalid email"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
