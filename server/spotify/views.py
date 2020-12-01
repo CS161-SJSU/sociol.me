@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.http.response import JsonResponse, HttpResponseRedirect
 from rest_framework.parsers import JSONParser
 from rest_framework import status
-
+from enum import Enum
 from django.shortcuts import redirect
 from authenticate.models import User
 from rest_framework.decorators import api_view
@@ -24,14 +24,15 @@ from base64 import b64encode
 
 from dotenv import load_dotenv
 
-from spotify.models import SpotifyTopArtistsLongTerm
-
 load_dotenv()
 from django.shortcuts import render
 from urllib.parse import urlencode
 import base64
 import datetime
 
+from spotify.models import SpotifyTopArtistsLONGTerm
+from spotify.models import SpotifyTopArtistsMEDIUMTerm
+from spotify.models import SpotifyTopArtistsSHORTTerm
 from spotify.models import SpotifyUser
 from spotify.models import SpotifyRecentlyPlayed
 
@@ -49,24 +50,28 @@ FRONTEND_URI = 'http://localhost:3000/setup/'
 
 # API STATS ENDPOINTS
 RECENTLY_PLAYED = 'https://api.spotify.com/v1/me/player/recently-played'
-TOP_ARTISTS_LONG_TERM = 'https://api.spotify.com/v1/me/top/artists?limit=20&time_range=long_term'
-TOP_ARTISTS_MEDIUM_TERM = 'https://api.spotify.com/v1/me/top/artists?limit=20&time_range=long_term'
-TOP_ARTISTS_SHORT_TERM = 'https://api.spotify.com/v1/me/top/artists?limit=20&time_range=long_term'
+TOP_ARTISTS = 'https://api.spotify.com/v1/me/top/artists?limit=20&time_range='
 
+
+@api_view(['POST'])
+def top_artist_long(request):
+    top_artist_helper_method(request, 'long', SpotifyTopArtistsLONGTerm)
+    return Response({'message': 'Success!'})
 
 
 @api_view(['POST'])
 def top_artist_medium(request):
-
+    top_artist_helper_method(request, 'medium', SpotifyTopArtistsMEDIUMTerm)
+    return Response({'message': 'Success!'})
 
 
 @api_view(['POST'])
 def top_artist_short(request):
+    top_artist_helper_method(request, 'short', SpotifyTopArtistsSHORTTerm)
+    return Response({'message': 'Success!'})
 
 
-
-
-def top_artist_helper_method(request, length):
+def top_artist_helper_method(request, length, model):
     email = request.data.get('email')
     print("Email", email)
     try:
@@ -82,19 +87,16 @@ def top_artist_helper_method(request, length):
             "Authorization": "Bearer {token}".format(token=access_token)
         }
 
-        call_type = 'TOP_ARTISTS_'+ length + '_TERM'
+        call_type = TOP_ARTISTS + length + '_term'
         r = requests.get(call_type, headers=headers)
         data = r.json()
-
-        print("heres the data ", data)
-
-        model_name = 'SpotifyTopArtists' + length + 'Term'
+        #print("heres the data ", data)
 
         try:
-            spotify_deleted = model_name.objects.filter(user=spotify_user_model.id).delete()
+            spotify_deleted = model.objects.filter(user=spotify_user_model.id).delete()
             print("DELETED STUFF ", spotify_deleted)
 
-        except model_name.DoesNotExist:
+        except model.DoesNotExist:
             print("User has no previous playlists in the DB")
 
         artist_names = []
@@ -113,19 +115,19 @@ def top_artist_helper_method(request, length):
 
             try:
                 print("DELETES DUPLICATES")
-                model_name.objects.get(artist_id=song["id"]).delete()
+                model.objects.get(artist_id=song["id"]).delete()
                 print("AFTER DELETE")
 
-            except model_name.DoesNotExist:
+            except model.DoesNotExist:
                 print("No OLD Artist")
 
-            spotify_top_artists = model_name.objects.create(user=spotify_user_model,
-                                                                                     artist_name=song["name"],
-                                                                                     artist_url=song["external_urls"][
-                                                                                         "spotify"],
-                                                                                     artist_id=song["id"],
-                                                                                     image=song["images"][1]["url"]
-                                                                                     )
+            spotify_top_artists = model.objects.create(user=spotify_user_model,
+                                                       artist_name=song["name"],
+                                                       artist_url=song["external_urls"][
+                                                           "spotify"],
+                                                       artist_id=song["id"],
+                                                       image=song["images"][1]["url"]
+                                                       )
 
             print("SPOTIFY DB OBJ ", spotify_top_artists)
 
@@ -145,92 +147,8 @@ def top_artist_helper_method(request, length):
 
         return Response({'message': data})
 
-    except model_name.DoesNotExist:
-        print("User has no previous playlists in the DB")
-
-
-
-
-
-@api_view(['POST'])
-def top_artist_long(request):
-    email = request.data.get('email')
-    print("Email", email)
-    try:
-        SpotifyUser.objects.get(email=email)
-        spotify_user_model = SpotifyUser.objects.get(email=email)
-        access_token = spotify_user_model.access_token
-
-        print("INSIDE TOP ARTISTS")
-
-        headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": "Bearer {token}".format(token=access_token)
-        }
-
-        r = requests.get(TOP_ARTISTS_LONG_TERM, headers=headers)
-        data = r.json()
-
-        print("heres the data ", data)
-
-        try:
-            spotify_deleted = SpotifyTopArtistsLongTerm.objects.filter(user=spotify_user_model.id).delete()
-            print("DELETED STUFF ", spotify_deleted)
-
-        except SpotifyTopArtistsLongTerm.DoesNotExist:
-            print("User has no previous playlists in the DB")
-
-        artist_names = []
-        images = []
-        artist_urls = []
-        artist_ids = []
-
-        if not data.items:
-            return Response({'message': "No Top Artists"})
-
-        for song in data["items"]:
-            artist_names.append(song["name"])
-            images.append(song["images"][1]["url"])
-            artist_urls.append(song["external_urls"]["spotify"])
-            artist_ids.append(song["id"])
-
-            try:
-                print("DELETES DUPLICATES")
-                SpotifyTopArtistsLongTerm.objects.get(artist_id=song["id"]).delete()
-                print("AFTER DELETE")
-
-            except SpotifyTopArtistsLongTerm.DoesNotExist:
-                print("No OLD Artist")
-
-            spotify_top_artists_long_term = SpotifyTopArtistsLongTerm.objects.create(user=spotify_user_model,
-                                                                                     artist_name=song["name"],
-                                                                                     artist_url=song["external_urls"][
-                                                                                         "spotify"],
-                                                                                     artist_id=song["id"],
-                                                                                     image=song["images"][1]["url"]
-                                                                                     )
-
-            print("SPOTIFY DB OBJ ", spotify_top_artists_long_term)
-
-        top_artist_long_term = {
-            "artist_name": artist_names,
-            "image": images,
-            "artist_url" : artist_urls,
-            "artists_ids" : artist_ids
-        }
-
-        # Saving into Pandas dataframe in order to show in table format
-        dataframe = pandas.DataFrame(top_artist_long_term,
-                                     columns=["artist_name", "image", "played_at", "artist_url", "artists_ids",
-                                              ])
-
-        print(dataframe)
-
-        return Response({'message': data})
-
-    except SpotifyTopArtistsLongTerm.DoesNotExist:
-        print("User has no previous playlists in the DB")
+    except model.DoesNotExist:
+        return Response({"message": "Email is not in the DB"})
 
 
 @api_view(['POST'])
@@ -388,123 +306,6 @@ def get_recently_played(request):
         tracks.append(response)
 
     return Response({'recent_played': tracks}, status=status.HTTP_202_ACCEPTED)
-
-
-class SpotifyAPI(object):
-    access_token = None
-    access_token_expires = datetime.datetime.now()
-    access_token_did_expire = None
-    client_id = None
-    client_secret = None
-    token_url = "https://accounts.spotify.com/api/token"
-
-    def __init__(self, client_id, client_secret, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.client_id = client_id
-        self.client_secret = client_secret
-
-    def get_client_credentials(self):
-        """
-        Returns a base64 encoded string
-
-        """
-        client_id = self.client_id
-        client_secret = self.client_secret
-        if client_id == None or client_secret == None:
-            raise Exception("You must set client_id and client_secret")
-        client_creds = f"{client_id}:{client_secret}"
-        client_creds_b64 = base64.b64encode(client_creds.encode())
-        return client_creds_b64.decode()
-
-    def get_token_header(self):
-
-        client_creds_b64 = self.get_client_credentials()
-        return {
-            "Authorization": f"Basic {client_creds_b64}"
-        }
-
-    def get_token_data(self):
-        return {
-            "grant_type": "client_credentials"
-        }
-
-    def perform_auth(self):
-        token_url = self.token_url
-        token_data = self.get_token_data()
-        token_headers = self.get_token_header()
-        r = requests.post(token_url, data=token_data, headers=token_headers)
-
-        if r.status_code not in range(200, 299):
-            raise Exception("Could not authenticate client")
-            return False
-        data = r.json()
-        print(r.json())
-        now = datetime.datetime.now()
-        access_token = data['access_token']
-        expires_in = data['expires_in']
-        expires = now + datetime.timedelta(seconds=expires_in)
-        self.access_token = access_token
-        self.access_token_expires = expires
-        self.access_token_did_expire = expires < now
-        return True
-
-    def get_access_token(self):
-        token = self.access_token
-        expires = self.access_token_expires
-        now = datetime.datetime.now()
-        print(expires)
-        print(now)
-        if expires > now:
-            self.perform_auth()
-            return self.get_access_token()
-        elif token == None:
-            self.perform_auth()
-            return self.get_access_token()
-        return token
-
-    def get_resource_header(self):
-        access_token = self.get_access_token()
-        headers = {
-            "Authorization": f"Bearer {access_token}"
-        }
-        print(access_token)
-        return headers
-
-    def get_resource(self, lookup_id, resource_type='albums', version='v1'):
-        endpoint = f"https://api.spotify.com/{version}/{resource_type}/{lookup_id}"
-        headers = self.get_resource_header()
-        r = requests.get(endpoint, header=headers)
-        if r.status_code not in range(200, 299):
-            return {}
-        return r.json()
-
-    def get_album(self, _id):
-        self.get_resource(_id)
-
-    def get_artist(self, _id):
-        self.get_resource(_id, resource_type='artists')
-
-    def base_search(self, query_params):
-        headers = self.get_resource_header()
-        endpoint = "https://api.spotify.com/v1/search"
-        lookup_url = f"{endpoint}"
-        r = requests.get(lookup_url, headers=headers)
-        if r.status_code not in range(200, 299):
-            return {}
-        return r.json()
-
-    def search(self, query=None, operator=None, operator_query=None, search_type='artist'):
-        if query == None:
-            raise Exception("A query is required")
-        if isinstance(query, dict):
-            query = " ".join([f"{k}:{v}" for k, v in query.items()])
-        if operator != None and operator_query != None:
-            if operator.lower() == "or" or operator.lower() == "not":
-                operator = operator.upper()
-                if isinstance(operator_query, str):
-                    query = f"{query} {operator} {operator_query}"
-        query_params = urlencode({"q": query, "type": search_type.lower()})
-        return self.base_search(query_params)
 
 
 @api_view(['GET'])
@@ -700,7 +501,6 @@ def get_credentials():
     return b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode(
         "ascii"
     )
-
 
 @api_view(['GET'])
 def spotify_refresh(request):

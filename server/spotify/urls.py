@@ -11,4 +11,6 @@ urlpatterns = [
     url(r'^spotify/recently_played/', views.recently_played),
     url(r'^spotify/get_recently_played/', views.get_recently_played),
     url(r'^spotify/top_artists_long/', views.top_artist_long),
+    url(r'^spotify/top_artists_medium/', views.top_artist_medium),
+    url(r'^spotify/top_artists_short/', views.top_artist_short),
 ]
