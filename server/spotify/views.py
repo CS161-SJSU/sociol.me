@@ -54,6 +54,104 @@ TOP_ARTISTS_MEDIUM_TERM = 'https://api.spotify.com/v1/me/top/artists?limit=20&ti
 TOP_ARTISTS_SHORT_TERM = 'https://api.spotify.com/v1/me/top/artists?limit=20&time_range=long_term'
 
 
+
+@api_view(['POST'])
+def top_artist_medium(request):
+
+
+
+@api_view(['POST'])
+def top_artist_short(request):
+
+
+
+
+def top_artist_helper_method(request, length):
+    email = request.data.get('email')
+    print("Email", email)
+    try:
+        SpotifyUser.objects.get(email=email)
+        spotify_user_model = SpotifyUser.objects.get(email=email)
+        access_token = spotify_user_model.access_token
+
+        print("INSIDE TOP ARTISTS")
+
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {token}".format(token=access_token)
+        }
+
+        call_type = 'TOP_ARTISTS_'+ length + '_TERM'
+        r = requests.get(call_type, headers=headers)
+        data = r.json()
+
+        print("heres the data ", data)
+
+        model_name = 'SpotifyTopArtists' + length + 'Term'
+
+        try:
+            spotify_deleted = model_name.objects.filter(user=spotify_user_model.id).delete()
+            print("DELETED STUFF ", spotify_deleted)
+
+        except model_name.DoesNotExist:
+            print("User has no previous playlists in the DB")
+
+        artist_names = []
+        images = []
+        artist_urls = []
+        artist_ids = []
+
+        if not data.items:
+            return Response({'message': "No Top Artists"})
+
+        for song in data["items"]:
+            artist_names.append(song["name"])
+            images.append(song["images"][1]["url"])
+            artist_urls.append(song["external_urls"]["spotify"])
+            artist_ids.append(song["id"])
+
+            try:
+                print("DELETES DUPLICATES")
+                model_name.objects.get(artist_id=song["id"]).delete()
+                print("AFTER DELETE")
+
+            except model_name.DoesNotExist:
+                print("No OLD Artist")
+
+            spotify_top_artists = model_name.objects.create(user=spotify_user_model,
+                                                                                     artist_name=song["name"],
+                                                                                     artist_url=song["external_urls"][
+                                                                                         "spotify"],
+                                                                                     artist_id=song["id"],
+                                                                                     image=song["images"][1]["url"]
+                                                                                     )
+
+            print("SPOTIFY DB OBJ ", spotify_top_artists)
+
+        top_artist = {
+            "artist_name": artist_names,
+            "image": images,
+            "artist_url": artist_urls,
+            "artists_ids": artist_ids
+        }
+
+        # Saving into Pandas dataframe in order to show in table format
+        dataframe = pandas.DataFrame(top_artist,
+                                     columns=["artist_name", "image", "played_at", "artist_url", "artists_ids",
+                                              ])
+
+        print(dataframe)
+
+        return Response({'message': data})
+
+    except model_name.DoesNotExist:
+        print("User has no previous playlists in the DB")
+
+
+
+
+
 @api_view(['POST'])
 def top_artist_long(request):
     email = request.data.get('email')

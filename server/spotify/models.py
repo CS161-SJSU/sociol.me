@@ -32,7 +32,21 @@ class SpotifyRecentlyPlayed(models.Model):
     preview_url = models.CharField(max_length=200, blank=False, default='')
 
 
-class SpotifyTopArtistsLongTerm(models.Model):
+class SpotifyTopArtistsLONGTerm(models.Model):
+    user = models.ForeignKey(SpotifyUser, on_delete=models.CASCADE)
+    artist_name = models.CharField(max_length=70, blank=False, default='')
+    image = models.CharField(max_length=200, blank=False, default='')
+    artist_url = models.CharField(max_length=200, blank=False, default='')
+    artist_id = models.CharField(max_length=200, blank=False, default='')
+
+class SpotifyTopArtistsMEDIUMTerm(models.Model):
+    user = models.ForeignKey(SpotifyUser, on_delete=models.CASCADE)
+    artist_name = models.CharField(max_length=70, blank=False, default='')
+    image = models.CharField(max_length=200, blank=False, default='')
+    artist_url = models.CharField(max_length=200, blank=False, default='')
+    artist_id = models.CharField(max_length=200, blank=False, default='')
+
+class SpotifyTopArtistsSHORTTerm(models.Model):
     user = models.ForeignKey(SpotifyUser, on_delete=models.CASCADE)
     artist_name = models.CharField(max_length=70, blank=False, default='')
     image = models.CharField(max_length=200, blank=False, default='')
