@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 
-#User = settings.AUTH_USER_MODEL
+
+# User = settings.AUTH_USER_MODEL
 
 
 # from authenticate.models
@@ -19,6 +20,7 @@ class SpotifyUser(models.Model):
     refresh_token = models.CharField(max_length=2000, blank=False, default='')
     image = models.CharField(max_length=2000, default='')
 
+
 class SpotifyRecentlyPlayed(models.Model):
     user = models.ForeignKey(SpotifyUser, on_delete=models.CASCADE)
     song_title = models.CharField(max_length=70, blank=False, default='')
@@ -30,5 +32,24 @@ class SpotifyRecentlyPlayed(models.Model):
     preview_url = models.CharField(max_length=200, blank=False, default='')
 
 
+class SpotifyTopArtistsLongTerm(models.Model):
+    user = models.ForeignKey(SpotifyUser, on_delete=models.CASCADE)
+    artist_name = models.CharField(max_length=70, blank=False, default='')
+    image = models.CharField(max_length=200, blank=False, default='')
+    artist_url = models.CharField(max_length=200, blank=False, default='')
+    artist_id = models.CharField(max_length=200, blank=False, default='')
 
+class SpotifyTopArtistsMediumTerm(models.Model):
+    user = models.ForeignKey(SpotifyUser, on_delete=models.CASCADE)
+    artist_name = models.CharField(max_length=70, blank=False, default='')
+    image = models.CharField(max_length=200, blank=False, default='')
+    artist_url = models.CharField(max_length=200, blank=False, default='')
+    artist_id = models.CharField(max_length=200, blank=False, default='')
+
+class SpotifyTopArtistsShortTerm(models.Model):
+    user = models.ForeignKey(SpotifyUser, on_delete=models.CASCADE)
+    artist_name = models.CharField(max_length=70, blank=False, default='')
+    image = models.CharField(max_length=200, blank=False, default='')
+    artist_url = models.CharField(max_length=200, blank=False, default='')
+    artist_id = models.CharField(max_length=200, blank=False, default='')
 
