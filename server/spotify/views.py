@@ -62,7 +62,7 @@ def top_artist_long(request):
 @api_view(['POST'])
 def top_artist_medium(request):
     artists = top_artist_helper_method(request, 'medium', SpotifyTopArtistsMediumTerm)
-    return Response({'artist_6_mons': artists})
+    return Response({'artist_6_months': artists})
 
 
 @api_view(['POST'])
@@ -106,7 +106,7 @@ def top_artist_helper_method(request, length, model):
 
         if not data.items:
             return Response({'message': "No Top Artists"})
-        print("~~~~~~~~~~~", data)
+        # print("~~~~~~~~~~~", data)
 
         for song in data["items"]:
             artist_names.append(song["name"])
@@ -335,16 +335,6 @@ def spotify_login(request):
 
 @api_view(['GET'])
 def spotify_callback(request):
-    # Keep these for now, we will check the states later
-    state = request.GET.get('state')
-
-    # Stored cookie is showing None, check on this later
-    stored_cookie = request.COOKIES.get('spotify_cookie')
-    print("STORED COOKIE ", stored_cookie)
-
-    print("Cookies ", request.COOKIES)
-    print("STATE: ", state)
-
     code = request.GET.get('code')
     print(request)
     print("CODE :", code)
@@ -357,7 +347,6 @@ def spotify_callback(request):
     }
 
     # Post request in order to get callback URL
-    # Might have to add headers into this?
     # EDGE CASE - call it often etc?
     res = requests.post(TOKEN_URL, auth=(CLIENT_ID, CLIENT_SECRET), data=auth_options)
 
@@ -410,18 +399,18 @@ def spotify_callback(request):
         print("INSIDE CREATE FUNC")
         if (user_data['images']):
             spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
-                                                        display_name=user_data['display_name'],
-                                                        id=user_data['id'], href=user_data['href'],
-                                                        followers=user_data['followers']['total'],
-                                                        image=user_data['images'][0]['url'],
-                                                        access_token=access_token)
+                                                            display_name=user_data['display_name'],
+                                                            id=user_data['id'], href=user_data['href'],
+                                                            followers=user_data['followers']['total'],
+                                                            image=user_data['images'][0]['url'],
+                                                            access_token=access_token)
         else:
             spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
-                                                        display_name=user_data['display_name'],
-                                                        id=user_data['id'], href=user_data['href'],
-                                                        followers=user_data['followers']['total'],
-                                                        image="",
-                                                        access_token=access_token)     
+                                                            display_name=user_data['display_name'],
+                                                            id=user_data['id'], href=user_data['href'],
+                                                            followers=user_data['followers']['total'],
+                                                            image="",
+                                                            access_token=access_token)
 
         print("MODEL : ", spotify_user_model)
 
