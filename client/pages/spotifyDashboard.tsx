@@ -24,8 +24,8 @@ class SpotifyDashboard extends React.Component {
       this.props.GetUserInfo(email)
       this.props.SpotifyGetUserInfo(email)
       this.props.SpotifyGetRecentPlaylists(email)
-
-      this.props.SpotifyGetTopArtists(temp)
+      this.props.SpotifyGetTopArtists({ email })
+      // this.props.SpotifyGetTopArtists(temp)
     }
   }
 
@@ -38,6 +38,7 @@ class SpotifyDashboard extends React.Component {
 
     const spotifyUser = spotify.user || []
     const recent = spotify.recent_played || []
+    const topArtists = spotify.artist_all_time || []
     const recentSongs = recent.filter((song, idx) => idx < 12)
 
     return spotifyUser ? (
@@ -70,50 +71,8 @@ class SpotifyDashboard extends React.Component {
               />
             </Grid.Col>
           </Grid.Row>
-          {/* <Grid.Row cards deck>
-            <Grid.Col width={12} alignItems="center">
-              <Card title="Recently Played Songs">
-                <Table
-                  responsive
-                  highlightRowOnHover
-                  hasOutline
-                  verticalAlign="center"
-                  cards
-                  className="text-nowrap"
-                >
-                  <Table.Header>
-                    <Table.Row>
-                      <Table.ColHeader>No.</Table.ColHeader>
-                      <Table.ColHeader>Song Title</Table.ColHeader>
-                      <Table.ColHeader>Artist</Table.ColHeader>
-                      <Table.ColHeader>Date Played</Table.ColHeader>
-                    </Table.Row>
-                  </Table.Header>
-                  <Table.Body>
-                    {recentSongs.map((item, idx) => (
-                      <Table.Row>
-                        <Table.Col>
-                          <div>{idx + 1}</div>
-                        </Table.Col>
-                        <Table.Col>
-                          <a href={item.track_url} target="_blank">
-                            <div>{item.song_title}</div>
-                          </a>
-                        </Table.Col>
-                        <Table.Col>
-                          <div>{item.artist_name}</div>
-                        </Table.Col>
-                        <Table.Col>
-                          <div>{item.played_at}</div>
-                        </Table.Col>
-                      </Table.Row>
-                    ))}
-                  </Table.Body>
-                </Table>
-              </Card>
-            </Grid.Col>
-          </Grid.Row> */}
-          {recentSongs && (
+
+          {recentSongs && recentSongs.length > 0 && (
             <>
               <Page.Header title="Recently Played Songs" />
               <Grid.Row className="row-cards">
@@ -131,6 +90,30 @@ class SpotifyDashboard extends React.Component {
                             fullName={item.song_title}
                             dateString={item.artist_name}
                           />
+                        </GalleryCard.Footer>
+                      </a>
+                    </GalleryCard>
+                  </Grid.Col>
+                ))}
+              </Grid.Row>
+            </>
+          )}
+
+          {topArtists && topArtists.length > 0 && (
+            <>
+              <Page.Header title="Top Artists of All Times" />
+              <Grid.Row className="row-cards">
+                {topArtists.map((item, key) => (
+                  <Grid.Col sm={6} lg={3} key={key}>
+                    <GalleryCard>
+                      <a href={item.artist_url} target="_blank">
+                        <GalleryCard.Image
+                          href={item.image}
+                          src={item.image}
+                          alt={`Song Title: ${item.artist_name}`}
+                        />
+                        <GalleryCard.Footer>
+                          <GalleryCard.Details fullName={item.artist_name} />
                         </GalleryCard.Footer>
                       </a>
                     </GalleryCard>

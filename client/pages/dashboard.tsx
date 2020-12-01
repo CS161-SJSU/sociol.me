@@ -127,7 +127,7 @@ class Dashboard extends React.Component {
                 </Table>
               </Card>
             </Grid.Col>
-            {topTweets && (
+            {topTweets && topTweets.length > 0 && (
               <>
                 <Grid.Col width={12}>
                   <Card title="Top 5 Tweets">
@@ -171,7 +171,7 @@ class Dashboard extends React.Component {
               </>
             )}
 
-            {worstTweets && (
+            {worstTweets && worstTweets.length > 0 && (
               <>
                 <Grid.Col width={12}>
                   <Card title="Worst 5 Tweets">
