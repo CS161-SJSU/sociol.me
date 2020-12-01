@@ -23,8 +23,6 @@ class Setup extends React.Component {
       this.props.SpotifyGetUserInfo(email).then(() => {
         this.props.SpotifyRecentPlaylists({ email })
       })
-
-      // this.props.SpotifyRecentPlaylists({ email })
     }
   }
 

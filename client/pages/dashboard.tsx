@@ -110,11 +110,13 @@ class Dashboard extends React.Component {
                   <Table.Body>
                     <Table.Row>
                       <Table.Col alignContent="center">
-                        <Avatar
-                          imageURL="/users/trinity.jpg"
-                          className="d-block"
-                          status="green"
-                        />
+                        {user && user.image_url && (
+                          <Avatar
+                            imageURL={user.image_url}
+                            className="d-block"
+                            status="green"
+                          />
+                        )}
                       </Table.Col>
                       <Table.Col>
                         <div>{twitterUser.name}</div>
