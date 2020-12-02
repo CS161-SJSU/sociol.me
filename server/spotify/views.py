@@ -25,7 +25,7 @@ from base64 import b64encode
 from dotenv import load_dotenv
 
 load_dotenv()
-from django.shortcuts import render
+
 from urllib.parse import urlencode
 import base64
 import datetime
@@ -56,20 +56,20 @@ TOP_TRACKS = 'https://api.spotify.com/v1/me/top/tracks?limit=10&offset=0'
 
 @api_view(['POST'])
 def top_artist_long(request):
-    artists = top_artist_helper_method(request, 'long', SpotifyTopArtistsLongTerm)
-    return Response({'artist_all_time': artists})
+    top_artist_helper_method(request, 'long', SpotifyTopArtistsLongTerm)
+    return Response({'artist_all_time': 'Success'})
 
 
 @api_view(['POST'])
 def top_artist_medium(request):
-    artists = top_artist_helper_method(request, 'medium', SpotifyTopArtistsMediumTerm)
-    return Response({'artist_6_months': artists})
+    top_artist_helper_method(request, 'medium', SpotifyTopArtistsMediumTerm)
+    return Response({'artist_6_months': 'Success'})
 
 
 @api_view(['POST'])
 def top_artist_short(request):
-    artists = top_artist_helper_method(request, 'short', SpotifyTopArtistsShortTerm)
-    return Response({'artist_4_weeks': artists})
+    top_artist_helper_method(request, 'short', SpotifyTopArtistsShortTerm)
+    return Response({'artist_4_weeks': 'Success'})
 
 @api_view(['POST'])
 def top_track_long(request):
@@ -115,7 +115,7 @@ def top_artist_helper_method(request, length, model):
             print("DELETED STUFF ", spotify_deleted)
 
         except model.DoesNotExist:
-            print("User has no previous playlists in the DB")
+            print("User has no top artists in the DB")
 
         artist_names = []
         images = []
@@ -245,6 +245,52 @@ def top_tracks_helper_method(request, length, model):
     except model.DoesNotExist:
         return Response({"message": "Email is not in the DB"})
 
+@api_view(['GET'])
+def get_top_artist_long(request):
+    artists = get_top_artist_helper_method(request, SpotifyTopArtistsLongTerm)
+    return Response({'artist_all_time': artists})
+
+
+@api_view(['GET'])
+def get_top_artist_medium(request):
+    artists = get_top_artist_helper_method(request, SpotifyTopArtistsMediumTerm)
+    return Response({'artist_6_months': artists})
+
+
+@api_view(['GET'])
+def get_top_artist_short(request):
+    artists = get_top_artist_helper_method(request, SpotifyTopArtistsShortTerm)
+    return Response({'artist_4_weeks': artists})
+
+
+def get_top_artist_helper_method(request, model):
+
+    email = request.GET.get('email')
+    print("Inside get top artist method, email is : ", email)
+
+    if email is None:
+        return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    spotify_user = SpotifyUser.objects.get(email=email)
+    if spotify_user.email != email:
+        return Response({"err": "invalid email"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    spotify_id = spotify_user.id
+    top_artists = model.objects.filter(user_id=spotify_id)
+
+    artists_list = []
+    for artist in top_artists:
+        response = {
+            "artist_name": artist.artist_name,
+            "image": artist.image,
+            "artist_url": artist.artist_url,
+            "artists_id": artist.artist_id
+        }
+        artists_list.append(response)
+
+    return artists_list
+
+
 @api_view(['POST'])
 def recently_played(request):
     email = request.data.get('email')
@@ -363,26 +409,18 @@ def recently_played(request):
 @api_view(['GET'])
 def get_recently_played(request):
     email = request.GET.get('email')
-    # auth_token = request.data.get('auth_token')
-    print("Inside get method, email is : ", email)
-    # print(auth_token)
+
     if email is None:
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
-
-    # Find the user thru email first then find their ID, since other users might have similar ids?
 
     spotify_user = SpotifyUser.objects.get(email=email)
     if spotify_user.email != email:
         return Response({"err": "invalid email"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    print("Spotify user is: ", spotify_user)
-
     spotify_id = spotify_user.id
 
-    print("Spotify ID is: ", spotify_id)
-
     recent_tracks = SpotifyRecentlyPlayed.objects.filter(user_id=spotify_id)
-    print("RECENT TRACKS ARE : ", recent_tracks)
+    #print("RECENT TRACKS ARE : ", recent_tracks)
 
     tracks = []
     for track in recent_tracks:
@@ -498,14 +536,16 @@ def spotify_callback(request):
                                                             id=user_data['id'], href=user_data['href'],
                                                             followers=user_data['followers']['total'],
                                                             image=user_data['images'][0]['url'],
-                                                            access_token=access_token)
+                                                            access_token=access_token,
+                                                            refresh_token=refresh_token)
         else:
             spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
                                                             display_name=user_data['display_name'],
                                                             id=user_data['id'], href=user_data['href'],
                                                             followers=user_data['followers']['total'],
                                                             image="",
-                                                            access_token=access_token)
+                                                            access_token=access_token,
+                                                            refresh_token=refresh_token)
 
         print("MODEL : ", spotify_user_model)
 
@@ -585,11 +625,11 @@ def get_credentials():
     )
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def spotify_refresh(request):
     # Refreshes access token
     email = request.data.get('email')
-    print("Email", email)
+    print("Email for refresh token", email)
     spotify_user = SpotifyUser.objects.get(email=email)
     refresh_token = spotify_user.refresh_token
 
