@@ -52,9 +52,6 @@ const SetupPage = (props) => {
       props.SpotifyUpdateEmail({ ...token, email }).then(() => {
         router.push('/setup')
       })
-      props.SpotifyRefreshToken({email})
-      props.SpotifyRecentPlaylists({ email })
-      props.SpotifyTopArtists({ email })
     }
   }
 
