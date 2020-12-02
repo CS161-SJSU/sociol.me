@@ -441,14 +441,16 @@ def spotify_callback(request):
                                                             id=user_data['id'], href=user_data['href'],
                                                             followers=user_data['followers']['total'],
                                                             image=user_data['images'][0]['url'],
-                                                            access_token=access_token)
+                                                            access_token=access_token,
+                                                            refresh_token=refresh_token)
         else:
             spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
                                                             display_name=user_data['display_name'],
                                                             id=user_data['id'], href=user_data['href'],
                                                             followers=user_data['followers']['total'],
                                                             image="",
-                                                            access_token=access_token)
+                                                            access_token=access_token,
+                                                            refresh_token=refresh_token)
 
         print("MODEL : ", spotify_user_model)
 
