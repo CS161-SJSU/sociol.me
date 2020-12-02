@@ -8,14 +8,10 @@ import {
   spotifyGetUserFailed,
   spotifyRefreshTokenSuccess,
   spotifyRefreshTokenFailed,
-  spotifyGetTopTracksSuccess,
-  spotifyGetTopTracksFailed,
   spotifyGetTopArtistsSuccess,
   spotifyGetTopArtistsFailed,
   spotifyTopArtistsSuccess,
   spotifyTopArtistsFailed,
-  spotifyGetTopPlaylistsSuccess,
-  spotifyGetTopPlaylistsFailed,
   spotifyRecentPlaylistsSuccess,
   spotifyRecentPlaylistsFailed,
   spotifyGetRecentPlaylistsSuccess,
@@ -32,7 +28,7 @@ import {
   SPOTIFIY_GET_TOP_ARTIST,
   SPOTIFIY_TOP_ARTIST,
 } from '../constants/main'
-import { setTokenToLocalStorage } from '../utils'
+
 
 // eslint-disable-next-line import/prefer-default-export
 export const SpotifyConnect = () => (dispatch) => {
