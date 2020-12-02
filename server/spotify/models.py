@@ -53,3 +53,23 @@ class SpotifyTopArtistsShortTerm(models.Model):
     artist_url = models.CharField(max_length=200, blank=False, default='')
     artist_id = models.CharField(max_length=200, blank=False, default='')
 
+class SpotifyTopTracksLongTerm(models.Model):
+    user = models.ForeignKey(SpotifyUser, on_delete=models.CASCADE)
+    track_name = models.CharField(max_length=70, blank=False, default='')
+    popularity = models.CharField(max_length=100000000000, blank=False, default='')
+    track_url = models.CharField(max_length=200, blank=False, default='')
+    track_id = models.CharField(max_length=200, blank=False, default='')
+
+class SpotifyTopTracksMediumTerm(models.Model):
+    user = models.ForeignKey(SpotifyUser, on_delete=models.CASCADE)
+    track_name = models.CharField(max_length=70, blank=False, default='')
+    popularity = models.CharField(max_length=100000000000, blank=False, default='')
+    track_url = models.CharField(max_length=200, blank=False, default='')
+    track_id = models.CharField(max_length=200, blank=False, default='')
+
+class SpotifyTopTracksShortTerm(models.Model):
+    user = models.ForeignKey(SpotifyUser, on_delete=models.CASCADE)
+    track_name = models.CharField(max_length=70, blank=False, default='')
+    popularity = models.CharField(max_length=100000000000, blank=False, default='')
+    track_url = models.CharField(max_length=200, blank=False, default='')
+    track_id = models.CharField(max_length=200, blank=False, default='')

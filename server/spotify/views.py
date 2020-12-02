@@ -51,6 +51,7 @@ FRONTEND_URI = 'http://localhost:3000/setup/'
 # API STATS ENDPOINTS
 RECENTLY_PLAYED = 'https://api.spotify.com/v1/me/player/recently-played'
 TOP_ARTISTS = 'https://api.spotify.com/v1/me/top/artists?limit=20&time_range='
+TOP_TRACKS = 'https://api.spotify.com/v1/me/top/tracks?limit=10&offset=0'
 
 
 @api_view(['POST'])
@@ -69,6 +70,23 @@ def top_artist_medium(request):
 def top_artist_short(request):
     artists = top_artist_helper_method(request, 'short', SpotifyTopArtistsShortTerm)
     return Response({'artist_4_weeks': artists})
+
+@api_view(['POST'])
+def top_track_long(request):
+    tracks = top_tracks_helper_method(request, 'long', SpotifyTopTracksLongTerm)
+    return Response({'track_all_time': tracks})
+
+
+@api_view(['POST'])
+def top_track_medium(request):
+    tracks = top_tracks_helper_method(request, 'medium', SpotifyTopTracksMediumTerm)
+    return Response({'track_6_months': tracks})
+
+
+@api_view(['POST'])
+def top_track_short(request):
+    tracks = top_tracks_helper_method(request, 'short', SpotifyTopTracksShortTerm)
+    return Response({'track_4_weeks': tracks})
 
 
 def top_artist_helper_method(request, length, model):
@@ -149,6 +167,83 @@ def top_artist_helper_method(request, length, model):
     except model.DoesNotExist:
         return Response({"message": "Email is not in the DB"})
 
+def top_tracks_helper_method(request, length, model):
+    email = request.data.get('email')
+    print("Email", email)
+    try:
+        SpotifyUser.objects.get(email=email)
+        spotify_user_model = SpotifyUser.objects.get(email=email)
+        access_token = spotify_user_model.access_token
+
+        print("INSIDE TOP TRACKS")
+
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {token}".format(token=access_token)
+        }
+
+        call_type = TOP_TRACKS + length + '_term'
+        r = requests.get(call_type, headers=headers)
+        data = r.json()
+        # print("heres the data ", data)
+
+        try:
+            spotify_deleted = model.objects.filter(user=spotify_user_model.id).delete()
+            print("DELETED STUFF ", spotify_deleted)
+
+        except model.DoesNotExist:
+            print("User has no previous playlists in the DB")
+
+        track_names = []
+        track_popularity = []
+        track_urls = []
+        track_ids = []
+
+        if not data.items:
+            return Response({'message': "No Top Tracks"})
+        # print("~~~~~~~~~~~", data)
+
+        for song in data["items"]:
+            track_names.append(song["name"])
+            track_popularity.append(song["popularity"])
+            track_urls.append(song["external_urls"]["spotify"])
+            track_ids.append(song["id"])
+
+            try:
+                model.objects.get(track_id=song["id"]).delete()
+
+            except model.DoesNotExist:
+                print("No OLD Tracks")
+
+            spotify_top_tracks = model.objects.create(user=spotify_user_model,
+                                                       track_name=song["name"],
+                                                       track_url=song["external_urls"][
+                                                           "spotify"],
+                                                       track_id=song["id"],
+                                                       track_popularity=song["popularity"]
+                                                       )
+
+            print("SPOTIFY DB OBJ ", spotify_top_tracks)
+
+        spotify_id = spotify_user_model.id
+        top_tracks = model.objects.filter(user_id=spotify_id)
+
+        tracks_list = []
+        for track in top_tracks:
+            response = {
+                "track_name": track.track_name,
+                "track_popularity": track.track_popularity,
+                "track_url": track.track_url,
+                "track_id": track.track_id
+            }
+            tracks_list.append(response)
+        # print("This is the track list ", tracks_list)
+
+        return tracks_list
+
+    except model.DoesNotExist:
+        return Response({"message": "Email is not in the DB"})
 
 @api_view(['POST'])
 def recently_played(request):
