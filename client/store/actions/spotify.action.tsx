@@ -31,6 +31,16 @@ export const spotifyGetUserFailed = (error) => ({
   payload: error,
 })
 
+export const spotifyRefreshTokenSuccess = (user) => ({
+  type: types.SPOTIFY_REFRESH_TOKEN_SUCCESS,
+  payload: user,
+})
+
+export const spotifyRefreshTokenFailed = (error) => ({
+  type: types.SPOTIFY_REFRESH_TOKEN_FAILED,
+  payload: error,
+})
+
 export const spotifyGetTopTracksSuccess = (user) => ({
   type: types.SPOTIFY_GET_TOP_TRACKS_SUCCESS,
   payload: user,
@@ -40,6 +50,17 @@ export const spotifyGetTopTracksFailed = (error) => ({
   type: types.SPOTIFY_GET_TOP_TRACKS_FAILED,
   payload: error,
 })
+
+export const spotifyTopArtistsSuccess = (user) => ({
+  type: types.SPOTIFY_TOP_ARTISTS_SUCCESS,
+  payload: user,
+})
+
+export const spotifyTopArtistsFailed = (error) => ({
+  type: types.SPOTIFY_TOP_ARTISTS_FAILED,
+  payload: error,
+})
+
 
 export const spotifyGetTopArtistsSuccess = (user) => ({
   type: types.SPOTIFY_GET_TOP_ARTISTS_SUCCESS,
