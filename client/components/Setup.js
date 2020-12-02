@@ -7,7 +7,7 @@ import { USER_EMAIL, USER_TOKEN } from '../constants/main'
 import FormPage from './FormPage'
 
 import { TwitterGetUserInfo, TwitterTopWorst } from '../api/twitter.api'
-import { SpotifyGetUserInfo, SpotifyRecentPlaylists } from '../api/spotify.api'
+import { SpotifyGetUserInfo, SpotifyRefreshToken, SpotifyRecentPlaylists, SpotifyTopArtists } from '../api/spotify.api'
 
 class Setup extends React.Component {
   componentDidMount() {
@@ -19,7 +19,10 @@ class Setup extends React.Component {
         this.props.TwitterTopWorst({ email })
       })
       this.props.SpotifyGetUserInfo(email).then(() => {
-        this.props.SpotifyRecentPlaylists({ email })
+        this.props.SpotifyRefreshToken({ email }).then(() => {
+          this.props.SpotifyRecentPlaylists({ email })
+          this.props.SpotifyTopArtists({email})
+        })
       })
     }
   }
@@ -150,7 +153,9 @@ function matchDispatchToProps(dispatch) {
       TwitterGetUserInfo,
       TwitterTopWorst,
       SpotifyGetUserInfo,
+      SpotifyRefreshToken,
       SpotifyRecentPlaylists,
+      SpotifyTopArtists,
     },
     dispatch
   )

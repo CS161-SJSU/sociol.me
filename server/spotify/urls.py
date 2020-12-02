@@ -13,4 +13,7 @@ urlpatterns = [
     url(r'^spotify/top_artists_long/', views.top_artist_long),
     url(r'^spotify/top_artists_medium/', views.top_artist_medium),
     url(r'^spotify/top_artists_short/', views.top_artist_short),
+    url(r'^spotify/get_top_artists_long/', views.get_top_artist_long),
+    url(r'^spotify/get_top_artists_medium/', views.get_top_artist_medium),
+    url(r'^spotify/get_top_artists_short/', views.get_top_artist_short)
 ]

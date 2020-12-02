@@ -24,7 +24,7 @@ class SpotifyDashboard extends React.Component {
       this.props.GetUserInfo(email)
       this.props.SpotifyGetUserInfo(email)
       this.props.SpotifyGetRecentPlaylists(email)
-      this.props.SpotifyGetTopArtists({ email })
+      this.props.SpotifyGetTopArtists(email)
       // this.props.SpotifyGetTopArtists(temp)
     }
   }

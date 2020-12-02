@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.http.response import JsonResponse
-from rest_framework.parsers import JSONParser 
+from rest_framework.parsers import JSONParser
 from rest_framework import status
- 
+
 from twitter.models import TwitterModel
 from twitter.models import TwitterTopWorst
 from rest_framework.decorators import api_view
@@ -36,7 +36,7 @@ def twitter_authenticate(request):
     print(consumer_key)
     consumer_secret = os.environ.get('TWITTER_SECRET')
     print(consumer_secret)
-    
+
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 
     try:
@@ -45,13 +45,13 @@ def twitter_authenticate(request):
     except tweepy.TweepError:
         print("Error! Failed to get request token.")
 
-    webbrowser.open(redirect_url)                
+    webbrowser.open(redirect_url)
 
     return Response({'message': 'error authenticating twitter'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST', 'GET'])
-def verify(request): 
+def verify(request):
     email = request.data.get('email')
     print(email)
     if email is None:
@@ -92,12 +92,12 @@ def verify(request):
         twitter_user.save()
         print("update db")
     except TwitterModel.DoesNotExist:
-        twitter_user_model = TwitterModel.objects.create(email = email, name = name, user_id = user_id, screen_name = screen_name, description = description, 
+        twitter_user_model = TwitterModel.objects.create(email = email, name = name, user_id = user_id, screen_name = screen_name, description = description,
         followers_count = followers_count, friends_count = friends_count, auth_token = auth_token, auth_token_secret = auth_token_secret)
         print("make new document")
 
     user_twitter_info = {
-        'auth_token': auth_token, 
+        'auth_token': auth_token,
         'screen_name': screen_name,
         'name': name,
         'user_id' : user_id,
@@ -105,16 +105,15 @@ def verify(request):
         'friends_count' : friends_count,
         'statuses_count' : statuses_count,
         'description' : description,
-        'auth_token' : auth_token
     }
 
     print(user_twitter_info)
-    
+
     return Response(user_twitter_info, status=status.HTTP_202_ACCEPTED)
 
 
 @api_view(['GET'])
-def get_twitter_info(request): 
+def get_twitter_info(request):
     email = request.GET.get('email')
     print(email)
     if email is None:
@@ -126,7 +125,7 @@ def get_twitter_info(request):
 
 
     user_twitter_info = {
-        'auth_token': twitter_user_info.auth_token, 
+        'auth_token': twitter_user_info.auth_token,
         'screen_name': twitter_user_info.screen_name,
         'name': twitter_user_info.name,
         'user_id' : twitter_user_info.user_id,
@@ -137,7 +136,7 @@ def get_twitter_info(request):
     }
 
     print(user_twitter_info)
-    
+
     return Response({"user": user_twitter_info}, status=status.HTTP_202_ACCEPTED)
 
 
@@ -158,7 +157,7 @@ def top_worst(request):
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
         auth.set_access_token(twitter_user_model.auth_token, twitter_user_model.auth_token_secret)
         api = tweepy.API(auth, wait_on_rate_limit = True)
-    
+
         print("this is the api: ")
         print(api)
 
@@ -167,7 +166,7 @@ def top_worst(request):
         print("User ID: ", user_id)
 
         print("try timeline")
-        
+
         count = 2000
         public_tweets = api.user_timeline(user_id, count = count, include_rts = False)
         # check for the top and worst tweet of the user in DB
@@ -177,15 +176,15 @@ def top_worst(request):
             print("delete the old tweets")
         except TwitterModel.DoesNotExist:
             print("no old tweets in DB")
-        
+
         print("Either case, create new top worst tweets of the user")
 
         print("----------This is the top best 5 tweets: --------------")
-        
+
         sorted_tweets = sorted(public_tweets, key=lambda x: x.retweet_count, reverse=True)[:5]
         tweet_index = 1
 
-        
+
         for sorted_tweet in sorted_tweets:
             twitter_object = TwitterTopWorst.objects.create(tweet_id = sorted_tweet.id, name = sorted_tweet.user.name,
             screen_name = sorted_tweet.user.screen_name, retweet_count = sorted_tweet.retweet_count,
@@ -227,7 +226,7 @@ def get_top_worst(request):
         return Response({"err": "invalid email"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
     tweets = TwitterTopWorst.objects.filter(user_twitter_id__in = TwitterModel.objects.filter(email = email))
-    
+
     twitter_info = serializers.serialize('json', tweets)
     print(tweets)
 
@@ -238,8 +237,8 @@ def get_top_worst(request):
             "tweet_id": tweet.tweet_id,
             "text": tweet.text,
             "retweet_count": tweet.retweet_count,
-            "favorite_count": tweet.favorite_count, 
+            "favorite_count": tweet.favorite_count,
         }
         responses.append(response)
-    
+
     return Response({"topworst": responses} , status=status.HTTP_202_ACCEPTED)
