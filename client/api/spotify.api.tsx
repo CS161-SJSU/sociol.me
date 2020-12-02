@@ -6,6 +6,8 @@ import {
   spotifyUpdateEmailFailed,
   spotifyGetUserSuccess,
   spotifyGetUserFailed,
+  spotifyRefreshTokenSuccess,
+  spotifyRefreshTokenFailed,
   spotifyGetTopTracksSuccess,
   spotifyGetTopTracksFailed,
   spotifyGetTopArtistsSuccess,
@@ -21,6 +23,7 @@ import {
   HOST,
   SPOTIFIY_AUTH,
   SPOTIFIY_ME,
+  SPOTIFIY_REFRESH,
   SPOTIFIY_UPDATE_EMAIL,
   SPOTIFIY_RECENT_PLAYLISTS,
   SPOTIFIY_GET_RECENT_PLAYLISTS,
@@ -63,6 +66,19 @@ export const SpotifyGetUserInfo = (email) => (dispatch) => {
       dispatch(spotifyGetUserFailed(err))
     })
 }
+
+export const SpotifyRefreshToken = (userData) => (dispatch) => {
+  return axios
+      .post(`${HOST}${SPOTIFIY_REFRESH}`, userData)
+      .then((res) => {
+        dispatch(spotifyRefreshTokenSuccess(res.data))
+      })
+      .catch((err) => {
+        dispatch(spotifyRefreshTokenFailed(err))
+      })
+}
+
+
 
 export const SpotifyRecentPlaylists = (userData) => (dispatch) => {
   return axios

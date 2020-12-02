@@ -25,7 +25,7 @@ from base64 import b64encode
 from dotenv import load_dotenv
 
 load_dotenv()
-from django.shortcuts import render
+
 from urllib.parse import urlencode
 import base64
 import datetime
@@ -97,7 +97,7 @@ def top_artist_helper_method(request, length, model):
             print("DELETED STUFF ", spotify_deleted)
 
         except model.DoesNotExist:
-            print("User has no previous playlists in the DB")
+            print("User has no top artists in the DB")
 
         artist_names = []
         images = []
@@ -490,11 +490,11 @@ def get_credentials():
     )
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def spotify_refresh(request):
     # Refreshes access token
     email = request.data.get('email')
-    print("Email", email)
+    print("Email for refresh token", email)
     spotify_user = SpotifyUser.objects.get(email=email)
     refresh_token = spotify_user.refresh_token
 
