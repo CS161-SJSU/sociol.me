@@ -6,5 +6,3 @@ export type User = {
   spofifyUsername: string
   numAccount: number
 }
-
-// should we use twitter/spotify ID or username

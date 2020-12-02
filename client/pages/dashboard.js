@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux'
 import { Page, Avatar, Grid, Card, Table, StatsCard } from 'tabler-react'
 
 import SiteWrapper from '../components/SiteWrapper'
-import Error401 from '../components/Error401'
+// import Error401 from '../components/Error401'
 import { USER_TOKEN, USER_EMAIL } from '../constants/main'
 import { GetUserInfo } from '../api/login.api'
 import { TwitterGetUserInfo, TwitterGetTopWorst } from '../api/twitter.api'
@@ -24,7 +24,7 @@ class Dashboard extends React.Component {
 
   render() {
     const { user } = this.props || {}
-    const { token } = user || ''
+    // const { token } = user || ''
     const { twitter } = this.props || {}
     const twitterUser = twitter.user || []
     const topworst = twitter.topworst || []

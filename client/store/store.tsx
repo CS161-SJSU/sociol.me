@@ -2,11 +2,11 @@ import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import logger from 'redux-logger'
 import { composeWithDevTools } from 'redux-devtools-extension'
-import { MakeStore, createWrapper, Context } from 'next-redux-wrapper'
+import { createWrapper } from 'next-redux-wrapper'
 
-import reducers, { State } from './reducers'
+import reducers from './reducers'
 
-export const makeStore: MakeStore<State> = (context: Context) =>
+export const makeStore = () =>
   createStore(reducers, composeWithDevTools(applyMiddleware(thunk, logger)))
 
-export const wrapper = createWrapper<State>(makeStore, { debug: true })
+export const wrapper = createWrapper(makeStore, { debug: true })

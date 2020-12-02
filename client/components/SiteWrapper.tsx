@@ -3,16 +3,9 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-
 import { Site, Nav, Grid, Button } from 'tabler-react'
-
 import { USER_TOKEN, USER_EMAIL } from '../constants/main'
-import type { NotificationProps } from 'tabler-react'
 import { GetUserInfo } from '../api/login.api'
-
-type Props = {
-  children: React.Node
-}
 
 type subNavItem = {
   value: string
@@ -56,7 +49,7 @@ const navBarItems: Array<navItem> = [
   },
 ]
 
-class SiteWrapper extends React.Component<Props, State> {
+class SiteWrapper extends React.Component {
   componentDidMount() {
     const token = localStorage.getItem(USER_TOKEN)
     const email = localStorage.getItem(USER_EMAIL)
@@ -66,7 +59,7 @@ class SiteWrapper extends React.Component<Props, State> {
     }
   }
 
-  render(): React.Node {
+  render() {
     const { user } = this.props || {}
 
     const accountDropdownProps = {
@@ -105,7 +98,6 @@ class SiteWrapper extends React.Component<Props, State> {
           accountDropdown: accountDropdownProps,
         }}
         navProps={{ itemsObjects: navBarItems }}
-        // routerContextComponentType={withRouter(RouterContextProvider)}
         footerProps={{
           links: [
             <a href="#">About Us</a>,

@@ -3,12 +3,6 @@ import Document, { Html, Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheets } from '@material-ui/core/styles'
 import theme from '../styles/theme'
 
-const styleBody = {
-  body: {
-    margin: '0px',
-  },
-}
-
 export default class MyDocument extends Document {
   render() {
     return (
@@ -24,10 +18,6 @@ export default class MyDocument extends Document {
             rel="stylesheet"
             href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
           />
-          {/* <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css"
-          /> */}
         </Head>
         <body style={{ margin: '0', padding: '0' }}>
           <Main />

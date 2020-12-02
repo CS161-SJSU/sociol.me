@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Page, Grid, GalleryCard, StatsCard } from 'tabler-react'
 import SiteWrapper from '../components/SiteWrapper'
-import Error401 from '../components/Error401'
+// import Error401 from '../components/Error401'
 import { USER_TOKEN, USER_EMAIL } from '../constants/main'
 
 import { GetUserInfo } from '../api/login.api'
@@ -17,9 +17,9 @@ class SpotifyDashboard extends React.Component {
   componentDidMount() {
     const token = localStorage.getItem(USER_TOKEN)
     const email = localStorage.getItem(USER_EMAIL)
-    const temp = {
-      email: 'cagan.sevencan@sjsu.edu',
-    }
+    // const temp = {
+    //   email: 'cagan.sevencan@sjsu.edu',
+    // }
     if (token) {
       this.props.GetUserInfo(email)
       this.props.SpotifyGetUserInfo(email)
@@ -30,11 +30,10 @@ class SpotifyDashboard extends React.Component {
   }
 
   render() {
-    const { user } = this.props || {}
-    const { token } = user || ''
+    // const { user } = this.props || {}
+    // const { token } = user || ''
 
     const { spotify } = this.props || {}
-    console.log('spotify: ', spotify)
 
     const spotifyUser = spotify.user || []
     const recent = spotify.recent_played || []

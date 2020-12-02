@@ -4,15 +4,15 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Card } from 'tabler-react'
 import FormPage from '../components/FormPage'
-import Error401 from '../components/Error401'
+// import Error401 from '../components/Error401'
 import { GoogleLogout } from 'react-google-login'
 import { USER_EMAIL, USER_TOKEN } from '../constants/main'
 
 import { GetUserInfo } from '../api/login.api'
 
 const Logout = (props) => {
-  const { user } = props || {}
-  const { token } = user || ''
+  // const { user } = props || {}
+  // const { token } = user || ''
 
   useEffect(() => {
     const token = window.localStorage.getItem(USER_TOKEN)

@@ -1,6 +1,5 @@
 /* eslint-disable import/prefer-default-export */
 import {
-  SET_USER_INFO,
   LOGIN_SUCCESS,
   LOGIN_FAILED,
   GET_USER_SUCCESS,

@@ -6,12 +6,8 @@ import {
   spotifyUpdateEmailFailed,
   spotifyGetUserSuccess,
   spotifyGetUserFailed,
-  spotifyGetTopTracksSuccess,
-  spotifyGetTopTracksFailed,
   spotifyGetTopArtistsSuccess,
   spotifyGetTopArtistsFailed,
-  spotifyGetTopPlaylistsSuccess,
-  spotifyGetTopPlaylistsFailed,
   spotifyRecentPlaylistsSuccess,
   spotifyRecentPlaylistsFailed,
   spotifyGetRecentPlaylistsSuccess,
@@ -26,7 +22,6 @@ import {
   SPOTIFIY_GET_RECENT_PLAYLISTS,
   SPOTIFIY_TOP_ARTIST,
 } from '../constants/main'
-import { setTokenToLocalStorage } from '../utils'
 
 // eslint-disable-next-line import/prefer-default-export
 export const SpotifyConnect = () => (dispatch) => {
@@ -44,8 +39,6 @@ export const SpotifyUpdateEmail = (userData) => (dispatch) => {
   return axios
     .post(`${HOST}${SPOTIFIY_UPDATE_EMAIL}`, userData)
     .then((res) => {
-      // SpotifyGetUserInfo(userData.email)
-      // SpotifyRecentPlaylists(userData)
       dispatch(spotifyUpdateEmailSuccess(res.data))
     })
     .catch((err) => {

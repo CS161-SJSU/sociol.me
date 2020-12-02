@@ -1,28 +1,16 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { State } from '../store/reducers'
 import { TwitterGetUserInfo } from '../api/twitter.api'
-import { USER_EMAIL, USER_TOKEN } from '../constants/main'
 import Landing from '../components/Landing'
 
-const Index = (props) => {
-  useEffect(() => {
-    const token = window.localStorage.getItem(USER_TOKEN)
-    const email = window.localStorage.getItem(USER_EMAIL)
-    if (email) {
-      // props.TwitterGetUserInfo(email)
-    }
-  })
-
+const Index = () => {
   return (
     <div>
       <Landing />
     </div>
   )
 }
-
-Index.getInitialProps = (props) => ({})
 
 function mapStateToProps(state) {
   return {

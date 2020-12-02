@@ -20,13 +20,9 @@ import {
 import { GetUserInfo } from '../api/login.api'
 
 import Setup from '../components/Setup'
-import Error401 from '../components/Error401'
+// import Error401 from '../components/Error401'
 
 const SetupPage = (props) => {
-  const { user } = props || {}
-  const { twitter } = props || {}
-  const { spotify } = props || {}
-  const { token } = user || ''
   const [email, setEmail] = useState('')
 
   const router = useRouter()
@@ -76,8 +72,6 @@ const SetupPage = (props) => {
     </>
   )
 }
-
-SetupPage.getInitialProps = (props) => ({})
 
 function mapStateToProps(state) {
   return {

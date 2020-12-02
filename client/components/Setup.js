@@ -4,17 +4,15 @@ import { connect } from 'react-redux'
 import Link from 'next/link'
 import { Card, Button, Icon } from 'tabler-react'
 import { USER_EMAIL, USER_TOKEN } from '../constants/main'
-import FormPage from '../components/FormPage'
+import FormPage from './FormPage'
 
 import { TwitterGetUserInfo, TwitterTopWorst } from '../api/twitter.api'
 import { SpotifyGetUserInfo, SpotifyRecentPlaylists } from '../api/spotify.api'
 
 class Setup extends React.Component {
-  componentDidMount(props) {
+  componentDidMount() {
     const token = localStorage.getItem(USER_TOKEN)
     const email = localStorage.getItem(USER_EMAIL)
-    const { spotify } = props || {}
-    const { user } = spotify || {}
 
     if (token) {
       this.props.TwitterGetUserInfo(email).then(() => {

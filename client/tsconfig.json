@@ -41,7 +41,15 @@
     "**/*.spec.tsx",
     "**/*.test.ts",
     "**/*.test.tsx",
-    "coverage"
+    "coverage",
+    "components/SiteWrapper.tsx"
   ],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "pages/spotifyDashboard.js",
+    "pages/dashboard.js",
+    "components/Setup.js"
+  ]
 }

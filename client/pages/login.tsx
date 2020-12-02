@@ -7,22 +7,18 @@ import Login from '../components/Login'
 import { USER_TOKEN } from '../constants/main'
 import { GoogleSignin } from '../api/login.api'
 
-//TODO: Handle failed cases
-
 const LoginPage = (props) => {
   console.log('LOGIN PAGE: props: ', props)
   const router = useRouter()
 
   useEffect(() => {
     const token = window.localStorage.getItem(USER_TOKEN)
-    // const token = props.user.token
     if (token) {
       router.push('/setup')
     }
   })
 
   const onGoogleSignin = (userData: Object) => {
-    // console.log('here', userData)
     props.GoogleSignin(userData)
   }
 

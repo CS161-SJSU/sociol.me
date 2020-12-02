@@ -1,6 +1,5 @@
 import React from 'react'
 import Hero from '../components/sections/Hero'
-import FeaturesTiles from './sections/FeaturesTiles'
 import FeaturesSplit from './sections/FeaturesSplit'
 import Testimonial from './sections/Testimonial'
 import Cta from './sections/Cta'

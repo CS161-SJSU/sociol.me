@@ -19,7 +19,6 @@ import {
   TWITTER_TOP_WORST,
   TWITTER_GET_TOP_WORST,
 } from '../constants/main'
-import { setTokenToLocalStorage } from '../utils'
 
 export const TwitterConnect = () => (dispatch) => {
   return axios

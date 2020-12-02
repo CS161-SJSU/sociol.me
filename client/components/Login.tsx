@@ -11,9 +11,7 @@ interface LoginProps {
 
 const Login: React.FC<LoginProps> = ({ onGoogleSignin }: LoginProps) => {
   const onGoogleSigninSuccess = (res) => {
-    // console.log(res)
     const googleProfile = res.profileObj
-
 
     const userData = {
       email: googleProfile.email,
@@ -24,11 +22,9 @@ const Login: React.FC<LoginProps> = ({ onGoogleSignin }: LoginProps) => {
       googleId: googleProfile.googleId,
       tokenId: res.tokenId,
     }
-    // if signin successfully
     if (userData.tokenId) {
       onGoogleSignin(userData)
     }
-    //  save previous id  // onClick
   }
 
   const onGoogleSigninFail = (res) => {

@@ -1,11 +1,6 @@
 import * as React from 'react'
 import styled from 'styled-components'
 
-type Props = {
-  children?: React.Node
-  imageURL?: string
-}
-
 const Wrapper = styled.div`
   height: 100%;
   margin: 0;
@@ -21,7 +16,7 @@ const Page = styled.div`
   height: 68rem;
 `
 
-function FormPage(props: Props): React.Node {
+function FormPage(props) {
   return (
     <Wrapper>
       <Page>
