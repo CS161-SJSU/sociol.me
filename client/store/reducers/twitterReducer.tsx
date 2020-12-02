@@ -9,7 +9,7 @@ export default function twitterReducer(
 ) {
   switch (action.type) {
     case HYDRATE:
-      return { ...state, ...action.payload }
+      return { ...state, ...action.payload.twitter }
     case types.TWITTER_AUTH_SUCCESS:
       return { ...state, ...action.payload, ...{ loading: false } }
     case types.TWITTER_AUTH_FAILED:

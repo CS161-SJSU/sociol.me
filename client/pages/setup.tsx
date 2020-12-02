@@ -26,7 +26,6 @@ const SetupPage = (props) => {
   const [email, setEmail] = useState('')
 
   const router = useRouter()
-  console.log(router.query)
 
   useEffect(() => {
     const token = window.localStorage.getItem(USER_TOKEN)
