@@ -16,6 +16,7 @@ import {
   SpotifyGetUserInfo,
   SpotifyRefreshToken,
   SpotifyRecentPlaylists,
+  SpotifyTopArtists,
 } from '../api/spotify.api'
 
 import { GetUserInfo } from '../api/login.api'
@@ -58,6 +59,7 @@ const SetupPage = (props) => {
       })
       props.SpotifyRefreshToken({email})
       props.SpotifyRecentPlaylists({ email })
+      props.SpotifyTopArtists({ email })
     }
   }
 
@@ -102,6 +104,7 @@ function matchDispatchToProps(dispatch) {
       SpotifyGetUserInfo,
       SpotifyRefreshToken,
       SpotifyRecentPlaylists,
+      SpotifyTopArtists,
     },
     dispatch
   )
