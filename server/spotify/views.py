@@ -33,6 +33,9 @@ import datetime
 from spotify.models import SpotifyTopArtistsLongTerm
 from spotify.models import SpotifyTopArtistsMediumTerm
 from spotify.models import SpotifyTopArtistsShortTerm
+from spotify.models import SpotifyTopTracksLongTerm
+from spotify.models import SpotifyTopTracksMediumTerm
+from spotify.models import SpotifyTopTracksShortTerm
 from spotify.models import SpotifyUser
 from spotify.models import SpotifyRecentlyPlayed
 
@@ -246,10 +249,53 @@ def top_tracks_helper_method(request, length, model):
         return Response({"message": "Email is not in the DB"})
 
 @api_view(['GET'])
+def get_top_track_long(request):
+    tracks = get_top_tracks_helper_method(request, SpotifyTopTracksLongTerm)
+    return Response({'track_all_time': tracks})
+
+
+@api_view(['GET'])
+def get_top_track_medium(request):
+    tracks = get_top_tracks_helper_method(request, SpotifyTopTracksMediumTerm)
+    return Response({'track_6_months': tracks})
+
+
+@api_view(['GET'])
+def get_top_track_short(request):
+    tracks = get_top_tracks_helper_method(request, SpotifyTopTracksShortTerm)
+    return Response({'track_4_weeks': tracks})
+
+def get_top_tracks_helper_method(request, model):
+
+    email = request.GET.get('email')
+    print("Inside get top track method, email is : ", email)
+
+    if email is None:
+        return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    spotify_user = SpotifyUser.objects.get(email=email)
+    if spotify_user.email != email:
+        return Response({"err": "invalid email"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    spotify_id = spotify_user.id
+    top_tracks = model.objects.filter(user_id=spotify_id)
+
+    tracks_list = []
+    for track in top_tracks:
+        response = {
+            "track_name": track.track_name,
+            "track_popularity": track.track_popularity,
+            "track_url": track.track_url,
+            "track_id": track.track_id
+        }
+        tracks_list.append(response)
+
+    return tracks_list
+
+@api_view(['GET'])
 def get_top_artist_long(request):
     artists = get_top_artist_helper_method(request, SpotifyTopArtistsLongTerm)
     return Response({'artist_all_time': artists})
-
 
 @api_view(['GET'])
 def get_top_artist_medium(request):
@@ -261,7 +307,6 @@ def get_top_artist_medium(request):
 def get_top_artist_short(request):
     artists = get_top_artist_helper_method(request, SpotifyTopArtistsShortTerm)
     return Response({'artist_4_weeks': artists})
-
 
 def get_top_artist_helper_method(request, model):
 
