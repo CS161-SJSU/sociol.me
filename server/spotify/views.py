@@ -169,7 +169,6 @@ def get_top_artist_short(request):
 
 
 def get_top_artist_helper_method(request, model):
-
     email = request.GET.get('email')
     print("Inside get top artist method, email is : ", email)
 
@@ -222,7 +221,7 @@ def recently_played(request):
         # print("PRINT THE CALL ")
         # print(RECENTLY_PLAYED + '?after={time}'.format(time=yesterday_unix_timestamp))
 
-        r = requests.get("https://api.spotify.com/v1/me/player/recently-played?limit=20&after=0", headers=headers)
+        # r = requests.get("https://api.spotify.com/v1/me/player/recently-played?limit=20&after=0", headers=headers)
         r = requests.get(RECENTLY_PLAYED + '?limit=20&after={time}'.format(time=yesterday_unix_timestamp),
                          headers=headers)
 
@@ -325,7 +324,7 @@ def get_recently_played(request):
     spotify_id = spotify_user.id
 
     recent_tracks = SpotifyRecentlyPlayed.objects.filter(user_id=spotify_id)
-    #print("RECENT TRACKS ARE : ", recent_tracks)
+    # print("RECENT TRACKS ARE : ", recent_tracks)
 
     tracks = []
     for track in recent_tracks:
@@ -376,6 +375,8 @@ def spotify_callback(request):
     code = request.GET.get('code')
     print(request)
     print("CODE :", code)
+    if code is None:
+        return redirect(FRONTEND_URI)
 
     # Request tokens with code we obtained
     auth_options = {
