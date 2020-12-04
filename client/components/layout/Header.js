@@ -108,13 +108,6 @@ const Header = ({
                 <div className="header-nav-inner">
                   {!hideSignin && (
                     <ul className="list-reset header-nav-right">
-                      <Link
-                        href="/register"
-                        className="button button-primary button-wide-mobile button-sm"
-                        onClick={closeMenu}
-                      >
-                        Register
-                      </Link>
                       <li>
                         <Link
                           href="/login"
