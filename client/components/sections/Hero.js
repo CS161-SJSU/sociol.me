@@ -61,11 +61,11 @@ const Hero = ({
               <span className="text-color-primary">Social Media</span>
             </h1>
             <div className="container-xs">
-              <p className="mb-50">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua — Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat.
+              <p className="mb-50" align="left">
+                Does content creation sound like something you might be interested in?
+                It doesn't have to be a difficult process. We are here to help you navigate
+                your personal profile at no cost. Learn about your engagement. Grow your 
+                platform. Sociol –– bridging social media and content creation.
               </p>
               <div>
                 <ButtonGroup>
