@@ -14,13 +14,11 @@ Analysts for your Social Media</br></br>
 
 - [NextJS]()
 - [Redux](https://github.com/reduxjs/redux)
-- [Jest](https://github.com/facebook/jest)
-- [Enzyme](https://github.com/FormidableLabs/enzyme-matchers/tree/master/packages/jest-enzyme)
 
 ### Backend
 
 - [Django](https://github.com/django/django)
-- [MongoDB]()
+- [MongoDB Atlas]()
 
 ## ✅ Getting Started
 
@@ -40,7 +38,7 @@ What things you need to install the software and how to install them
 
 ```
 # Clone this repository
-git clone https://github.com/CS161-SJSU/social-analytics
+git clone https://github.com/CS161-SJSU/sociol.me
 
 # Go into the repository
 cd social-analytics
@@ -75,7 +73,7 @@ source activate your_env_name
 
 # For Windows
 Create the virtual environment named "env":
-python -m venv env 
+python -m venv env
 
 Add the path to the git ignore file (optional):
 echo env/ >> .gitignore
@@ -95,6 +93,17 @@ cd server
 ```
 
 ```
+#The .env file will look like this
+GOOGLE_CLIENT_ID = ".....apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET = '...'
+SPOTIFY_CLIENT_ID="..."
+SPOTIFY_CLIENT_SECRET="..."
+SPOTIFY_REDIRECT_URI="http://localhost:8000/spotify/callback"
+TWITTER_ID="..."
+TWITTER_SECRET="..."
+```
+
+```
 # Install server packages from requirements.txt
 pip3 install -r requirements.txt or python -m pip3 install -r requirements.txt
 
@@ -108,25 +117,11 @@ python3 manage.py migrate or Python manage.py migrate (Windows)
 python3 manage.py runserver or Python manage.py runserver (Windows)
 ```
 
-## ⚙️ Testing
-
-```
-# Test server using Django unittest
-cd server
-python3 manage.py test
-```
-
-```
-# Test client using Jest and Enzyme
-cd client
-npm test
-```
-
 ## ⭐️ Team
 
 👩🏻‍💻 **Trinity Nguyen** - [trinwin](https://github.com/trinwin) (Project Lead + Frontend Lead)
 
-👨🏻‍💻 **Cagan Sevencan** - [cagansevencan](https://github.com/cagansevencan) (Frontend + Backend / QA)
+👨🏻‍💻 **Cagan Sevencan** - [cagansevencan](https://github.com/cagansevencan) (Frontend + Backend Developer)
 
 👩🏻‍💻 **Julia Chin** - [juliachin123](https://github.com/juliachin123) (Backend Developer)
 
@@ -134,4 +129,4 @@ npm test
 
 👨🏻‍💻 **Toan Dao** - [toandaosjsu](https://github.com/toandaosjsu) (Backend Developer)
 
-See also the list of [contributors](https://github.com/CS161-SJSU/social-analytics/graphs/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/CS161-SJSU/sociol.me/graphs/contributors) who participated in this project.
