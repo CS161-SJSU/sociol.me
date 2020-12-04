@@ -31,8 +31,8 @@ def to_authenticate(request):
 
         try:
             # validating token
-            CLIENT_ID = os.environ.get('CLIENT_ID')
-            idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
+            GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+            idinfo = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
 
             #  
             

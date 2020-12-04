@@ -13,6 +13,11 @@ const LoginPage = (props) => {
 
   useEffect(() => {
     const token = window.localStorage.getItem(USER_TOKEN)
+
+    console.log(
+      'process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID: ',
+      process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+    )
     if (token) {
       router.push('/setup')
     }

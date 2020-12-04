@@ -11,9 +11,6 @@ import { USER_EMAIL, USER_TOKEN } from '../constants/main'
 import { GetUserInfo } from '../api/login.api'
 
 const Logout = (props) => {
-  // const { user } = props || {}
-  // const { token } = user || ''
-
   useEffect(() => {
     const token = window.localStorage.getItem(USER_TOKEN)
     const email = window.localStorage.getItem(USER_EMAIL)

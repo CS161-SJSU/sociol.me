@@ -10,6 +10,7 @@ import {
   TwitterTopWorst,
   TwitterGetUserInfo,
 } from '../api/twitter.api'
+
 import {
   SpotifyConnect,
   SpotifyUpdateEmail,
@@ -22,7 +23,6 @@ import {
 import { GetUserInfo } from '../api/login.api'
 
 import Setup from '../components/Setup'
-// import Error401 from '../components/Error401'
 
 const SetupPage = (props) => {
   const [email, setEmail] = useState('')
