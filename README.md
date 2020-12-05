@@ -20,7 +20,13 @@ Analysts for your Social Media</br></br>
 - [Django](https://github.com/django/django)
 - [MongoDB Atlas]()
 
-## ✅ Getting Started
+## 📃 Documentation
+
+- [Sprint Board on Notion](https://www.notion.so/SOCIOL-WORKSPACE-ce4b2e57cb624bc799503aab93d6f550)
+
+- [Design Document & Test Plan](https://docs.google.com/document/d/1LJ3sYdDiWNycKB0D7CaV12whC3bwlRjrU7pU4TftlY0/edit?usp=sharing)
+
+## ⏱ Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
@@ -34,7 +40,7 @@ What things you need to install the software and how to install them
 - Install [MongoDB](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/)
 - Install [MongoDB Compass](https://docs.mongodb.com/compass/master/install) (Recommended)
 
-### ⚒️ Installation
+### ⛓ Installation
 
 ```
 # Clone this repository
@@ -44,7 +50,7 @@ git clone https://github.com/CS161-SJSU/sociol.me
 cd social-analytics
 ```
 
-### 💻 Client Start-up
+### 💡 Client Start-up
 
 ```
 # Go into client folder
@@ -62,7 +68,7 @@ yarn install or npm install
 yarn dev or npm run dev
 ```
 
-### ⌨️ Server Start-up
+### 🔗 Server Start-up
 
 ```
 # Create virtual environment (recommend) using conda/virtualenv
