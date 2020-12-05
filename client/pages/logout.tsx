@@ -20,7 +20,6 @@ const Logout = (props) => {
   }, [])
   const router = useRouter()
   const logout = () => {
-    console.log('logout')
     localStorage.removeItem(USER_EMAIL)
     localStorage.removeItem(USER_TOKEN)
     router.push('/')

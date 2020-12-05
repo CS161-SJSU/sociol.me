@@ -8,16 +8,11 @@ import { USER_TOKEN } from '../constants/main'
 import { GoogleSignin } from '../api/login.api'
 
 const LoginPage = (props) => {
-  console.log('LOGIN PAGE: props: ', props)
   const router = useRouter()
 
   useEffect(() => {
     const token = window.localStorage.getItem(USER_TOKEN)
 
-    console.log(
-      'process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID: ',
-      process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-    )
     if (token) {
       router.push('/setup')
     }

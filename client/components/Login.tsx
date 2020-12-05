@@ -28,7 +28,7 @@ const Login: React.FC<LoginProps> = ({ onGoogleSignin }: LoginProps) => {
   }
 
   const onGoogleSigninFail = (res) => {
-    console.log('FAILED: ' + res)
+    // console.log('FAILED: ' + res)
   }
 
   const GoogleSignIn = styled.div`
