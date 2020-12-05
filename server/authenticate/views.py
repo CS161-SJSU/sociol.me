@@ -51,7 +51,6 @@ def to_authenticate(request):
             
         except ValueError:
             # Invalid token
-            print("Value Error")
             return Response({'message': 'Google ID info is wrong!'}, status=status.HTTP_401_UNAUTHORIZED)
     
     return Response({'message': 'Google sign in failed!'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -60,7 +59,6 @@ def to_authenticate(request):
 @api_view(['GET'])
 def get_user(request): 
     email = request.GET.get('email')
-    print(email)
     if email is None:
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
