@@ -23,7 +23,9 @@ if __name__ == "__main__":
 
     data = r.json()
 
+    print("Data ", data)
 
     data = r.json()
 
+    print("Data ", data)
 

@@ -73,11 +73,13 @@ def top_artist_short(request):
 
 def top_artist_helper_method(request, length, model):
     email = request.data.get('email')
+    print("Email", email)
     try:
         SpotifyUser.objects.get(email=email)
         spotify_user_model = SpotifyUser.objects.get(email=email)
         access_token = spotify_user_model.access_token
 
+        print("INSIDE TOP ARTISTS")
 
         headers = {
             "Accept": "application/json",
@@ -88,11 +90,14 @@ def top_artist_helper_method(request, length, model):
         call_type = TOP_ARTISTS + length + '_term'
         r = requests.get(call_type, headers=headers)
         data = r.json()
+        # print("heres the data ", data)
 
         try:
             spotify_deleted = model.objects.filter(user=spotify_user_model.id).delete()
+            print("DELETED STUFF ", spotify_deleted)
 
         except model.DoesNotExist:
+            print("User has no top artists in the DB")
 
         artist_names = []
         images = []
@@ -101,6 +106,7 @@ def top_artist_helper_method(request, length, model):
 
         if not data.items:
             return Response({'message': "No Top Artists"})
+        # print("~~~~~~~~~~~", data)
 
         for song in data["items"]:
             artist_names.append(song["name"])
@@ -112,6 +118,7 @@ def top_artist_helper_method(request, length, model):
                 model.objects.get(artist_id=song["id"]).delete()
 
             except model.DoesNotExist:
+                print("No OLD Artist")
 
             spotify_top_artists = model.objects.create(user=spotify_user_model,
                                                        artist_name=song["name"],
@@ -121,6 +128,7 @@ def top_artist_helper_method(request, length, model):
                                                        image=song["images"][1]["url"]
                                                        )
 
+            print("SPOTIFY DB OBJ ", spotify_top_artists)
 
         spotify_id = spotify_user_model.id
         top_artists = model.objects.filter(user_id=spotify_id)
@@ -134,6 +142,7 @@ def top_artist_helper_method(request, length, model):
                 "artists_id": artist.artist_id
             }
             artists_list.append(response)
+        # print("This is the artist list ", artists_list)
 
         return artists_list
 
@@ -161,6 +170,7 @@ def get_top_artist_short(request):
 
 def get_top_artist_helper_method(request, model):
     email = request.GET.get('email')
+    print("Inside get top artist method, email is : ", email)
 
     if email is None:
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -188,10 +198,15 @@ def get_top_artist_helper_method(request, model):
 @api_view(['POST'])
 def recently_played(request):
     email = request.data.get('email')
+    print("Email", email)
 
     try:
         spotify_user_model = SpotifyUser.objects.get(email=email)
+        print("USER MODEL", spotify_user_model)
         access_token = spotify_user_model.access_token
+        print("ACCESS TOKEN ", access_token)
+
+        print("INSIDE RECENTLY PLAYED")
 
         headers = {
             "Accept": "application/json",
@@ -203,17 +218,26 @@ def recently_played(request):
         yesterday = today - datetime.timedelta(days=1)  # We want to run the feed daily, last 24 hours played songs
         yesterday_unix_timestamp = int(yesterday.timestamp()) * 1000
 
+        # print("PRINT THE CALL ")
+        # print(RECENTLY_PLAYED + '?after={time}'.format(time=yesterday_unix_timestamp))
 
         # r = requests.get("https://api.spotify.com/v1/me/player/recently-played?limit=20&after=0", headers=headers)
         r = requests.get(RECENTLY_PLAYED + '?limit=20&after={time}'.format(time=yesterday_unix_timestamp),
                          headers=headers)
 
         data = r.json()
+        # print("+++++++++ data", data)
+
+        print("SPOTIFY USER ID ", spotify_user_model.id)
 
         try:
             spotify_deleted = SpotifyRecentlyPlayed.objects.filter(user=spotify_user_model.id).delete()
+            print("DELETED STUFF ", spotify_deleted)
 
         except SpotifyRecentlyPlayed.DoesNotExist:
+            print("User has no previous playlists in the DB")
+
+        # print("Recently played data: ", data)
 
         song_titles = []
         artist_names = []
@@ -238,9 +262,12 @@ def recently_played(request):
             preview_urls.append(song["track"]["preview_url"])
 
             try:
+                print("INSIDE TRY")
                 SpotifyRecentlyPlayed.objects.get(track_id=song["track"]["id"]).delete()
+                print("ADD +1 played EDGE CASE")
 
             except SpotifyRecentlyPlayed.DoesNotExist:
+                print("No OLD TRACKS")
 
             spotify_recently_played = SpotifyRecentlyPlayed.objects.create(user=spotify_user_model,
                                                                            song_title=song["track"]["name"],
@@ -255,6 +282,7 @@ def recently_played(request):
                                                                            preview_url=song["track"]["preview_url"]
                                                                            )
 
+            print("SPOTIFY DB OBJ ", spotify_recently_played)
 
         recently_played_dict = {
             "song_title": song_titles,
@@ -273,6 +301,9 @@ def recently_played(request):
                                               "image",
                                               "track_urls", "preview_urls"])
 
+        print(dataframe)
+
+        # print(recently_played_dict )
         return Response({'message': data})
 
     except SpotifyUser.DoesNotExist:
@@ -293,6 +324,7 @@ def get_recently_played(request):
     spotify_id = spotify_user.id
 
     recent_tracks = SpotifyRecentlyPlayed.objects.filter(user_id=spotify_id)
+    # print("RECENT TRACKS ARE : ", recent_tracks)
 
     tracks = []
     for track in recent_tracks:
@@ -318,6 +350,8 @@ def spotify_login(request):
         secrets.choice(string.ascii_uppercase + string.digits) for _ in range(16)
     )
 
+    print("STATE BEFORE SENDING IT ", state)
+
     scope = 'user-read-private user-read-email user-follow-read user-library-read user-read-recently-played ' \
             'user-top-read user-follow-read user-follow-modify playlist-read-private playlist-read-collaborative ' \
             'playlist-modify-public '
@@ -332,12 +366,15 @@ def spotify_login(request):
     res = HttpResponseRedirect(f'{AUTH_URL}/?{urlencode(payload)}')
 
     webbrowser.open(res.url)
+    print(res.url)
     return Response({'message': "Returned token"}, status=status.HTTP_202_ACCEPTED)
 
 
 @api_view(['GET'])
 def spotify_callback(request):
     code = request.GET.get('code')
+    print(request)
+    print("CODE :", code)
     if code is None:
         return redirect(FRONTEND_URI)
 
@@ -353,9 +390,13 @@ def spotify_callback(request):
     res = requests.post(TOKEN_URL, auth=(CLIENT_ID, CLIENT_SECRET), data=auth_options)
 
     res_data = res.json()
+    print("----Response Data is : ", res_data)
 
     access_token = res_data.get('access_token')
     refresh_token = res_data.get('refresh_token')
+
+    print("----Access TOKEN ", access_token)
+    print("----REFRESH TOKEN ", refresh_token)
 
     if res_data.get('error') or res.status_code != 200:
         Response({"Failed to receive token: %s "},
@@ -370,6 +411,7 @@ def spotify_callback(request):
 
     r = requests.get(ME_URL, headers=headers)
     user_data = r.json()
+    print("----User Data: ", user_data)
 
     if r.status_code != 200:
         Response({"Failed to get Profile info %s "},
@@ -377,17 +419,23 @@ def spotify_callback(request):
 
     # Update DB if any of the user info has changed
     user_ID = user_data['id']
+    print("USER ID: ", user_ID)
 
     if not user_data['images']:
         user_data['images'] = ''
 
     try:
+        print("INSIDE TRY METHOD")
         spotify_user_info = SpotifyUser.objects.get(id=user_data['id'])
+        print("SAVING NEW ACCESS TOKEN ", access_token)
+        print("SAVING NEW REFRESH TOKEN ", refresh_token)
         spotify_user_info.access_token = access_token
         spotify_user_info.refresh_token = refresh_token
         spotify_user_info.save()
+        print("DB IS UPDATED")
 
     except SpotifyUser.DoesNotExist:
+        print("INSIDE CREATE FUNC")
         if (user_data['images']):
             spotify_user_model = SpotifyUser.objects.create(country=user_data['country'],
                                                             display_name=user_data['display_name'],
@@ -405,6 +453,7 @@ def spotify_callback(request):
                                                             access_token=access_token,
                                                             refresh_token=refresh_token)
 
+        print("MODEL : ", spotify_user_model)
 
         redirect(FRONTEND_URI + '?access_token=' + access_token + '&id=' + user_ID)
 
@@ -416,6 +465,11 @@ def get_spotify_update_email(request):
     # UPDATE EMAIL IF THEY DONT HAVE
     email = request.data.get('email')
     id = request.data.get('id')
+
+    print("REQUEST DATA", request.data)
+    print("ID ", id)
+    print("Email ", email)
+
     if email is None:
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
@@ -423,8 +477,10 @@ def get_spotify_update_email(request):
     if spotify_user_info is None:
         return Response({"err": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
+    print("USER ID ", spotify_user_info)
     spotify_user_info.email = email
     spotify_user_info.save()
+    print("updated email data")
 
     user_spotify_info = {
         'id': spotify_user_info.id,
@@ -436,6 +492,8 @@ def get_spotify_update_email(request):
         'image': spotify_user_info.image
     }
 
+    print("Updated: ", user_spotify_info)
+
     return Response({"user": user_spotify_info}, status=status.HTTP_202_ACCEPTED)
 
 
@@ -443,6 +501,9 @@ def get_spotify_update_email(request):
 def spotify_me(request):
     email = request.GET.get('email')
     # auth_token = request.data.get('auth_token')
+
+    print(email)
+    # print(auth_token)
     if email is None:
         return Response({"err": "Email not provided"}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
@@ -459,6 +520,8 @@ def spotify_me(request):
         'href': spotify_user_info.href,
         'followers': spotify_user_info.followers
     }
+
+    print(user_spotify_info)
     return Response({"user": user_spotify_info}, status=status.HTTP_202_ACCEPTED)
 
 
@@ -472,8 +535,13 @@ def get_credentials():
 def spotify_refresh(request):
     # Refreshes access token
     email = request.data.get('email')
+    print("Email for refresh token", email)
     spotify_user = SpotifyUser.objects.get(email=email)
     refresh_token = spotify_user.refresh_token
+
+    print("spotify refresh", spotify_user.refresh_token)
+    print("spotify access", spotify_user.access_token)
+
     client_creds_b64 = get_credentials()
 
     payload = {
@@ -486,9 +554,15 @@ def spotify_refresh(request):
         TOKEN_URL, data=payload, headers=headers
     )
     res_data = res.json()
+    print(res_data)
     new_access_token = res_data["access_token"]
+
+    print("RES DATA ", res_data)
+    print("New Access Token ", new_access_token)
 
     spotify_user.access_token = new_access_token
     spotify_user.save()
+
+    print("DB is updated")
 
     return Response({"Response Data ": res_data}, status=status.HTTP_202_ACCEPTED)
